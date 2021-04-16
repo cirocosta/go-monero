@@ -11,7 +11,7 @@
 - [ ] `get_block_header_by_height`
 - [ ] `get_block_headers_range`
 - [ ] `get_block`
-- [ ] `get_connections`
+- [x] `get_connections`
 - [ ] `get_info`
 - [ ] `hard_fork_info`
 - [ ] `set_bans`

@@ -10,7 +10,7 @@ var parser = flags.NewParser(&options, flags.Default)
 
 type Options struct {
 	Verbose bool   `short:"v" long:"verbose" description:"dump http requests and responses to stderr"`
-	Address string `short:"a" long:"address" default:"http://xps.utxo.com.br:18089" description:"RPC server address"`
+	Address string `short:"a" env:"MONEROD_ADDRESS" long:"address" description:"RPC server address" required:"true"`
 }
 
 var options Options
