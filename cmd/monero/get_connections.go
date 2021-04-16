@@ -35,8 +35,8 @@ func (c *GetConnectionsCommand) Execute(_ []string) error {
 
 func init() {
 	parser.AddCommand("get-connections",
-		"Retrieve information about incoming and outgoing connections to your node",
-		"Retrieve information about incoming and outgoing connections to your node",
+		"Retrieve information about incoming and outgoing connections to your node (restricted)",
+		"Retrieve information about incoming and outgoing connections to your node (restricted)",
 		&GetConnectionsCommand{},
 	)
 }
