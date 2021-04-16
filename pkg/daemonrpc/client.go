@@ -12,10 +12,6 @@ import (
 const (
 	EndpointJsonRPC = "/json_rpc"
 	VersionJsonRPC  = "2.0"
-
-	MethodGetBlockCount    = "get_block_count"
-	MethodOnGetBlockHash   = "on_get_block_hash"
-	MethodGetBlockTemplate = "get_block_template"
 )
 
 type Client struct {
@@ -73,41 +69,31 @@ func NewClient(address string, opts ...ClientOption) (*Client, error) {
 type ResponseEnvelope struct {
 	Id      string      `json:"id"`
 	JsonRPC string      `json:"jsonrpc"`
-	Result  interface{} `json:"result"`
+	Result  interface{} `json:"result,omitempty"`
+	Error   struct {
+		Code    int    `json:"code"`
+		Message string `json:"message"`
+	} `json:"error,omitempty"`
 }
 
 // RequestEnvelope wraps all requests made to the RPC server.
 //
 type RequestEnvelope struct {
-	Id      string                 `json:"id"`
-	JsonRPC string                 `json:"jsonrpc"`
-	Method  string                 `json:"method"`
-	Params  map[string]interface{} `json:"params,omitempty"`
+	Id      string      `json:"id"`
+	JsonRPC string      `json:"jsonrpc"`
+	Method  string      `json:"method"`
+	Params  interface{} `json:"params,omitempty"`
 }
 
-type GetBlockCountResponse struct {
-	Count  uint64 `json:"count"`
-	Status string `json:"status"`
-}
-
-func (c *Client) GetBlockCount() (*GetBlockCountResponse, error) {
-	resp := &GetBlockCountResponse{}
-
-	if err := c.JsonRPC(MethodGetBlockCount, nil, resp); err != nil {
-		return nil, fmt.Errorf("get: %w", err)
-	}
-
-	return resp, nil
-}
-
-func (c *Client) JsonRPC(method string, params map[string]interface{}, response interface{}) error {
+func (c *Client) JsonRPC(method string, params interface{}, response interface{}) error {
 	url := *c.url
 	url.Path = EndpointJsonRPC
 
 	b, err := json.Marshal(&RequestEnvelope{
-		Id:     "0",
-		Method: method,
-		Params: params,
+		Id:      "0",
+		JsonRPC: "2.0",
+		Method:  method,
+		Params:  params,
 	})
 	if err != nil {
 		return fmt.Errorf("marshal: %w", err)
@@ -129,10 +115,19 @@ func (c *Client) JsonRPC(method string, params map[string]interface{}, response 
 		return fmt.Errorf("non-2xx status code: %d", resp.StatusCode)
 	}
 
-	if err := json.NewDecoder(resp.Body).Decode(&ResponseEnvelope{
+	rpcResponseBody := &ResponseEnvelope{
 		Result: response,
-	}); err != nil {
+	}
+
+	if err := json.NewDecoder(resp.Body).Decode(rpcResponseBody); err != nil {
 		return fmt.Errorf("decode: %w", err)
+	}
+
+	if rpcResponseBody.Error.Code != 0 || rpcResponseBody.Error.Message != "" {
+		return fmt.Errorf("rpc error: code=%d message=%s",
+			rpcResponseBody.Error.Code,
+			rpcResponseBody.Error.Message,
+		)
 	}
 
 	return nil

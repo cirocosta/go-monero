@@ -110,6 +110,8 @@ func TestClient(t *testing.T) {
 			require.NoError(t, err)
 
 			err = client.JsonRPC("rpc-method", params, nil)
+			assert.Equal(t, body.Id, "0")
+			assert.Equal(t, body.JsonRPC, "2.0")
 			assert.Equal(t, body.Method, "rpc-method")
 			assert.Equal(t, body.Params, params)
 		})
@@ -131,6 +133,26 @@ func TestClient(t *testing.T) {
 			assert.NoError(t, err)
 
 			assert.Equal(t, result, map[string]string{"foo": "bar"})
+		})
+
+		it("fails if rpc errored", func() {
+			handler := func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintln(w, `{"id":"id", "jsonrpc":"jsonrpc", "error": {"code": -1, "message":"foo"}}`)
+			}
+
+			daemon := httptest.NewServer(http.HandlerFunc(handler))
+			defer daemon.Close()
+
+			client, err = daemonrpc.NewClient(daemon.URL, daemonrpc.WithHTTPClient(daemon.Client()))
+			require.NoError(t, err)
+
+			result := map[string]string{}
+
+			err = client.JsonRPC("rpc-method", nil, &result)
+			assert.Error(t, err)
+
+			assert.Contains(t, err.Error(), "foo")
+			assert.Contains(t, err.Error(), "-1")
 		})
 
 	}, spec.Report(report.Terminal{}), spec.Parallel(), spec.Random())

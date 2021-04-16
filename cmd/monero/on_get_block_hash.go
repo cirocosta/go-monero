@@ -8,9 +8,11 @@ import (
 	"github.com/cirocosta/go-monero/pkg/daemonrpc"
 )
 
-type BlockCountCommand struct{}
+type OnGetBlockHashCommand struct {
+	Height uint64 `long:"height" required:"true"`
+}
 
-func (c *BlockCountCommand) Execute(_ []string) error {
+func (c *OnGetBlockHashCommand) Execute(_ []string) error {
 	client, err := daemonrpc.NewClient(options.Address,
 		daemonrpc.WithHTTPClient(daemonrpc.NewHTTPClient(options.Verbose)),
 	)
@@ -18,7 +20,7 @@ func (c *BlockCountCommand) Execute(_ []string) error {
 		return fmt.Errorf("new client for '%s': %w", options.Address, err)
 	}
 
-	resp, err := client.GetBlockCount()
+	resp, err := client.OnGetBlockHash(c.Height)
 	if err != nil {
 		return fmt.Errorf("get block count: %w", err)
 	}
@@ -34,9 +36,9 @@ func (c *BlockCountCommand) Execute(_ []string) error {
 }
 
 func init() {
-	parser.AddCommand("block-count",
-		"Get the block count",
-		"Look up how many blocks are in the longest chain known to the node",
-		&BlockCountCommand{},
+	parser.AddCommand("on-get-block-hash",
+		"Look up a block's hash by its height",
+		"Look up a block's hash by its height",
+		&OnGetBlockHashCommand{},
 	)
 }
