@@ -9,7 +9,6 @@
 - [ ] `get_block_header_by_height`
 - [ ] `get_block_headers_range`
 - [ ] `get_block`
-- [ ] `get_coinbase_tx_sum`
 - [ ] `get_fee_estimate`
 - [ ] `get_last_block_header`
 - [ ] `get_output_distribution`
@@ -23,6 +22,7 @@
 - [ ] `sync_info`
 - [x] `get_block_count`
 - [x] `get_block_template`
+- [x] `get_coinbase_tx_sum`
 - [x] `get_connections`
 - [x] `get_info`
 - [x] `on_get_block_hash`

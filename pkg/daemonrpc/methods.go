@@ -4,10 +4,11 @@ import "fmt"
 
 const (
 	MethodGetBlockCount    = "get_block_count"
-	MethodOnGetBlockHash   = "on_get_block_hash"
 	MethodGetBlockTemplate = "get_block_template"
+	MethodGetCoinbaseTxSum = "get_coinbase_tx_sum"
 	MethodGetConnections   = "get_connections"
 	MethodGetInfo          = "get_info"
+	MethodOnGetBlockHash   = "on_get_block_hash"
 )
 
 type GetBlockCountResult struct {
@@ -145,6 +146,35 @@ func (c *Client) GetInfo() (*GetInfoResult, error) {
 	)
 
 	if err := c.JsonRPC(MethodGetInfo, nil, resp); err != nil {
+		return nil, fmt.Errorf("get: %w", err)
+	}
+
+	return resp, nil
+}
+
+type GetCoinbaseTxSumResult struct {
+	Credits             int    `json:"credits"`
+	EmissionAmount      int64  `json:"emission_amount"`
+	EmissionAmountTop64 int    `json:"emission_amount_top64"`
+	FeeAmount           int    `json:"fee_amount"`
+	FeeAmountTop64      int    `json:"fee_amount_top64"`
+	Status              string `json:"status"`
+	TopHash             string `json:"top_hash"`
+	Untrusted           bool   `json:"untrusted"`
+	WideEmissionAmount  string `json:"wide_emission_amount"`
+	WideFeeAmount       string `json:"wide_fee_amount"`
+}
+
+func (c *Client) GetCoinbaseTxSum(height, count uint64) (*GetCoinbaseTxSumResult, error) {
+	var (
+		resp   = &GetCoinbaseTxSumResult{}
+		params = map[string]uint64{
+			"height": height,
+			"count":  count,
+		}
+	)
+
+	if err := c.JsonRPC(MethodGetCoinbaseTxSum, params, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 

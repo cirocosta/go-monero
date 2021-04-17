@@ -9,7 +9,7 @@ import (
 var parser = flags.NewParser(&options, flags.Default)
 
 type Options struct {
-	Verbose bool   `short:"v" long:"verbose" description:"dump http requests and responses to stderr"`
+	Verbose bool   `short:"v" env:"MONEROD_VERBOSE" long:"verbose" description:"dump http requests and responses to stderr"`
 	Address string `short:"a" env:"MONEROD_ADDRESS" long:"address" description:"RPC server address" required:"true"`
 }
 
