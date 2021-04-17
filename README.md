@@ -1,6 +1,9 @@
 # go-monero
 
-## todo
+
+## daemon
+
+### json rpc
 
 - [ ] `flush_txpool`
 - [ ] `get_alternate_chains`
@@ -26,3 +29,39 @@
 - [x] `get_info`
 - [x] `on_get_block_hash`
 - [x] `sync_info`
+
+
+### json rpc
+
+- [ ] `/get_alt_blocks_hashes`
+- [ ] `/get_blocks.bin`
+- [ ] `/get_blocks_by_height.bin`
+- [ ] `/get_hashes.bin`
+- [ ] `/get_height`
+- [ ] `/get_info (not JSON)`
+- [ ] `/get_limit`
+- [ ] `/get_o_indexes.bin`
+- [ ] `/get_outs.bin`
+- [ ] `/get_outs`
+- [ ] `/get_peer_list`
+- [ ] `/get_transaction_pool_hashes.bin`
+- [ ] `/get_transaction_pool_stats`
+- [ ] `/get_transactions`
+- [ ] `/in_peers`
+- [ ] `/is_key_image_spent`
+- [ ] `/mining_status`
+- [ ] `/out_peers`
+- [ ] `/save_bc`
+- [ ] `/send_raw_transaction`
+- [ ] `/set_limit`
+- [ ] `/set_log_categories`
+- [ ] `/set_log_hash_rate`
+- [ ] `/set_log_level`
+- [ ] `/start_mining`
+- [ ] `/start_save_graph`
+- [ ] `/stop_daemon`
+- [ ] `/stop_mining`
+- [ ] `/stop_save_graph`
+- [ ] `/update`
+- [x] `/get_transaction_pool`
+`

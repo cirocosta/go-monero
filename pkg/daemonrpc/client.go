@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"time"
@@ -85,6 +86,35 @@ type RequestEnvelope struct {
 	Params  interface{} `json:"params,omitempty"`
 }
 
+func (c *Client) Other(endpoint string, params interface{}, response interface{}) error {
+	url := *c.url
+	url.Path = endpoint
+
+	var body io.Reader
+
+	if params != nil {
+		b, err := json.Marshal(params)
+		if err != nil {
+			return fmt.Errorf("marshal: %w", err)
+		}
+
+		body = bytes.NewReader(b)
+	}
+
+	req, err := http.NewRequest("GET", url.String(), body)
+	if err != nil {
+		return fmt.Errorf("new req '%s': %w", url.String(), err)
+	}
+
+	req.Header.Add("Content-Type", "application/json")
+
+	if err := c.submitRequest(req, response); err != nil {
+		return fmt.Errorf("submit request: %w", err)
+	}
+
+	return nil
+}
+
 func (c *Client) JsonRPC(method string, params interface{}, response interface{}) error {
 	url := *c.url
 	url.Path = EndpointJsonRPC
@@ -104,6 +134,27 @@ func (c *Client) JsonRPC(method string, params interface{}, response interface{}
 		return fmt.Errorf("new req '%s': %w", url.String(), err)
 	}
 
+	req.Header.Add("Content-Type", "application/json")
+
+	rpcResponseBody := &ResponseEnvelope{
+		Result: response,
+	}
+
+	if err := c.submitRequest(req, rpcResponseBody); err != nil {
+		return fmt.Errorf("submit request: %w", err)
+	}
+
+	if rpcResponseBody.Error.Code != 0 || rpcResponseBody.Error.Message != "" {
+		return fmt.Errorf("rpc error: code=%d message=%s",
+			rpcResponseBody.Error.Code,
+			rpcResponseBody.Error.Message,
+		)
+	}
+
+	return nil
+}
+
+func (c *Client) submitRequest(req *http.Request, response interface{}) error {
 	resp, err := c.http.Do(req)
 	if err != nil {
 		return fmt.Errorf("do: %w", err)
@@ -115,19 +166,8 @@ func (c *Client) JsonRPC(method string, params interface{}, response interface{}
 		return fmt.Errorf("non-2xx status code: %d", resp.StatusCode)
 	}
 
-	rpcResponseBody := &ResponseEnvelope{
-		Result: response,
-	}
-
-	if err := json.NewDecoder(resp.Body).Decode(rpcResponseBody); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(response); err != nil {
 		return fmt.Errorf("decode: %w", err)
-	}
-
-	if rpcResponseBody.Error.Code != 0 || rpcResponseBody.Error.Message != "" {
-		return fmt.Errorf("rpc error: code=%d message=%s",
-			rpcResponseBody.Error.Code,
-			rpcResponseBody.Error.Message,
-		)
 	}
 
 	return nil

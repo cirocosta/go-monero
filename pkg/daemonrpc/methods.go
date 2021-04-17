@@ -11,6 +11,8 @@ const (
 	MethodGetInfo          = "get_info"
 	MethodOnGetBlockHash   = "on_get_block_hash"
 	MethodSyncInfo         = "sync_info"
+
+	EndpointGetTransactionPool = "/get_transaction_pool"
 )
 
 type GetBlockCountResult struct {
@@ -254,6 +256,47 @@ func (c *Client) SyncInfo() (*SyncInfoResult, error) {
 
 	if err := c.JsonRPC(MethodSyncInfo, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
+	}
+
+	return resp, nil
+}
+
+type GetTransactionPoolResult struct {
+	Credits        int `json:"credits"`
+	SpentKeyImages []struct {
+		IDHash    string   `json:"id_hash"`
+		TxsHashes []string `json:"txs_hashes"`
+	} `json:"spent_key_images"`
+	Status       string `json:"status"`
+	TopHash      string `json:"top_hash"`
+	Transactions []struct {
+		BlobSize           int    `json:"blob_size"`
+		DoNotRelay         bool   `json:"do_not_relay"`
+		DoubleSpendSeen    bool   `json:"double_spend_seen"`
+		Fee                int    `json:"fee"`
+		IDHash             string `json:"id_hash"`
+		KeptByBlock        bool   `json:"kept_by_block"`
+		LastFailedHeight   int    `json:"last_failed_height"`
+		LastFailedIDHash   string `json:"last_failed_id_hash"`
+		LastRelayedTime    int    `json:"last_relayed_time"`
+		MaxUsedBlockHeight int    `json:"max_used_block_height"`
+		MaxUsedBlockIDHash string `json:"max_used_block_id_hash"`
+		ReceiveTime        int    `json:"receive_time"`
+		Relayed            bool   `json:"relayed"`
+		TxBlob             string `json:"tx_blob"`
+		TxJSON             string `json:"tx_json"`
+		Weight             int    `json:"weight"`
+	} `json:"transactions"`
+	Untrusted bool `json:"untrusted"`
+}
+
+func (c *Client) GetTransactionPool() (*GetTransactionPoolResult, error) {
+	var (
+		resp = new(GetTransactionPoolResult)
+	)
+
+	if err := c.Other(EndpointGetTransactionPool, nil, resp); err != nil {
+		return nil, fmt.Errorf("other: %w", err)
 	}
 
 	return resp, nil
