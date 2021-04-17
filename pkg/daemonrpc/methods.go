@@ -182,7 +182,14 @@ func (c *Client) GetCoinbaseTxSum(height, count uint64) (*GetCoinbaseTxSumResult
 	return resp, nil
 }
 
-type GetFeeEstimateResult interface{}
+type GetFeeEstimateResult struct {
+	Credits          int    `json:"credits"`
+	Fee              int    `json:"fee"`
+	QuantizationMask int    `json:"quantization_mask"`
+	Status           string `json:"status"`
+	TopHash          string `json:"top_hash"`
+	Untrusted        bool   `json:"untrusted"`
+}
 
 func (c *Client) GetFeeEstimate(graceBlocks uint64) (*GetFeeEstimateResult, error) {
 	var (
