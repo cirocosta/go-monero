@@ -1,5 +1,6 @@
 # go-monero
 
+total wip, a few useful tools for debugging monero's daemon && p2p.
 
 ## daemon
 
@@ -64,4 +65,4 @@
 - [ ] `/stop_save_graph`
 - [ ] `/update`
 - [x] `/get_transaction_pool`
-`
+
