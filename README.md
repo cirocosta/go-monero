@@ -18,7 +18,6 @@
 - [ ] `relay_tx`
 - [ ] `set_bans`
 - [ ] `submit_block`
-- [ ] `sync_info`
 - [x] `get_block_count`
 - [x] `get_block_template`
 - [x] `get_coinbase_tx_sum`
@@ -26,3 +25,4 @@
 - [x] `get_fee_estimate`
 - [x] `get_info`
 - [x] `on_get_block_hash`
+- [x] `sync_info`

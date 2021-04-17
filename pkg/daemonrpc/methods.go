@@ -10,6 +10,7 @@ const (
 	MethodGetFeeEstimate   = "get_fee_estimate"
 	MethodGetInfo          = "get_info"
 	MethodOnGetBlockHash   = "on_get_block_hash"
+	MethodSyncInfo         = "sync_info"
 )
 
 type GetBlockCountResult struct {
@@ -200,6 +201,58 @@ func (c *Client) GetFeeEstimate(graceBlocks uint64) (*GetFeeEstimateResult, erro
 	)
 
 	if err := c.JsonRPC(MethodGetFeeEstimate, params, resp); err != nil {
+		return nil, fmt.Errorf("get: %w", err)
+	}
+
+	return resp, nil
+}
+
+type SyncInfoResult struct {
+	Credits               int    `json:"credits"`
+	Height                int    `json:"height"`
+	NextNeededPruningSeed int    `json:"next_needed_pruning_seed"`
+	Overview              string `json:"overview"`
+	Status                string `json:"status"`
+	TargetHeight          int    `json:"target_height"`
+	TopHash               string `json:"top_hash"`
+	Untrusted             bool   `json:"untrusted"`
+	Peers                 []struct {
+		Info struct {
+			Address           string `json:"address"`
+			AddressType       int    `json:"address_type"`
+			AvgDownload       int    `json:"avg_download"`
+			AvgUpload         int    `json:"avg_upload"`
+			ConnectionID      string `json:"connection_id"`
+			CurrentDownload   int    `json:"current_download"`
+			CurrentUpload     int    `json:"current_upload"`
+			Height            int    `json:"height"`
+			Host              string `json:"host"`
+			Incoming          bool   `json:"incoming"`
+			IP                string `json:"ip"`
+			LiveTime          int    `json:"live_time"`
+			LocalIP           bool   `json:"local_ip"`
+			Localhost         bool   `json:"localhost"`
+			PeerID            string `json:"peer_id"`
+			Port              string `json:"port"`
+			PruningSeed       int    `json:"pruning_seed"`
+			RecvCount         int    `json:"recv_count"`
+			RecvIdleTime      int    `json:"recv_idle_time"`
+			RPCCreditsPerHash int    `json:"rpc_credits_per_hash"`
+			RPCPort           int    `json:"rpc_port"`
+			SendCount         int    `json:"send_count"`
+			SendIdleTime      int    `json:"send_idle_time"`
+			State             string `json:"state"`
+			SupportFlags      int    `json:"support_flags"`
+		} `json:"info"`
+	} `json:"peers"`
+}
+
+func (c *Client) SyncInfo() (*SyncInfoResult, error) {
+	var (
+		resp = new(SyncInfoResult)
+	)
+
+	if err := c.JsonRPC(MethodSyncInfo, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
