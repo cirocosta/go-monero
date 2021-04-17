@@ -7,6 +7,7 @@ const (
 	MethodOnGetBlockHash   = "on_get_block_hash"
 	MethodGetBlockTemplate = "get_block_template"
 	MethodGetConnections   = "get_connections"
+	MethodGetInfo          = "get_info"
 )
 
 type GetBlockCountResult struct {
@@ -100,6 +101,50 @@ func (c *Client) GetConnections() (*GetConnectionsResult, error) {
 	)
 
 	if err := c.JsonRPC(MethodGetConnections, nil, resp); err != nil {
+		return nil, fmt.Errorf("get: %w", err)
+	}
+
+	return resp, nil
+}
+
+type GetInfoResult struct {
+	AltBlocksCount           int    `json:"alt_blocks_count"`
+	BlockSizeLimit           int    `json:"block_size_limit"`
+	BlockSizeMedian          int    `json:"block_size_median"`
+	BootstrapDaemonAddress   string `json:"bootstrap_daemon_address"`
+	BusySyncing              bool   `json:"busy_syncing"`
+	CumulativeDifficulty     int64  `json:"cumulative_difficulty"`
+	Difficulty               int64  `json:"difficulty"`
+	FreeSpace                int64  `json:"free_space"`
+	GreyPeerlistSize         int    `json:"grey_peerlist_size"`
+	Height                   int    `json:"height"`
+	HeightWithoutBootstrap   int    `json:"height_without_bootstrap"`
+	IncomingConnectionsCount int    `json:"incoming_connections_count"`
+	Mainnet                  bool   `json:"mainnet"`
+	Offline                  bool   `json:"offline"`
+	OutgoingConnectionsCount int    `json:"outgoing_connections_count"`
+	RPCConnectionsCount      int    `json:"rpc_connections_count"`
+	Stagenet                 bool   `json:"stagenet"`
+	StartTime                int    `json:"start_time"`
+	Status                   string `json:"status"`
+	Synchronized             bool   `json:"synchronized"`
+	Target                   int    `json:"target"`
+	TargetHeight             int    `json:"target_height"`
+	Testnet                  bool   `json:"testnet"`
+	TopBlockHash             string `json:"top_block_hash"`
+	TxCount                  int    `json:"tx_count"`
+	TxPoolSize               int    `json:"tx_pool_size"`
+	Untrusted                bool   `json:"untrusted"`
+	WasBootstrapEverUsed     bool   `json:"was_bootstrap_ever_used"`
+	WhitePeerlistSize        int    `json:"white_peerlist_size"`
+}
+
+func (c *Client) GetInfo() (*GetInfoResult, error) {
+	var (
+		resp = &GetInfoResult{}
+	)
+
+	if err := c.JsonRPC(MethodGetInfo, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 

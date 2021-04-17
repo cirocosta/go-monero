@@ -12,7 +12,7 @@
 - [ ] `get_block_headers_range`
 - [ ] `get_block`
 - [x] `get_connections`
-- [ ] `get_info`
+- [x] `get_info`
 - [ ] `hard_fork_info`
 - [ ] `set_bans`
 - [ ] `get_bans`
