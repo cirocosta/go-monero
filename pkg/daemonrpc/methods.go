@@ -7,6 +7,7 @@ const (
 	MethodGetBlockTemplate = "get_block_template"
 	MethodGetCoinbaseTxSum = "get_coinbase_tx_sum"
 	MethodGetConnections   = "get_connections"
+	MethodGetFeeEstimate   = "get_fee_estimate"
 	MethodGetInfo          = "get_info"
 	MethodOnGetBlockHash   = "on_get_block_hash"
 )
@@ -175,6 +176,23 @@ func (c *Client) GetCoinbaseTxSum(height, count uint64) (*GetCoinbaseTxSumResult
 	)
 
 	if err := c.JsonRPC(MethodGetCoinbaseTxSum, params, resp); err != nil {
+		return nil, fmt.Errorf("get: %w", err)
+	}
+
+	return resp, nil
+}
+
+type GetFeeEstimateResult interface{}
+
+func (c *Client) GetFeeEstimate(graceBlocks uint64) (*GetFeeEstimateResult, error) {
+	var (
+		resp   = new(GetFeeEstimateResult)
+		params = map[string]uint64{
+			"grace_blocks": graceBlocks,
+		}
+	)
+
+	if err := c.JsonRPC(MethodGetFeeEstimate, params, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
