@@ -52,7 +52,12 @@ func (c *Client) Ping(ctx context.Context) error {
 		return fmt.Errorf("read full header: %w", err)
 	}
 
-	fmt.Printf("resp header: %+v\n", responseHeaderB)
+	respHeader, err := NewHeaderFromResponseBytes(responseHeaderB)
+	if err != nil {
+		return fmt.Errorf("new header from resp bytes: %w", err)
+	}
+
+	fmt.Printf("%+v\n", respHeader)
 
 	// do ping
 	return nil

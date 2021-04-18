@@ -41,24 +41,6 @@ func TestLevin(t *testing.T) {
 			assert.Contains(t, err.Error(), "signature mismatch")
 		})
 
-		it("fails w/ expects response not being set in a response", func() {
-			bytes := []byte{
-				0x01, 0x21, 0x01, 0x01, // signature
-				0x01, 0x01, 0x01, 0x01,
-				0x01, 0x00, 0x00, 0x00, // length
-				0x00, 0x00, 0x00, 0x00, //
-				0x00,                   // expects response
-				0x00, 0x00, 0x00, 0x00, // command
-				0x00, 0x00, 0x00, 0x00, // return code
-				0x00, 0x00, 0x00, 0x00, // flags
-				0x00, 0x00, 0x00, 0x00, // version
-			}
-
-			_, err := levin.NewHeaderFromResponseBytes(bytes)
-			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "expects response")
-		})
-
 		it("fails w/ invalid command", func() {
 			bytes := []byte{
 				0x01, 0x21, 0x01, 0x01, // signature

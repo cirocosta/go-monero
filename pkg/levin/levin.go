@@ -179,10 +179,6 @@ func NewHeaderFromResponseBytes(bytes []byte) (*Header, error) {
 		size = 1
 		header.ExpectsResponse = (bytes[idx] != 0)
 		idx += size
-
-		if !header.ExpectsResponse {
-			return nil, fmt.Errorf("expects response should be set in a response")
-		}
 	}
 
 	{ // command
