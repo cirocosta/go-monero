@@ -23,9 +23,11 @@ func (c *P2PHandshakeCommand) Execute(_ []string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	if err := client.Handshake(ctx); err != nil {
-		return fmt.Errorf("ping: %w", err)
-	}
+	// if err := client.Handshake(ctx); err != nil {
+	// 	return fmt.Errorf("ping: %w", err)
+	// }
+
+	_, _ = client, ctx
 
 	return nil
 }

@@ -3,7 +3,6 @@ package levin
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"net"
 	"time"
 )
@@ -40,38 +39,7 @@ func (c *Client) Close() error {
 	return nil
 }
 
-func (c *Client) Handshake(ctx context.Context) error {
-	b := NewRequest(CommandHandshake).Bytes()
-
-	fmt.Println(b)
-
-	if _, err := c.conn.Write(b); err != nil {
-		return fmt.Errorf("write: %w", err)
-	}
-
-	resp, err := ioutil.ReadAll(c.conn)
-	if err != nil {
-		return fmt.Errorf("read all: %w", err)
-	}
-
-	fmt.Println(resp)
-	return nil
-}
-
 func (c *Client) Ping(ctx context.Context) error {
-	b := NewRequest(CommandPing).Bytes()
-
-	if _, err := c.conn.Write(b); err != nil {
-		return fmt.Errorf("write: %w", err)
-	}
-
-	resp, err := ioutil.ReadAll(c.conn)
-	if err != nil {
-		return fmt.Errorf("read all: %w", err)
-	}
-
-	fmt.Println(resp)
-
 	// do ping
 	return nil
 }

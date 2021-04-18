@@ -1,36 +1,39 @@
+//
+// see https://github.com/monero-project/monero/blob/e45619e61e4831eea70a43fe6985f4d57ea02e9e/contrib/epee/include/net/levin_base.h
+// see https://github.com/monero-project/monero/blob/e45619e61e4831eea70a43fe6985f4d57ea02e9e/docs/LEVIN_PROTOCOL.md
+
 package levin
 
 import (
-	"bytes"
-	"fmt"
-	"math/rand"
-	"time"
-
-	"github.com/lunixbochs/struc"
+	"encoding/binary"
 )
 
-func init() {
-	rand.Seed(time.Now().Unix())
-}
+const (
+	LevinSignature       uint64 = 0x0101010101012101 // Dander's Nightmare
+	LevinProtocolVersion uint32 = 1
+	LevinPacketRequest   uint32 = 0x00000001 // Q flag
+	LevinPacketReponse   uint32 = 0x00000002 // S flag
 
-type Signature [8]byte
-
-var MoneroSignature = Signature{
-	0x01, 0x21, 0x01, 0x01,
-	0x01, 0x01, 0x01, 0x01,
-}
-
-type Command uint32
+	// Return Codes
+	LevinOk                               int32 = 0
+	LevinErrorConnection                  int32 = -1
+	LevinErrorConnectionNotFound          int32 = -2
+	LevinErrorConnectionDestroyed         int32 = -3
+	LevinErrorConnectionTimedout          int32 = -4
+	LevinErrorConnectionNoDuplexProtocol  int32 = -5
+	LevinErrorConnectionHandlerNotDefined int32 = -6
+	LevinErrorFormat                      int32 = -7
+)
 
 const (
 	// p2p admin commands
-	CommandHandshake    Command = 0x1001
-	CommandTimedSync    Command = 0x1002
-	CommandPing         Command = 0x1003
-	CommandStat         Command = 0x1004
-	CommandNetworkState Command = 0x1005
-	CommandPeerID       Command = 0x1006
-	CommandSupportFlags Command = 0x1007
+	CommandHandshake    uint32 = 0x1001
+	CommandTimedSync    uint32 = 0x1002
+	CommandPing         uint32 = 0x1003
+	CommandStat         uint32 = 0x1004
+	CommandNetworkState uint32 = 0x1005
+	CommandPeerID       uint32 = 0x1006
+	CommandSupportFlags uint32 = 0x1007
 )
 
 //
@@ -102,66 +105,96 @@ const (
 //         '--> version
 //
 type Header struct {
-	Signature        Signature
-	Length           uint64 `struc:"uint64,little"`
-	ExpectedResponse uint8
-	Command          Command `struc:"uint32,little"`
-	ReturnCode       uint32  `struc:"uint32,little"`
-	Flags            byte    // only 4 most significant bits matter (Q|S|B|E)
-	Reserved         [3]byte `struc:"pad"`
-	Version          byte
-	Padding          [3]byte `struc:"pad"`
+	Signature       uint64
+	Length          uint64
+	ExpectsResponse bool
+	Command         uint32
+	ReturnCode      int32
+	Flags           uint32 // only 4 most significant bits matter (Q|S|B|E)
+	Version         uint32
+}
+
+func NewHeader(command uint32, length uint64) *Header {
+	return &Header{
+		Signature:       LevinSignature,
+		Length:          length,
+		ExpectsResponse: true,
+		Command:         command,
+		ReturnCode:      0,
+		Flags:           LevinPacketRequest,
+		Version:         0x01,
+	}
 }
 
 func (h *Header) Bytes() []byte {
-	var buf bytes.Buffer
+	var (
+		header = make([]byte, 33) // full header
+		b      = make([]byte, 8)  // biggest type
 
-	if err := struc.Pack(&buf, h); err != nil {
-		panic(fmt.Errorf("pack: %w", err)) // this should never fail
+		idx  = 0
+		size = 0
+	)
+
+	{ // signature
+		size = 8
+
+		binary.LittleEndian.PutUint64(b, h.Signature)
+		copy(header[idx:], b[:size])
+		idx += size
 	}
 
-	return buf.Bytes()
-}
+	{ // length
+		size = 8
 
-type Request struct {
-	Header  Header
-	Payload []byte
-}
-
-var CommandPayloads = map[Command][]byte{
-	CommandHandshake:    []byte("handshake"),
-	CommandNetworkState: []byte("network_state"),
-	CommandPeerID:       []byte("peer_id"),
-	CommandPing:         []byte("ping"),
-	CommandStat:         []byte("stat"),
-	CommandSupportFlags: []byte("support_flags"),
-	CommandTimedSync:    []byte("timed_sync"),
-}
-
-func NewRequest(command Command) *Request {
-	payload, found := CommandPayloads[command]
-	if !found {
-		panic("programming mistake: map doesn't have command '%s'")
+		binary.LittleEndian.PutUint64(b, h.Length)
+		copy(header[idx:], b[:size])
+		idx += size
 	}
 
-	header := Header{
-		Signature:        MoneroSignature,
-		Length:           uint64(len(payload)),
-		ExpectedResponse: uint8(rand.Uint32()),
-		Command:          command,
-		ReturnCode:       0,
-		Flags:            1 << 7, // Q
-		Reserved:         [3]byte{0, 0, 0},
-		Version:          0x01,
-		Padding:          [3]byte{0, 0, 0},
+	{ // expects response
+		size = 1
+
+		if h.ExpectsResponse {
+			b[0] = 0x01
+		} else {
+			b[0] = 0x00
+		}
+
+		copy(header[idx:], b[:size])
+		idx += size
 	}
 
-	return &Request{
-		Header:  header,
-		Payload: payload,
-	}
-}
+	{ // command
+		size = 4
 
-func (r *Request) Bytes() []byte {
-	return append(r.Header.Bytes(), r.Payload...)
+		binary.LittleEndian.PutUint32(b, h.Command)
+		copy(header[idx:], b[:size])
+		idx += size
+	}
+
+	{ // return code
+		size = 4
+
+		binary.LittleEndian.PutUint32(b, uint32(h.ReturnCode))
+		copy(header[idx:], b[:size])
+		idx += size
+	}
+
+	{ // return code
+		size = 4
+
+		binary.LittleEndian.PutUint32(b, h.Flags)
+		copy(header[idx:], b[:size])
+		idx += size
+	}
+
+	{ // return code
+		size = 4
+
+		binary.LittleEndian.PutUint32(b, 0)
+		copy(header[idx:], b[:size])
+		idx += size
+	}
+
+	return header
 }
