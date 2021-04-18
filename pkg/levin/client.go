@@ -3,6 +3,7 @@ package levin
 import (
 	"context"
 	"fmt"
+	"io"
 	"net"
 	"time"
 )
@@ -40,6 +41,19 @@ func (c *Client) Close() error {
 }
 
 func (c *Client) Ping(ctx context.Context) error {
+	reqHeaderB := NewRequestHeader(CommandPing, 0).Bytes()
+
+	if _, err := c.conn.Write(reqHeaderB); err != nil {
+		return fmt.Errorf("write: %w", err)
+	}
+
+	responseHeaderB := make([]byte, LevinHeaderSizeBytes)
+	if _, err := io.ReadFull(c.conn, responseHeaderB); err != nil {
+		return fmt.Errorf("read full header: %w", err)
+	}
+
+	fmt.Printf("resp header: %+v\n", responseHeaderB)
+
 	// do ping
 	return nil
 }

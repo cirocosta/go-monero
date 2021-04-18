@@ -6,14 +6,23 @@ package levin
 
 import (
 	"encoding/binary"
+	"fmt"
 )
 
 const (
-	LevinSignature       uint64 = 0x0101010101012101 // Dander's Nightmare
-	LevinProtocolVersion uint32 = 1
-	LevinPacketRequest   uint32 = 0x00000001 // Q flag
-	LevinPacketReponse   uint32 = 0x00000002 // S flag
+	LevinSignature uint64 = 0x0101010101012101 // Dander's Nightmare
 
+	LevinProtocolVersion uint32 = 1
+
+	LevinPacketRequest        uint32 = 0x00000001 // Q flag
+	LevinPacketReponse        uint32 = 0x00000002 // S flag
+	LevinPacketMaxDefaultSize uint64 = 100000000  // 100MB _after_ handshake
+	LevinPacketMaxInitialSize uint64 = 256 * 1024 // 256KiB _before_ handshake
+
+	LevinHeaderSizeBytes = 33
+)
+
+const (
 	// Return Codes
 	LevinOk                               int32 = 0
 	LevinErrorConnection                  int32 = -1
@@ -25,6 +34,10 @@ const (
 	LevinErrorFormat                      int32 = -7
 )
 
+func IsValidReturnCode(c int32) bool {
+	return (c >= LevinErrorFormat && c <= LevinOk)
+}
+
 const (
 	// p2p admin commands
 	CommandHandshake    uint32 = 0x1001
@@ -35,6 +48,10 @@ const (
 	CommandPeerID       uint32 = 0x1006
 	CommandSupportFlags uint32 = 0x1007
 )
+
+func IsValidCommand(c uint32) bool {
+	return (c >= CommandHandshake && c <= CommandSupportFlags)
+}
 
 //
 // Header
@@ -114,7 +131,7 @@ type Header struct {
 	Version         uint32
 }
 
-func NewHeader(command uint32, length uint64) *Header {
+func NewRequestHeader(command uint32, length uint64) *Header {
 	return &Header{
 		Signature:       LevinSignature,
 		Length:          length,
@@ -122,14 +139,101 @@ func NewHeader(command uint32, length uint64) *Header {
 		Command:         command,
 		ReturnCode:      0,
 		Flags:           LevinPacketRequest,
-		Version:         0x01,
+		Version:         LevinProtocolVersion,
 	}
+}
+
+func NewHeaderFromResponseBytes(bytes []byte) (*Header, error) {
+	if len(bytes) != LevinHeaderSizeBytes {
+		return nil, fmt.Errorf("invalid header size: expected %d, has %d",
+			LevinHeaderSizeBytes, len(bytes),
+		)
+	}
+
+	var (
+		size = 0
+		idx  = 0
+	)
+
+	header := &Header{}
+
+	{ // signature
+		size = 8
+		header.Signature = binary.LittleEndian.Uint64(bytes[idx : idx+size])
+		idx += size
+
+		if header.Signature != LevinSignature {
+			return nil, fmt.Errorf("signature mismatch: expected %x, got %x",
+				LevinSignature, header.Signature,
+			)
+		}
+	}
+
+	{ // length
+		size = 8
+		header.Length = binary.LittleEndian.Uint64(bytes[idx : idx+size])
+		idx += size
+	}
+
+	{ // expects response
+		size = 1
+		header.ExpectsResponse = (bytes[idx] != 0)
+		idx += size
+
+		if !header.ExpectsResponse {
+			return nil, fmt.Errorf("expects response should be set in a response")
+		}
+	}
+
+	{ // command
+		size = 4
+		header.Command = binary.LittleEndian.Uint32(bytes[idx : idx+size])
+		idx += size
+
+		if !IsValidCommand(header.Command) {
+			return nil, fmt.Errorf("invalid command %d", header.Command)
+		}
+	}
+
+	{ // return code
+		size = 4
+		header.ReturnCode = int32(binary.LittleEndian.Uint32(bytes[idx : idx+size]))
+		idx += size
+
+		if !IsValidReturnCode(header.ReturnCode) {
+			return nil, fmt.Errorf("invalid return code %d", header.ReturnCode)
+		}
+	}
+
+	{ // flags
+		size = 4
+		header.Flags = binary.LittleEndian.Uint32(bytes[idx : idx+size])
+		idx += size
+
+		if header.Flags != LevinPacketReponse {
+			return nil, fmt.Errorf("response flag not properly set %x",
+				header.Flags)
+		}
+	}
+
+	{ // version
+		size = 4
+		header.Version = binary.LittleEndian.Uint32(bytes[idx : idx+size])
+		idx += size
+
+		if header.Version != LevinProtocolVersion {
+			return nil, fmt.Errorf("invalid version %x",
+				header.Version)
+		}
+	}
+
+	return header, nil
 }
 
 func (h *Header) Bytes() []byte {
 	var (
-		header = make([]byte, 33) // full header
-		b      = make([]byte, 8)  // biggest type
+		header = make([]byte, LevinHeaderSizeBytes) // full header
+		b      = make([]byte, 8)                    // biggest type
 
 		idx  = 0
 		size = 0
@@ -180,7 +284,7 @@ func (h *Header) Bytes() []byte {
 		idx += size
 	}
 
-	{ // return code
+	{ // flags
 		size = 4
 
 		binary.LittleEndian.PutUint32(b, h.Flags)
@@ -188,10 +292,10 @@ func (h *Header) Bytes() []byte {
 		idx += size
 	}
 
-	{ // return code
+	{ // version
 		size = 4
 
-		binary.LittleEndian.PutUint32(b, 0)
+		binary.LittleEndian.PutUint32(b, h.Version)
 		copy(header[idx:], b[:size])
 		idx += size
 	}

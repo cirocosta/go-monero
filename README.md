@@ -66,3 +66,9 @@ total wip, a few useful tools for debugging monero's daemon && p2p.
 - [ ] `/update`
 - [x] `/get_transaction_pool`
 
+
+## thanks
+
+- `#monero-dev` (https://matrix.to/#/#freenode_#monero-dev:matrix.org)
+- https://github.com/cryptonotefoundation/cryptonote
+- https://github.com/LeTurt/turtlegod
