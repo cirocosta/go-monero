@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/binary"
 	"os"
+	"strconv"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/jessevdk/go-flags"
@@ -12,6 +13,8 @@ var opts = struct {
 	Uint16 uint16 `long:"uint16"`
 	Uint32 uint32 `long:"uint32"`
 	String string `long:"string"`
+
+	HexToDecimal string `long:"hex-to-decimal"`
 }{}
 
 func main() {
@@ -32,6 +35,15 @@ func main() {
 		binary.LittleEndian.PutUint32(b, opts.Uint32)
 	case len(opts.String) != 0:
 		b = []byte(opts.String)
+	case len(opts.HexToDecimal) != 0:
+		i, err := strconv.ParseUint(opts.HexToDecimal, 16, 64)
+		if err != nil {
+			panic(err)
+		}
+
+		b = make([]byte, 8)
+		spew.Dump(i)
+		binary.LittleEndian.PutUint64(b, i)
 	default:
 		parser.WriteHelp(os.Stderr)
 		os.Exit(1)
