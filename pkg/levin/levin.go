@@ -49,6 +49,17 @@ const (
 	CommandSupportFlags uint32 = 0x1007
 )
 
+var (
+	MainnetNetworkId = []byte{
+		0x12, 0x30, 0xf1, 0x71,
+		0x61, 0x04, 0x41, 0x61,
+		0x17, 0x31, 0x00, 0x82,
+		0x16, 0xa1, 0xa1, 0x10,
+	}
+
+	MainnetGenesisTx = "013c01ff0001ffffffffffff03029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd08807121017767aafcde9be00dcfd098715ebcf7f410daebc582fda69d24a28e9d0bc890d1"
+)
+
 func IsValidCommand(c uint32) bool {
 	return (c >= CommandHandshake && c <= CommandSupportFlags)
 }
