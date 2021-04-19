@@ -32,7 +32,7 @@ type PortableStorage struct {
 	Entries []Entry
 }
 
-func NewPortableStorageFromBytes(bytes []byte) error {
+func NewPortableStorageFromBytes(bytes []byte) (*PortableStorage, error) {
 
 	var (
 		size = 0
@@ -45,7 +45,7 @@ func NewPortableStorageFromBytes(bytes []byte) error {
 		idx += size
 
 		if sig != uint32(PortableStorageSignatureA) {
-			return fmt.Errorf("sig-a doesn't match")
+			return nil, fmt.Errorf("sig-a doesn't match")
 		}
 	}
 
@@ -55,7 +55,7 @@ func NewPortableStorageFromBytes(bytes []byte) error {
 		idx += size
 
 		if sig != uint32(PortableStorageSignatureB) {
-			return fmt.Errorf("sig-b doesn't match")
+			return nil, fmt.Errorf("sig-b doesn't match")
 		}
 	}
 
@@ -65,7 +65,7 @@ func NewPortableStorageFromBytes(bytes []byte) error {
 		idx += size
 
 		if version != PortableStorageFormatVersion {
-			return fmt.Errorf("version doesn't match")
+			return nil, fmt.Errorf("version doesn't match")
 		}
 	}
 
@@ -74,7 +74,7 @@ func NewPortableStorageFromBytes(bytes []byte) error {
 	//	while count >0:
 	//
 
-	return nil
+	return nil, nil
 }
 
 func ReadVarInt(b []byte) int {

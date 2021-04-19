@@ -12,6 +12,43 @@ import (
 
 func TestPortableStorage(t *testing.T) {
 
+	spec.Run(t, "NewPortableStorageFromBytes", func(t *testing.T, when spec.G, it spec.S) {
+
+		it("fails w/ wrong sigA", func() {
+			bytes := []byte{
+				0xaa, 0xaa, 0xaa, 0xaa,
+			}
+
+			_, err := levin.NewPortableStorageFromBytes(bytes)
+			assert.Error(t, err)
+			assert.Contains(t, err.Error(), "sig-a doesn't match")
+		})
+
+		it("fails w/ wrong sigB", func() {
+			bytes := []byte{
+				0x01, 0x11, 0x01, 0x01,
+				0xaa, 0xaa, 0xaa, 0xaa,
+			}
+
+			_, err := levin.NewPortableStorageFromBytes(bytes)
+			assert.Error(t, err)
+			assert.Contains(t, err.Error(), "sig-b doesn't match")
+		})
+
+		it("fails w/ wrong format ver", func() {
+			bytes := []byte{
+				0x01, 0x11, 0x01, 0x01,
+				0x01, 0x01, 0x02, 0x01,
+				0xaa,
+			}
+
+			_, err := levin.NewPortableStorageFromBytes(bytes)
+			assert.Error(t, err)
+			assert.Contains(t, err.Error(), "version doesn't match")
+		})
+
+	}, spec.Report(report.Log{}), spec.Parallel(), spec.Random())
+
 	spec.Run(t, "VarrIn", func(t *testing.T, when spec.G, it spec.S) {
 
 		it("i <= 63", func() {
