@@ -15,6 +15,25 @@ func TestPortableStorage(t *testing.T) {
 	spec.Run(t, "VarrIn", func(t *testing.T, when spec.G, it spec.S) {
 
 		it("i <= 63", func() {
+			b := []byte{0x08}
+			assert.Equal(t, levin.ReadVarInt(b), 2)
+		})
+
+		it("64 <= i <= 16383", func() {
+			b := []byte{0x01, 0x02}
+			assert.Equal(t, levin.ReadVarInt(b), 128)
+		})
+
+		it("16384 <= i <= 1073741823", func() {
+			b := []byte{0x02, 0x00, 0x01, 0x00}
+			assert.Equal(t, levin.ReadVarInt(b), 16384)
+		})
+
+	}, spec.Report(report.Log{}), spec.Parallel(), spec.Random())
+
+	spec.Run(t, "VarrIn", func(t *testing.T, when spec.G, it spec.S) {
+
+		it("i <= 63", func() {
 			i := 2 // 0b00000010
 
 			b, err := levin.VarIn(i)
@@ -88,20 +107,20 @@ func TestPortableStorage(t *testing.T) {
 				// node_data
 				0x09,                                                 // len("node_data")
 				0x6e, 0x6f, 0x64, 0x65, 0x5f, 0x64, 0x61, 0x74, 0x61, // "node_data"
-				0x12, // boost_serialized_obj
+				0x0c, // boost_serialized_obj
 				0x04, // var_in(node_data.entries)
 
 				// for i in range node_data
 				0x03,             // len("foo")
 				0x66, 0x6f, 0x6f, // "foo"
-				0x10,             // boost_serialized_string
+				0x0a,             // boost_serialized_string
 				0xc,              // var_in(len("bar"))
 				0x62, 0x61, 0x72, // "bar"
 
 				// payload_data
 				0x0c,                                                                   // len("payload_data")
 				0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x5f, 0x64, 0x61, 0x74, 0x61, // "payload_data"
-				0x12, // boost_serialized_obj
+				0x0c, // boost_serialized_obj
 				0x04, // var_in(payload_data.entries)
 
 				// for i in range payload_data.entries

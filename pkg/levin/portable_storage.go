@@ -78,9 +78,23 @@ func NewPortableStorageFromBytes(bytes []byte) error {
 }
 
 func ReadVarInt(b []byte) int {
-	// read mask
-	// depending on the mask:
-	//	read N next bytes
+	sizeMask := b[0] & PortableRawSizeMarkMask
+
+	switch uint32(sizeMask) {
+	case uint32(PortableRawSizeMarkByte):
+		return int(b[0] >> 2)
+	case uint32(PortableRawSizeMarkWord):
+		return int((binary.LittleEndian.Uint16(b[0:2])) >> 2)
+	case PortableRawSizeMarkDword:
+		return int((binary.LittleEndian.Uint32(b[0:4])) >> 2)
+	case uint32(PortableRawSizeMarkInt64):
+		panic("int64 not supported") // TODO
+		// return int((binary.LittleEndian.Uint64(b[0:8])) >> 2)
+		//         '-> bad
+	default:
+		panic(fmt.Errorf("malformed sizemask: %+v", sizeMask))
+	}
+
 	return 0
 }
 
