@@ -40,6 +40,84 @@ func (c *Client) Close() error {
 	return nil
 }
 
+func (c *Client) Handshake(ctx context.Context) error {
+	payload := (&PortableStorage{
+		Entries: []Entry{
+			{
+				Name: "node_data",
+				Serializable: &Section{
+					Entries: []Entry{
+						{
+							Name:         "local_time",
+							Serializable: BoostUint64(time.Now().Unix()),
+						},
+						{
+							Name:         "my_port",
+							Serializable: BoostUint32(0),
+						},
+						{
+							Name:         "network_id",
+							Serializable: BoostString(string(MainnetNetworkId)),
+						},
+						{
+							Name:         "peer_id",
+							Serializable: BoostUint64(12343332),
+						},
+					},
+				},
+			},
+
+			{
+				Name: "payload_data",
+				Serializable: &Section{
+					Entries: []Entry{
+						{
+							Name:         "cumulative_difficulty",
+							Serializable: BoostUint64(1),
+						},
+						{
+							Name:         "current_height",
+							Serializable: BoostUint64(1),
+						},
+						{
+							Name:         "top_id",
+							Serializable: BoostString(MainnetGenesisTx),
+						},
+						{
+							Name:         "top_version",
+							Serializable: BoostByte(1),
+						},
+					},
+				},
+			},
+		},
+	}).Bytes()
+
+	reqHeaderB := NewRequestHeader(CommandHandshake, uint64(len(payload))).Bytes()
+
+	if _, err := c.conn.Write(reqHeaderB); err != nil {
+		return fmt.Errorf("write header: %w", err)
+	}
+
+	if _, err := c.conn.Write(payload); err != nil {
+		return fmt.Errorf("write payload: %w", err)
+	}
+
+	responseHeaderB := make([]byte, LevinHeaderSizeBytes)
+	if _, err := io.ReadFull(c.conn, responseHeaderB); err != nil {
+		return fmt.Errorf("read full header: %w", err)
+	}
+
+	respHeader, err := NewHeaderFromResponseBytes(responseHeaderB)
+	if err != nil {
+		return fmt.Errorf("new header from resp bytes: %w", err)
+	}
+
+	fmt.Printf("%+v\n", respHeader)
+
+	return nil
+}
+
 func (c *Client) Ping(ctx context.Context) error {
 	reqHeaderB := NewRequestHeader(CommandPing, 0).Bytes()
 
@@ -59,6 +137,5 @@ func (c *Client) Ping(ctx context.Context) error {
 
 	fmt.Printf("%+v\n", respHeader)
 
-	// do ping
 	return nil
 }

@@ -40,13 +40,13 @@ func IsValidReturnCode(c int32) bool {
 
 const (
 	// p2p admin commands
-	CommandHandshake    uint32 = 0x1001
-	CommandTimedSync    uint32 = 0x1002
-	CommandPing         uint32 = 0x1003
-	CommandStat         uint32 = 0x1004
-	CommandNetworkState uint32 = 0x1005
-	CommandPeerID       uint32 = 0x1006
-	CommandSupportFlags uint32 = 0x1007
+	CommandHandshake    uint32 = 1001
+	CommandTimedSync    uint32 = 1002
+	CommandPing         uint32 = 1003
+	CommandStat         uint32 = 1004
+	CommandNetworkState uint32 = 1005
+	CommandPeerID       uint32 = 1006
+	CommandSupportFlags uint32 = 1007
 )
 
 var (
