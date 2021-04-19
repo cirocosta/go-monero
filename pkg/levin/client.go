@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"os"
 	"time"
 )
 
@@ -48,50 +49,19 @@ func (c *Client) Handshake(ctx context.Context) error {
 				Serializable: &Section{
 					Entries: []Entry{
 						{
-							Name:         "local_time",
-							Serializable: BoostUint64(time.Now().Unix()),
-						},
-						{
-							Name:         "my_port",
-							Serializable: BoostUint32(0),
-						},
-						{
 							Name:         "network_id",
 							Serializable: BoostString(string(MainnetNetworkId)),
-						},
-						{
-							Name:         "peer_id",
-							Serializable: BoostUint64(12343332),
-						},
-					},
-				},
-			},
-
-			{
-				Name: "payload_data",
-				Serializable: &Section{
-					Entries: []Entry{
-						{
-							Name:         "cumulative_difficulty",
-							Serializable: BoostUint64(1),
-						},
-						{
-							Name:         "current_height",
-							Serializable: BoostUint64(1),
-						},
-						{
-							Name:         "top_id",
-							Serializable: BoostString(MainnetGenesisTx),
-						},
-						{
-							Name:         "top_version",
-							Serializable: BoostByte(1),
 						},
 					},
 				},
 			},
 		},
 	}).Bytes()
+
+	for _, b := range payload {
+		fmt.Printf("%x ", b)
+	}
+	fmt.Println()
 
 	reqHeaderB := NewRequestHeader(CommandHandshake, uint64(len(payload))).Bytes()
 
@@ -103,17 +73,41 @@ func (c *Client) Handshake(ctx context.Context) error {
 		return fmt.Errorf("write payload: %w", err)
 	}
 
+again:
 	responseHeaderB := make([]byte, LevinHeaderSizeBytes)
 	if _, err := io.ReadFull(c.conn, responseHeaderB); err != nil {
 		return fmt.Errorf("read full header: %w", err)
 	}
 
-	respHeader, err := NewHeaderFromResponseBytes(responseHeaderB)
+	respHeader, err := NewHeaderFromBytesBytes(responseHeaderB)
 	if err != nil {
 		return fmt.Errorf("new header from resp bytes: %w", err)
 	}
 
 	fmt.Printf("%+v\n", respHeader)
+
+	if respHeader.Length != 0 {
+		var dest io.Writer = os.Stderr
+
+		if respHeader.Command == CommandHandshake {
+			f, err := os.Create("resp.bin")
+			if err != nil {
+				panic(err)
+			}
+
+			defer f.Close()
+
+			dest = f
+		}
+
+		if _, err := io.CopyN(dest, c.conn, int64(respHeader.Length)); err != nil {
+			return fmt.Errorf("copy payload to stdout: %w", err)
+		}
+	}
+
+	if respHeader.Command != CommandHandshake {
+		goto again
+	}
 
 	return nil
 }
@@ -130,7 +124,7 @@ func (c *Client) Ping(ctx context.Context) error {
 		return fmt.Errorf("read full header: %w", err)
 	}
 
-	respHeader, err := NewHeaderFromResponseBytes(responseHeaderB)
+	respHeader, err := NewHeaderFromBytesBytes(responseHeaderB)
 	if err != nil {
 		return fmt.Errorf("new header from resp bytes: %w", err)
 	}

@@ -32,6 +32,58 @@ type PortableStorage struct {
 	Entries []Entry
 }
 
+func NewPortableStorageFromBytes(bytes []byte) error {
+
+	var (
+		size = 0
+		idx  = 0
+	)
+
+	{ // sig-a
+		size = 4
+		sig := binary.LittleEndian.Uint32(bytes[idx : idx+size])
+		idx += size
+
+		if sig != uint32(PortableStorageSignatureA) {
+			return fmt.Errorf("sig-a doesn't match")
+		}
+	}
+
+	{ // sig-b
+		size = 4
+		sig := binary.LittleEndian.Uint32(bytes[idx : idx+size])
+		idx += size
+
+		if sig != uint32(PortableStorageSignatureB) {
+			return fmt.Errorf("sig-b doesn't match")
+		}
+	}
+
+	{ // format ver
+		size = 1
+		version := bytes[idx]
+		idx += size
+
+		if version != PortableStorageFormatVersion {
+			return fmt.Errorf("version doesn't match")
+		}
+	}
+
+	// read section
+	//	count = read var int (gives you number of entries)
+	//	while count >0:
+	//
+
+	return nil
+}
+
+func ReadVarInt(b []byte) int {
+	// read mask
+	// depending on the mask:
+	//	read N next bytes
+	return 0
+}
+
 func (s *PortableStorage) Bytes() []byte {
 	var (
 		body = make([]byte, 9) // fit _at least_ signatures + format ver

@@ -12,14 +12,14 @@ import (
 
 func TestLevin(t *testing.T) {
 
-	spec.Run(t, "NewHeaderFromResponse", func(t *testing.T, when spec.G, it spec.S) {
+	spec.Run(t, "NewHeaderFromBytes", func(t *testing.T, when spec.G, it spec.S) {
 
 		it("fails w/ wrong size", func() {
 			bytes := []byte{
 				0xff,
 			}
 
-			_, err := levin.NewHeaderFromResponseBytes(bytes)
+			_, err := levin.NewHeaderFromBytesBytes(bytes)
 			assert.Error(t, err)
 		})
 
@@ -36,7 +36,7 @@ func TestLevin(t *testing.T) {
 				0x00, 0x00, 0x00, 0x00, // version
 			}
 
-			_, err := levin.NewHeaderFromResponseBytes(bytes)
+			_, err := levin.NewHeaderFromBytesBytes(bytes)
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "signature mismatch")
 		})
@@ -54,7 +54,7 @@ func TestLevin(t *testing.T) {
 				0x00, 0x00, 0x00, 0x00, // version
 			}
 
-			_, err := levin.NewHeaderFromResponseBytes(bytes)
+			_, err := levin.NewHeaderFromBytesBytes(bytes)
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "invalid command")
 		})
@@ -66,33 +66,15 @@ func TestLevin(t *testing.T) {
 				0x01, 0x00, 0x00, 0x00, // length
 				0x00, 0x00, 0x00, 0x00, //
 				0x01,                   // expects response
-				0x03, 0x10, 0x00, 0x00, // command
+				0xe9, 0x03, 0x00, 0x00, // command
 				0xaa, 0xaa, 0xaa, 0xaa, // return code
 				0x00, 0x00, 0x00, 0x00, // flags
 				0x00, 0x00, 0x00, 0x00, // version
 			}
 
-			_, err := levin.NewHeaderFromResponseBytes(bytes)
+			_, err := levin.NewHeaderFromBytesBytes(bytes)
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "invalid return code")
-		})
-
-		it("fails w/ response flag not set", func() {
-			bytes := []byte{
-				0x01, 0x21, 0x01, 0x01, // signature
-				0x01, 0x01, 0x01, 0x01,
-				0x01, 0x00, 0x00, 0x00, // length
-				0x00, 0x00, 0x00, 0x00, //
-				0x01,                   // expects response
-				0x03, 0x10, 0x00, 0x00, // command
-				0x00, 0x00, 0x00, 0x00, // return code
-				0x00, 0x00, 0x00, 0x00, // flags
-				0x00, 0x00, 0x00, 0x00, // version
-			}
-
-			_, err := levin.NewHeaderFromResponseBytes(bytes)
-			assert.Error(t, err)
-			assert.Contains(t, err.Error(), "response flag not properly set")
 		})
 
 		it("fails w/ invalid version", func() {
@@ -102,13 +84,13 @@ func TestLevin(t *testing.T) {
 				0x01, 0x00, 0x00, 0x00, // length
 				0x00, 0x00, 0x00, 0x00, //
 				0x01,                   // expects response
-				0x03, 0x10, 0x00, 0x00, // command
+				0xe9, 0x03, 0x00, 0x00, // command
 				0x00, 0x00, 0x00, 0x00, // return code
 				0x02, 0x00, 0x00, 0x00, // flags
 				0x00, 0x00, 0x00, 0x00, // version
 			}
 
-			_, err := levin.NewHeaderFromResponseBytes(bytes)
+			_, err := levin.NewHeaderFromBytesBytes(bytes)
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "invalid version")
 		})
@@ -120,13 +102,13 @@ func TestLevin(t *testing.T) {
 				0x01, 0x00, 0x00, 0x00, // length
 				0x00, 0x00, 0x00, 0x00, //
 				0x01,                   // expects response
-				0x03, 0x10, 0x00, 0x00, // command
+				0xeb, 0x03, 0x00, 0x00, // command
 				0x00, 0x00, 0x00, 0x00, // return code
 				0x02, 0x00, 0x00, 0x00, // flags
 				0x01, 0x00, 0x00, 0x00, // version
 			}
 
-			header, err := levin.NewHeaderFromResponseBytes(bytes)
+			header, err := levin.NewHeaderFromBytesBytes(bytes)
 			assert.NoError(t, err)
 			assert.Equal(t, header.Command, levin.CommandPing)
 			assert.Equal(t, header.ReturnCode, levin.LevinOk)
@@ -147,7 +129,7 @@ func TestLevin(t *testing.T) {
 				0x01, 0x00, 0x00, 0x00, // length		-- 0 for a ping msg
 				0x00, 0x00, 0x00, 0x00,
 				0x01,                   // expects response	-- `true` bool
-				0x03, 0x10, 0x00, 0x00, // command		-- 1003 for ping
+				0xeb, 0x03, 0x00, 0x00, // command		-- 1003 for ping
 				0x00, 0x00, 0x00, 0x00, // return code		-- 0 for requests
 				0x01, 0x00, 0x00, 0x00, // flags		-- Q(1st lsb) set for req
 				0x01, 0x00, 0x00, 0x00, // version
@@ -162,8 +144,8 @@ func TestLevin(t *testing.T) {
 				0x01, 0x01, 0x01, 0x01,
 				0x04, 0x00, 0x00, 0x00, // length		-- 0 for a ping msg
 				0x00, 0x00, 0x00, 0x00,
-				0x01,                   // expects response	-- `true` bool
-				0x01, 0x10, 0x00, 0x00, // command		-- 1003 for ping
+				0x01, // expects response	-- `true` bool
+				0xe9, 0x03, 0x00, 0x00,
 				0x00, 0x00, 0x00, 0x00, // return code		-- 0 for requests
 				0x01, 0x00, 0x00, 0x00, // flags		-- Q(1st lsb) set for req
 				0x01, 0x00, 0x00, 0x00, // version

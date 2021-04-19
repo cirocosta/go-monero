@@ -18,9 +18,9 @@ const (
 
 	BoostSerializeTypeDouble byte = 0x9
 
-	BoostSerializeTypeString byte = 0x10
-	BoostSerializeTypeBool   byte = 0x11
-	BoostSerializeTypeObject byte = 0x12
+	BoostSerializeTypeString byte = 0x0a
+	BoostSerializeTypeBool   byte = 0x0b
+	BoostSerializeTypeObject byte = 0x0c
 
 	BoostSerializeTypeArray byte = 0x13
 	BoostSerializeFlagArray byte = 0x80

@@ -35,7 +35,8 @@ const (
 )
 
 func IsValidReturnCode(c int32) bool {
-	return (c >= LevinErrorFormat && c <= LevinOk)
+	// anything >= 0 is good (there are some `1`s in the code :shrug:)
+	return c >= LevinErrorFormat
 }
 
 const (
@@ -57,7 +58,7 @@ var (
 		0x16, 0xa1, 0xa1, 0x10,
 	}
 
-	MainnetGenesisTx = "013c01ff0001ffffffffffff03029b2e4c0281c0b02e7c53291a94d1d0cbff8883f8024f5142ee494ffbbd08807121017767aafcde9be00dcfd098715ebcf7f410daebc582fda69d24a28e9d0bc890d1"
+	MainnetGenesisTx = "418015bb9ae982a1975da7d79277c2705727a56894ba0fb246adaabb1f4632e3"
 )
 
 func IsValidCommand(c uint32) bool {
@@ -154,7 +155,7 @@ func NewRequestHeader(command uint32, length uint64) *Header {
 	}
 }
 
-func NewHeaderFromResponseBytes(bytes []byte) (*Header, error) {
+func NewHeaderFromBytesBytes(bytes []byte) (*Header, error) {
 	if len(bytes) != LevinHeaderSizeBytes {
 		return nil, fmt.Errorf("invalid header size: expected %d, has %d",
 			LevinHeaderSizeBytes, len(bytes),
@@ -216,11 +217,6 @@ func NewHeaderFromResponseBytes(bytes []byte) (*Header, error) {
 		size = 4
 		header.Flags = binary.LittleEndian.Uint32(bytes[idx : idx+size])
 		idx += size
-
-		if header.Flags != LevinPacketReponse {
-			return nil, fmt.Errorf("response flag not properly set %x",
-				header.Flags)
-		}
 	}
 
 	{ // version
