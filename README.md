@@ -6,9 +6,8 @@ total wip, a few useful tools for debugging monero's daemon && p2p.
 
 - [x] header
 - [ ] payload
-- [ ] handshake
-  - [ ] extract peer list
-- [ ] ping
+  - [x] serialization
+  - [ ] deserialization
 
 ## daemon
 
