@@ -10,6 +10,7 @@ import (
 )
 
 var opts = struct {
+	Byte   byte   `long:"byte"`
 	Uint16 uint16 `long:"uint16"`
 	Uint32 uint32 `long:"uint32"`
 	String string `long:"string"`
@@ -27,6 +28,8 @@ func main() {
 	var b []byte
 
 	switch {
+	case opts.Byte != 0:
+		b = []byte{opts.Byte}
 	case opts.Uint16 != 0:
 		b = make([]byte, 2)
 		binary.LittleEndian.PutUint16(b, opts.Uint16)
