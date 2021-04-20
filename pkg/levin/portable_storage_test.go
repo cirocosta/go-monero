@@ -47,23 +47,85 @@ func TestPortableStorage(t *testing.T) {
 			assert.Contains(t, err.Error(), "version doesn't match")
 		})
 
+		it("reads the content", func() {
+			bytes := []byte{
+				0x01, 0x11, 0x01, 0x01, // sig a
+				0x01, 0x01, 0x02, 0x01, // sig b
+				0x01, // format ver
+
+				0x08, // var_in(len(entries))
+
+				// node_data
+				0x09,                                                 // len("node_data")
+				0x6e, 0x6f, 0x64, 0x65, 0x5f, 0x64, 0x61, 0x74, 0x61, // "node_data"
+				0x0c, // boost_serialized_obj
+				0x04, // var_in(node_data.entries)
+
+				// for i in range node_data
+				0x03,             // len("foo")
+				0x66, 0x6f, 0x6f, // "foo"
+				0x0a,             // boost_serialized_string
+				0xc,              // var_in(len("bar"))
+				0x62, 0x61, 0x72, // "bar"
+
+				// payload_data
+				0x0c,                                                                   // len("payload_data")
+				0x70, 0x61, 0x79, 0x6c, 0x6f, 0x61, 0x64, 0x5f, 0x64, 0x61, 0x74, 0x61, // "payload_data"
+				0x0c, // boost_serialized_obj
+				0x04, // var_in(payload_data.entries)
+
+				// for i in range payload_data.entries
+				0x06,                               // len("number")
+				0x6e, 0x75, 0x6d, 0x62, 0x65, 0x72, // "number"
+				0x06,                   // boost_serialized_uint32
+				0x01, 0x00, 0x00, 0x00, // uint32(1)
+			}
+
+			ps, err := levin.NewPortableStorageFromBytes(bytes)
+			assert.NoError(t, err)
+
+			assert.Len(t, ps.Entries, 2)
+			assert.Equal(t, ps.Entries[0].Name, "node_data")
+			assert.EqualValues(t, ps.Entries[0].Value, levin.Entries{
+				{
+					Name:  "foo",
+					Value: "bar",
+				},
+			})
+
+			assert.Equal(t, ps.Entries[1].Name, "payload_data")
+			assert.EqualValues(t, ps.Entries[1].Value, levin.Entries{
+				{
+					Name:  "number",
+					Value: uint32(1),
+				},
+			})
+		})
+
 	}, spec.Report(report.Log{}), spec.Parallel(), spec.Random())
 
-	spec.Run(t, "VarrIn", func(t *testing.T, when spec.G, it spec.S) {
+	spec.Run(t, "ReadVarIn", func(t *testing.T, when spec.G, it spec.S) {
 
 		it("i <= 63", func() {
 			b := []byte{0x08}
-			assert.Equal(t, levin.ReadVarInt(b), 2)
+			n, v := levin.ReadVarInt(b)
+
+			assert.Equal(t, n, 1)
+			assert.Equal(t, v, 2)
 		})
 
 		it("64 <= i <= 16383", func() {
 			b := []byte{0x01, 0x02}
-			assert.Equal(t, levin.ReadVarInt(b), 128)
+			n, v := levin.ReadVarInt(b)
+			assert.Equal(t, n, 2)
+			assert.Equal(t, v, 128)
 		})
 
 		it("16384 <= i <= 1073741823", func() {
 			b := []byte{0x02, 0x00, 0x01, 0x00}
-			assert.Equal(t, levin.ReadVarInt(b), 16384)
+			n, v := levin.ReadVarInt(b)
+			assert.Equal(t, n, 4)
+			assert.Equal(t, v, 16384)
 		})
 
 	}, spec.Report(report.Log{}), spec.Parallel(), spec.Random())

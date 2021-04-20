@@ -20,16 +20,21 @@ const (
 type Entry struct {
 	Name         string
 	Serializable Serializable
+	Value        interface{}
 }
 
-//
-// ex: node_data:
-//       foo: bar
-//     payload_data
-//       caz: 1
-//
+func (e Entry) Bytes() []byte {
+	return nil
+}
+
+type Entries []Entry
+
+func (e Entries) Bytes() []byte {
+	return nil
+}
+
 type PortableStorage struct {
-	Entries []Entry
+	Entries Entries
 }
 
 func NewPortableStorageFromBytes(bytes []byte) (*PortableStorage, error) {
@@ -69,24 +74,101 @@ func NewPortableStorageFromBytes(bytes []byte) (*PortableStorage, error) {
 		}
 	}
 
-	// read section
-	//	count = read var int (gives you number of entries)
-	//	while count >0:
-	//
+	ps := &PortableStorage{}
 
-	return nil, nil
+	_, ps.Entries = ReadObject(bytes[idx:])
+
+	return ps, nil
 }
 
-func ReadVarInt(b []byte) int {
+func ReadString(bytes []byte) (int, string) {
+	idx := 0
+
+	n, strLen := ReadVarInt(bytes)
+	idx += n
+
+	return idx + strLen, string(bytes[idx : idx+strLen])
+}
+
+func ReadObject(bytes []byte) (int, Entries) {
+	var (
+		idx = 0
+	)
+
+	n, i := ReadVarInt(bytes[idx:])
+	idx += n
+
+	entries := make(Entries, i)
+
+	for iter := 0; iter < i; iter++ {
+		entries[iter] = Entry{}
+		entry := &entries[iter]
+
+		lenName := int(bytes[idx])
+		idx += 1
+
+		entry.Name = string(bytes[idx : idx+lenName])
+		idx += lenName
+
+		ttype := bytes[idx]
+		idx += 1
+
+		switch ttype {
+		case BoostSerializeTypeObject:
+			n, obj := ReadObject(bytes[idx:])
+			idx += n
+
+			entry.Value = obj
+
+		case BoostSerializeTypeUint32:
+			obj := binary.LittleEndian.Uint32(bytes[idx:])
+			n += 4
+			idx += n
+
+			entry.Value = obj
+
+		case BoostSerializeFlagArray:
+			panic("not implemented yet")
+
+		case BoostSerializeTypeString:
+			n, obj := ReadString(bytes[idx:])
+			idx += n
+
+			entry.Value = obj
+
+		default:
+			panic("unknown fmt")
+		}
+
+		//if (ttype & BoostSerializeFlagArray) != 0 {
+
+		//	fmt.Println("DEALING WITH ARRAY")
+
+		//	// deal w/ array entry
+		//	//	1. capture the arr size (read var int)
+		//	//	2. iterate over it
+		//	//		// each entry is an object if we're dealing w/ local_peerlist_new
+		//}
+
+		// get a byte and check what we're dealing with
+	}
+
+	return idx, entries
+}
+
+// reads var int, returning number of bytes read and the integer in that byte
+// sequence.
+//
+func ReadVarInt(b []byte) (int, int) {
 	sizeMask := b[0] & PortableRawSizeMarkMask
 
 	switch uint32(sizeMask) {
 	case uint32(PortableRawSizeMarkByte):
-		return int(b[0] >> 2)
+		return 1, int(b[0] >> 2)
 	case uint32(PortableRawSizeMarkWord):
-		return int((binary.LittleEndian.Uint16(b[0:2])) >> 2)
+		return 2, int((binary.LittleEndian.Uint16(b[0:2])) >> 2)
 	case PortableRawSizeMarkDword:
-		return int((binary.LittleEndian.Uint32(b[0:4])) >> 2)
+		return 4, int((binary.LittleEndian.Uint32(b[0:4])) >> 2)
 	case uint32(PortableRawSizeMarkInt64):
 		panic("int64 not supported") // TODO
 		// return int((binary.LittleEndian.Uint64(b[0:8])) >> 2)
@@ -95,7 +177,7 @@ func ReadVarInt(b []byte) int {
 		panic(fmt.Errorf("malformed sizemask: %+v", sizeMask))
 	}
 
-	return 0
+	return -1, -1
 }
 
 func (s *PortableStorage) Bytes() []byte {
