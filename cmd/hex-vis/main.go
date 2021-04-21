@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/binary"
+	"fmt"
 	"os"
 	"strconv"
 
@@ -10,12 +11,13 @@ import (
 )
 
 var opts = struct {
+	Bits   byte   `long:"bits"`
 	Byte   byte   `long:"byte"`
 	Uint16 uint16 `long:"uint16"`
 	Uint32 uint32 `long:"uint32"`
 	String string `long:"string"`
 
-	HexToDecimal string `long:"hex-to-decimal"`
+	Hex string `long:"hex"`
 }{}
 
 func main() {
@@ -28,6 +30,9 @@ func main() {
 	var b []byte
 
 	switch {
+	case opts.Bits != 0:
+		fmt.Printf("%08b\n", opts.Bits)
+		return
 	case opts.Byte != 0:
 		b = []byte{opts.Byte}
 	case opts.Uint16 != 0:
@@ -38,8 +43,8 @@ func main() {
 		binary.LittleEndian.PutUint32(b, opts.Uint32)
 	case len(opts.String) != 0:
 		b = []byte(opts.String)
-	case len(opts.HexToDecimal) != 0:
-		i, err := strconv.ParseUint(opts.HexToDecimal, 16, 64)
+	case len(opts.Hex) != 0:
+		i, err := strconv.ParseUint(opts.Hex, 16, 64)
 		if err != nil {
 			panic(err)
 		}
