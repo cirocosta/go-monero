@@ -47,7 +47,7 @@ func TestPortableStorage(t *testing.T) {
 			assert.Contains(t, err.Error(), "version doesn't match")
 		})
 
-		it("reads the content", func() {
+		it("reads the contents", func() {
 			bytes := []byte{
 				0x01, 0x11, 0x01, 0x01, // sig a
 				0x01, 0x01, 0x02, 0x01, // sig b

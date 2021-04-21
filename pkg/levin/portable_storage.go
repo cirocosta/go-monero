@@ -91,9 +91,7 @@ func ReadString(bytes []byte) (int, string) {
 }
 
 func ReadObject(bytes []byte) (int, Entries) {
-	var (
-		idx = 0
-	)
+	var idx = 0
 
 	n, i := ReadVarInt(bytes[idx:])
 	idx += n
@@ -113,47 +111,100 @@ func ReadObject(bytes []byte) (int, Entries) {
 		ttype := bytes[idx]
 		idx += 1
 
-		switch ttype {
-		case BoostSerializeTypeObject:
-			n, obj := ReadObject(bytes[idx:])
-			idx += n
+		n, obj := ReadAny(bytes[idx:], ttype)
+		idx += n
 
-			entry.Value = obj
-
-		case BoostSerializeTypeUint32:
-			obj := binary.LittleEndian.Uint32(bytes[idx:])
-			n += 4
-			idx += n
-
-			entry.Value = obj
-
-		case BoostSerializeFlagArray:
-			panic("not implemented yet")
-
-		case BoostSerializeTypeString:
-			n, obj := ReadString(bytes[idx:])
-			idx += n
-
-			entry.Value = obj
-
-		default:
-			panic("unknown fmt")
-		}
-
-		//if (ttype & BoostSerializeFlagArray) != 0 {
-
-		//	fmt.Println("DEALING WITH ARRAY")
-
-		//	// deal w/ array entry
-		//	//	1. capture the arr size (read var int)
-		//	//	2. iterate over it
-		//	//		// each entry is an object if we're dealing w/ local_peerlist_new
-		//}
-
-		// get a byte and check what we're dealing with
+		entry.Value = obj
 	}
 
 	return idx, entries
+}
+
+func ReadArray(ttype byte, bytes []byte) (int, Entries) {
+	var (
+		idx = 0
+		n   = 0
+	)
+
+	n, i := ReadVarInt(bytes[idx:])
+	idx += n
+
+	entries := make(Entries, i)
+
+	for iter := 0; iter < i; iter++ {
+		n, obj := ReadAny(bytes[idx:], ttype)
+		idx += n
+
+		entries[iter] = Entry{
+			Value: obj,
+		}
+	}
+
+	return idx, entries
+}
+
+func ReadAny(bytes []byte, ttype byte) (int, interface{}) {
+	var (
+		idx = 0
+		n   = 0
+	)
+
+	if ttype&BoostSerializeFlagArray != 0 {
+		internalType := ttype &^ BoostSerializeFlagArray
+		n, obj := ReadArray(internalType, bytes[idx:])
+		idx += n
+
+		return idx, obj
+	}
+
+	if ttype == BoostSerializeTypeObject {
+		n, obj := ReadObject(bytes[idx:])
+		idx += n
+
+		return idx, obj
+	}
+
+	if ttype == BoostSerializeTypeUint8 {
+		obj := uint8(bytes[idx])
+		n += 1
+		idx += n
+
+		return idx, obj
+	}
+
+	if ttype == BoostSerializeTypeUint16 {
+		obj := binary.LittleEndian.Uint16(bytes[idx:])
+		n += 2
+		idx += n
+
+		return idx, obj
+	}
+
+	if ttype == BoostSerializeTypeUint32 {
+		obj := binary.LittleEndian.Uint32(bytes[idx:])
+		n += 4
+		idx += n
+
+		return idx, obj
+	}
+
+	if ttype == BoostSerializeTypeUint64 {
+		obj := binary.LittleEndian.Uint64(bytes[idx:])
+		n += 8
+		idx += n
+
+		return idx, obj
+	}
+
+	if ttype == BoostSerializeTypeString {
+		n, obj := ReadString(bytes[idx:])
+		idx += n
+
+		return idx, obj
+	}
+
+	panic(fmt.Errorf("unknown ttype %x", ttype))
+	return -1, nil
 }
 
 // reads var int, returning number of bytes read and the integer in that byte
