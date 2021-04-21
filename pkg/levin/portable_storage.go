@@ -23,6 +23,42 @@ type Entry struct {
 	Value        interface{}
 }
 
+func (e Entry) String() string {
+	v, ok := e.Value.(string)
+	if !ok {
+		panic(fmt.Errorf("interface couldnt be casted to string"))
+	}
+
+	return v
+}
+
+func (e Entry) Uint16() uint16 {
+	v, ok := e.Value.(uint16)
+	if !ok {
+		panic(fmt.Errorf("interface couldnt be casted to uint16"))
+	}
+
+	return v
+}
+
+func (e Entry) Uint32() uint32 {
+	v, ok := e.Value.(uint32)
+	if !ok {
+		panic(fmt.Errorf("interface couldnt be casted to uint32"))
+	}
+
+	return v
+}
+
+func (e Entry) Entries() Entries {
+	v, ok := e.Value.(Entries)
+	if !ok {
+		panic(fmt.Errorf("interface couldnt be casted to levin.Entries"))
+	}
+
+	return v
+}
+
 func (e Entry) Bytes() []byte {
 	return nil
 }

@@ -1,11 +1,11 @@
 package levin
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
 	"net"
-	"os"
 	"time"
 )
 
@@ -41,7 +41,7 @@ func (c *Client) Close() error {
 	return nil
 }
 
-func (c *Client) Handshake(ctx context.Context) error {
+func (c *Client) Handshake(ctx context.Context) (*LocalPeerList, error) {
 	payload := (&PortableStorage{
 		Entries: []Entry{
 			{
@@ -58,58 +58,47 @@ func (c *Client) Handshake(ctx context.Context) error {
 		},
 	}).Bytes()
 
-	for _, b := range payload {
-		fmt.Printf("%x ", b)
-	}
-	fmt.Println()
-
 	reqHeaderB := NewRequestHeader(CommandHandshake, uint64(len(payload))).Bytes()
 
 	if _, err := c.conn.Write(reqHeaderB); err != nil {
-		return fmt.Errorf("write header: %w", err)
+		return nil, fmt.Errorf("write header: %w", err)
 	}
 
 	if _, err := c.conn.Write(payload); err != nil {
-		return fmt.Errorf("write payload: %w", err)
+		return nil, fmt.Errorf("write payload: %w", err)
 	}
 
 again:
 	responseHeaderB := make([]byte, LevinHeaderSizeBytes)
 	if _, err := io.ReadFull(c.conn, responseHeaderB); err != nil {
-		return fmt.Errorf("read full header: %w", err)
+		return nil, fmt.Errorf("read full header: %w", err)
 	}
 
 	respHeader, err := NewHeaderFromBytesBytes(responseHeaderB)
 	if err != nil {
-		return fmt.Errorf("new header from resp bytes: %w", err)
+		return nil, fmt.Errorf("new header from resp bytes: %w", err)
 	}
 
-	fmt.Printf("%+v\n", respHeader)
+	dest := new(bytes.Buffer)
 
 	if respHeader.Length != 0 {
-		var dest io.Writer = os.Stderr
-
-		if respHeader.Command == CommandHandshake {
-			f, err := os.Create("resp.bin")
-			if err != nil {
-				panic(err)
-			}
-
-			defer f.Close()
-
-			dest = f
-		}
-
 		if _, err := io.CopyN(dest, c.conn, int64(respHeader.Length)); err != nil {
-			return fmt.Errorf("copy payload to stdout: %w", err)
+			return nil, fmt.Errorf("copy payload to stdout: %w", err)
 		}
 	}
 
 	if respHeader.Command != CommandHandshake {
+		dest.Reset()
 		goto again
 	}
 
-	return nil
+	ps, err := NewPortableStorageFromBytes(dest.Bytes())
+	if err != nil {
+		return nil, fmt.Errorf("new portable storage from bytes: %w", err)
+	}
+
+	peerList := NewLocalPeerListFromEntries(ps.Entries)
+	return &peerList, nil
 }
 
 func (c *Client) Ping(ctx context.Context) error {

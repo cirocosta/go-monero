@@ -65,13 +65,10 @@ type BoostString string
 func (v BoostString) Bytes() []byte {
 	b := []byte{BoostSerializeTypeString}
 
-	fmt.Println("VAR_IN: ", v)
 	varInB, err := VarIn(len(v))
 	if err != nil {
 		panic(fmt.Errorf("varin '%d': %w", len(v), err))
 	}
-
-	fmt.Println("VAR_RES: ", varInB)
 
 	return append(b, append(varInB, []byte(v)...)...)
 }
