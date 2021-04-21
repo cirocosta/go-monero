@@ -19,7 +19,7 @@ const (
 
 type Entry struct {
 	Name         string
-	Serializable Serializable
+	Serializable Serializable `json:"-,omitempty"`
 	Value        interface{}
 }
 
@@ -272,7 +272,6 @@ func (s *PortableStorage) Bytes() []byte {
 
 	body = append(body, varInB...)
 	for _, entry := range s.Entries {
-		fmt.Println("xx", entry.Name)
 		body = append(body, byte(len(entry.Name))) // section name length
 		body = append(body, []byte(entry.Name)...) // section name
 		body = append(body, entry.Serializable.Bytes()...)
@@ -301,7 +300,6 @@ func (s Section) Bytes() []byte {
 
 	body = append(body, varInB...)
 	for _, entry := range s.Entries {
-		fmt.Println("  xx", entry.Name)
 		body = append(body, byte(len(entry.Name))) // section name length
 		body = append(body, []byte(entry.Name)...) // section name
 		body = append(body, entry.Serializable.Bytes()...)
