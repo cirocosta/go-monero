@@ -5,9 +5,10 @@ total wip, a few useful tools for debugging monero's daemon && p2p.
 ## levin
 
 - [x] header
-- [ ] payload
+- [x] payload
   - [x] serialization
-  - [ ] deserialization
+  - [x] deserialization
+- [ ] properly typed structures
 
 ## daemon
 
