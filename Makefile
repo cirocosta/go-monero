@@ -2,7 +2,7 @@ build:
 	go build -v ./cmd/monero
 
 debug:
-	cd ./cmd/test && dlv debug
+	cd ./cmd/monero && dlv debug -- crawl
 
 test-debug:
 	cd ./pkg/levin && dlv test

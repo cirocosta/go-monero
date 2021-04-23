@@ -4,7 +4,13 @@ import (
 	"os"
 
 	"github.com/jessevdk/go-flags"
+	log "github.com/sirupsen/logrus"
 )
+
+func init() {
+	log.SetOutput(os.Stdout)
+	log.SetLevel(log.InfoLevel)
+}
 
 var parser = flags.NewParser(&options, flags.Default)
 

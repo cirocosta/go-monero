@@ -6,21 +6,35 @@ import (
 )
 
 type LocalPeerList struct {
-	Peers map[string]Peer
+	Peers map[string]*Peer
+}
+
+func (l *LocalPeerList) GetPeers() map[string]*Peer {
+	return l.Peers
 }
 
 type Peer struct {
 	Ip   string
 	Port uint16
+
+	Id      string
+	RPCPort uint16
+
+	CurrentHeight uint64
+	TopVersion    uint8
 }
 
 func (p Peer) Addr() string {
 	return fmt.Sprintf("%s:%d", p.Ip, p.Port)
 }
 
+func (p Peer) String() string {
+	return p.Addr()
+}
+
 // TODO less panic'ing
 func NewLocalPeerListFromEntries(entries Entries) LocalPeerList {
-	peers := map[string]Peer{}
+	peers := map[string]*Peer{}
 
 	for _, entry := range entries {
 		if entry.Name != "local_peerlist_new" {
@@ -66,7 +80,7 @@ func NewLocalPeerListFromEntries(entries Entries) LocalPeerList {
 
 					if ip != "" && port != 0 {
 
-						peer := Peer{
+						peer := &Peer{
 							Ip:   ip,
 							Port: port,
 						}

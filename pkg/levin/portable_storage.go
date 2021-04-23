@@ -82,6 +82,11 @@ func NewPortableStorageFromBytes(bytes []byte) (*PortableStorage, error) {
 
 	{ // sig-a
 		size = 4
+
+		if len(bytes[idx:]) < size {
+			return nil, fmt.Errorf("sig-a out of bounds")
+		}
+
 		sig := binary.LittleEndian.Uint32(bytes[idx : idx+size])
 		idx += size
 
@@ -230,6 +235,14 @@ func ReadAny(bytes []byte, ttype byte) (int, interface{}) {
 		idx += n
 
 		return idx, obj
+	}
+
+	if ttype == BoostSerializeTypeInt64 {
+		obj := binary.LittleEndian.Uint64(bytes[idx:])
+		n += 8
+		idx += n
+
+		return idx, int64(obj)
 	}
 
 	if ttype == BoostSerializeTypeString {

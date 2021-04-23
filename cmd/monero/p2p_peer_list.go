@@ -9,7 +9,8 @@ import (
 )
 
 type P2PPeerList struct {
-	NodeAddress string `long:"node-address" default:"xps.utxo.com.br:18080" description:"address of the node to find the peer list of"`
+	NodeAddress string        `long:"node-address" default:"xps.utxo.com.br:18080" description:"address of the node to find the peer list of"`
+	Timeout     time.Duration `long:"timeout" default:"20s"`
 }
 
 func (c *P2PPeerList) Execute(_ []string) error {
@@ -20,7 +21,7 @@ func (c *P2PPeerList) Execute(_ []string) error {
 
 	defer client.Close()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), c.Timeout)
 	defer cancel()
 
 	pl, err := client.Handshake(ctx)

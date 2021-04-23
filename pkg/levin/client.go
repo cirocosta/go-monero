@@ -9,6 +9,8 @@ import (
 	"time"
 )
 
+const DialTimeout = 15 * time.Second
+
 type Client struct {
 	conn net.Conn
 }
@@ -16,7 +18,7 @@ type Client struct {
 func NewClient(addr string) (*Client, error) {
 	var d net.Dialer
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), DialTimeout)
 	defer cancel()
 
 	conn, err := d.DialContext(ctx, "tcp", addr)

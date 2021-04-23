@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -33,11 +34,15 @@ func run() error {
 		return fmt.Errorf("portable storage from bytes: %w", err)
 	}
 
-	pl := levin.NewLocalPeerListFromEntries(ps.Entries)
-
-	for addr := range pl.Peers {
-		fmt.Println(addr)
+	if err := json.NewEncoder(os.Stdout).Encode(&ps); err != nil {
+		return fmt.Errorf("encode: %w", err)
 	}
+
+	// pl := levin.NewLocalPeerListFromEntries(ps.Entries)
+
+	// for addr := range pl.Peers {
+	// 	fmt.Println(addr)
+	// }
 
 	return nil
 }
