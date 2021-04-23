@@ -24,7 +24,7 @@ const (
 	// CrawlerConcurrency determines how many goroutines are spawn to visit
 	// peers.
 	//
-	CrawlerConcurrency = 250
+	CrawlerConcurrency = 500
 
 	// CrawlerDiscoveryTimeout determines the maximum amount of time that a
 	// worker trying to visit a peer should take before timing out and
@@ -67,10 +67,11 @@ func (n *VisitedPeer) Addr() string {
 }
 
 type Crawler struct {
-	visited    map[string]*VisitedPeer
-	notVisited map[string]*levin.Peer
-	log        *log.Entry
+	C chan *VisitedPeer
 
+	visited        map[string]*VisitedPeer
+	notVisited     map[string]*levin.Peer
+	log            *log.Entry
 	workerStatuses WorkerStatuses
 
 	sync.Mutex
@@ -78,6 +79,7 @@ type Crawler struct {
 
 func NewCrawler() *Crawler {
 	return &Crawler{
+		C:              make(chan *VisitedPeer, 0),
 		visited:        map[string]*VisitedPeer{},
 		notVisited:     map[string]*levin.Peer{},
 		workerStatuses: make(WorkerStatuses, CrawlerConcurrency),
@@ -112,12 +114,16 @@ func (c *Crawler) TryPutForVisit(peer *levin.Peer) {
 	return
 }
 
-func (c *Crawler) MarkVisited(node *VisitedPeer) {
+func (c *Crawler) MarkVisited(node *VisitedPeer) (alreadyIn bool) {
 	c.Lock()
 	defer c.Unlock()
 
+	if _, alreadyIn = c.visited[node.Addr()]; alreadyIn {
+		return true
+	}
+
 	c.visited[node.Addr()] = node
-	return
+	return false
 }
 
 // Runs takes care of spinning up worker goroutines that will then do the job
@@ -143,8 +149,12 @@ func (c *Crawler) Run(ctx context.Context) (map[string]*VisitedPeer, error) {
 
 	go func() {
 		for peerVisited := range peersVisitedC {
-			c.MarkVisited(peerVisited)
+			if alreadyIn := c.MarkVisited(peerVisited); alreadyIn {
+				continue
+			}
+
 			c.log.WithField("peervisited", peerVisited).Info("peer visited, marking visited")
+			c.C <- peerVisited
 		}
 	}()
 
