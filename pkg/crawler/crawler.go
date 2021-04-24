@@ -69,6 +69,7 @@ func (n *VisitedPeer) Addr() string {
 type Crawler struct {
 	C chan *VisitedPeer
 
+	clientOptions  []levin.ClientOption
 	visited        map[string]*VisitedPeer
 	notVisited     map[string]*levin.Peer
 	log            *log.Entry
@@ -77,9 +78,11 @@ type Crawler struct {
 	sync.Mutex
 }
 
-func NewCrawler() *Crawler {
+func NewCrawler(clientOpts ...levin.ClientOption) *Crawler {
 	return &Crawler{
-		C:              make(chan *VisitedPeer, 0),
+		C: make(chan *VisitedPeer, 0),
+
+		clientOptions:  clientOpts,
 		visited:        map[string]*VisitedPeer{},
 		notVisited:     map[string]*levin.Peer{},
 		workerStatuses: make(WorkerStatuses, CrawlerConcurrency),
@@ -227,7 +230,7 @@ func (c *Crawler) Worker(
 }
 
 func (c *Crawler) Discover(ctx context.Context, peer *levin.Peer) (map[string]*levin.Peer, error) {
-	client, err := levin.NewClient(ctx, peer.Addr())
+	client, err := levin.NewClient(ctx, peer.Addr(), c.clientOptions...)
 	if err != nil {
 		return nil, fmt.Errorf("new client: %w", err)
 	}

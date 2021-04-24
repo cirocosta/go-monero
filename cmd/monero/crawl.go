@@ -8,6 +8,7 @@ import (
 
 	"github.com/cirocosta/go-monero/pkg/crawler"
 	"github.com/cirocosta/go-monero/pkg/levin"
+	"golang.org/x/net/proxy"
 )
 
 type CrawlCommand struct {
@@ -15,6 +16,7 @@ type CrawlCommand struct {
 	Port    uint16        `long:"port"    default:"18080"           description:"p2p port"`
 	Timeout time.Duration `long:"timeout" default:"20s"             description:"maximum execution time"`
 	Output  string        `long:"output"  default:"nodes.csv"       description:"file to write peers to"`
+	Proxy   string        `long:"proxy" short:"x" description:"socks5 proxy addr"`
 }
 
 func (c *CrawlCommand) Execute(_ []string) error {
@@ -27,7 +29,23 @@ func (c *CrawlCommand) Execute(_ []string) error {
 	}
 	defer f.Close()
 
-	crawler := crawler.NewCrawler()
+	opts := []levin.ClientOption{}
+
+	if c.Proxy != "" {
+		dialer, err := proxy.SOCKS5("tcp", c.Proxy, nil, nil)
+		if err != nil {
+			return fmt.Errorf("socks5 '%s': %w", c.Proxy, err)
+		}
+
+		contextDialer, ok := dialer.(proxy.ContextDialer)
+		if !ok {
+			panic("can't cast proxy dialer to proxy context dialer")
+		}
+
+		opts = append(opts, levin.WithContextDialer(contextDialer))
+	}
+
+	crawler := crawler.NewCrawler(opts...)
 	crawler.TryPutForVisit(&levin.Peer{
 		Ip: c.Ip, Port: c.Port,
 	})
