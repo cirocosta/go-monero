@@ -3,10 +3,17 @@ package levin
 import (
 	"fmt"
 	"net"
+	"runtime"
 )
 
 type LocalPeerList struct {
 	Peers map[string]*Peer
+
+	Id      uint64
+	RPCPort uint16
+
+	CurrentHeight uint64
+	TopVersion    uint8
 }
 
 func (l *LocalPeerList) GetPeers() map[string]*Peer {
@@ -16,12 +23,6 @@ func (l *LocalPeerList) GetPeers() map[string]*Peer {
 type Peer struct {
 	Ip   string
 	Port uint16
-
-	Id      string
-	RPCPort uint16
-
-	CurrentHeight uint64
-	TopVersion    uint8
 }
 
 func (p Peer) Addr() string {
@@ -32,70 +33,98 @@ func (p Peer) String() string {
 	return p.Addr()
 }
 
-// TODO less panic'ing
-func NewLocalPeerListFromEntries(entries Entries) LocalPeerList {
+func ParsePeerList(entry Entry) map[string]*Peer {
 	peers := map[string]*Peer{}
 
-	for _, entry := range entries {
-		if entry.Name != "local_peerlist_new" {
-			continue
-		}
+	peerList := entry.Entries()
 
-		peerList := entry.Entries()
+	for _, peer := range peerList {
+		peerListAdr := peer.Entries()
 
-		for _, peer := range peerList {
-			peerListAdr := peer.Entries()
+		for _, adr := range peerListAdr {
+			if adr.Name != "adr" {
+				continue
+			}
 
-			for _, adr := range peerListAdr {
-				if adr.Name != "adr" {
+			addr := adr.Entries()
+
+			for _, addrField := range addr {
+
+				if addrField.Name != "addr" {
 					continue
 				}
 
-				addr := adr.Entries()
+				fields := addrField.Entries()
 
-				for _, addrField := range addr {
+				var ip string
+				var port uint16
 
-					if addrField.Name != "addr" {
-						continue
+				for _, field := range fields {
+					if field.Name == "m_ip" {
+						ip = ipzify(field.Uint32())
 					}
 
-					fields := addrField.Entries()
-
-					var ip string
-					var port uint16
-
-					for _, field := range fields {
-						if field.Name == "m_ip" {
-							ip = ipzify(field.Uint32())
-						}
-
-						if field.Name == "m_port" {
-							port = field.Uint16()
-						}
-
-						if field.Name == "addr" {
-							ip = net.IP([]byte(field.String())).String()
-						}
+					if field.Name == "m_port" {
+						port = field.Uint16()
 					}
 
-					if ip != "" && port != 0 {
-
-						peer := &Peer{
-							Ip:   ip,
-							Port: port,
-						}
-
-						peers[peer.Addr()] = peer
+					if field.Name == "addr" {
+						ip = net.IP([]byte(field.String())).String()
 					}
+				}
+
+				if ip != "" && port != 0 {
+
+					peer := &Peer{
+						Ip:   ip,
+						Port: port,
+					}
+
+					peers[peer.Addr()] = peer
 				}
 			}
 		}
 	}
 
-	return LocalPeerList{
-		Peers: peers,
+	return peers
+}
+
+// TODO less panic'ing
+func NewLocalPeerListFromEntries(entries Entries) LocalPeerList {
+	lpl := LocalPeerList{}
+
+	for _, entry := range entries {
+
+		if entry.Name == "node_data" {
+			for _, field := range entry.Entries() {
+				switch field.Name {
+				case "rpc_port":
+					lpl.RPCPort = field.Uint16()
+				case "peer_id":
+					lpl.Id = field.Uint64()
+				}
+			}
+		}
+
+		if entry.Name == "payload_data" {
+			for _, field := range entry.Entries() {
+				switch field.Name {
+				case "current_height":
+					lpl.CurrentHeight = field.Uint64()
+				case "top_version":
+					lpl.TopVersion = field.Uint8()
+				}
+			}
+		}
+
+		if entry.Name == "local_peerlist_new" {
+			lpl.Peers = ParsePeerList(entry)
+		}
 	}
 
+	runtime.Breakpoint()
+
+	return lpl
 }
 
 func ipzify(ip uint32) string {

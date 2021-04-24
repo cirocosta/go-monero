@@ -32,6 +32,15 @@ func (e Entry) String() string {
 	return v
 }
 
+func (e Entry) Uint8() uint8 {
+	v, ok := e.Value.(uint8)
+	if !ok {
+		panic(fmt.Errorf("interface couldnt be casted to uint8"))
+	}
+
+	return v
+}
+
 func (e Entry) Uint16() uint16 {
 	v, ok := e.Value.(uint16)
 	if !ok {
@@ -45,6 +54,15 @@ func (e Entry) Uint32() uint32 {
 	v, ok := e.Value.(uint32)
 	if !ok {
 		panic(fmt.Errorf("interface couldnt be casted to uint32"))
+	}
+
+	return v
+}
+
+func (e Entry) Uint64() uint64 {
+	v, ok := e.Value.(uint64)
+	if !ok {
+		panic(fmt.Errorf("interface couldnt be casted to uint64"))
 	}
 
 	return v
