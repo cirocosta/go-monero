@@ -15,13 +15,31 @@ type Client struct {
 	conn net.Conn
 }
 
-func NewClient(addr string) (*Client, error) {
-	var d net.Dialer
+type ClientConfig struct {
+	ContextDialer ContextDialer
+}
 
-	ctx, cancel := context.WithTimeout(context.Background(), DialTimeout)
-	defer cancel()
+type ClientOption func(*ClientConfig)
 
-	conn, err := d.DialContext(ctx, "tcp", addr)
+type ContextDialer interface {
+	DialContext(ctx context.Context, network, addr string) (net.Conn, error)
+}
+
+func WithContextDialer(v ContextDialer) func(*ClientConfig) {
+	return func(c *ClientConfig) {
+		c.ContextDialer = v
+	}
+}
+
+func NewClient(ctx context.Context, addr string, opts ...ClientOption) (*Client, error) {
+	cfg := &ClientConfig{
+		ContextDialer: &net.Dialer{},
+	}
+	for _, opt := range opts {
+		opt(cfg)
+	}
+
+	conn, err := cfg.ContextDialer.DialContext(ctx, "tcp", addr)
 	if err != nil {
 		return nil, fmt.Errorf("dial ctx: %w", err)
 	}

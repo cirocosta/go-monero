@@ -227,7 +227,7 @@ func (c *Crawler) Worker(
 }
 
 func (c *Crawler) Discover(ctx context.Context, peer *levin.Peer) (map[string]*levin.Peer, error) {
-	client, err := levin.NewClient(peer.Addr())
+	client, err := levin.NewClient(ctx, peer.Addr())
 	if err != nil {
 		return nil, fmt.Errorf("new client: %w", err)
 	}
