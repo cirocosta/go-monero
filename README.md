@@ -8,7 +8,7 @@ network free of CGO, either on clearnet or not.
 
 ## Quick start
 
-### library
+### Library
 
 ```console
 $ go get -u -v github.com/cirocosta/go-monero
@@ -92,7 +92,10 @@ func ShowBlockHeight (ctx context.Context, addr string) error {
 ```
 
 
-### cli
+### CLI
+
+Under `cmd/monero` you'll find a command line interface that exposes most of
+the functionality that the library provides.
 
 ```console
 $ GO111MODULE=on go get github.com/cirocosta/go-monero/cmd/monero
@@ -124,83 +127,17 @@ Available commands:
   sync-info             Get synchronisation information (restricted)
 ```
 
-## TODO
+## License
 
-### levin
-
-- [x] header
-- [x] payload
-  - [x] serialization
-  - [x] deserialization
-- [ ] properly typed structures
-
-### daemon
-
-#### non-jsonrpc
-
-- [ ] `flush_txpool`
-- [ ] `get_alternate_chains`
-- [ ] `get_bans`
-- [ ] `get_block_header_by_hash`
-- [ ] `get_block_header_by_height`
-- [ ] `get_block_headers_range`
-- [ ] `get_block`
-- [ ] `get_last_block_header`
-- [ ] `get_output_distribution`
-- [ ] `get_output_histogram`
-- [ ] `get_txpool_backlog`
-- [ ] `get_version`
-- [ ] `hard_fork_info`
-- [ ] `relay_tx`
-- [ ] `set_bans`
-- [ ] `submit_block`
-- [x] `get_block_count`
-- [x] `get_block_template`
-- [x] `get_coinbase_tx_sum`
-- [x] `get_connections`
-- [x] `get_fee_estimate`
-- [x] `get_info`
-- [x] `on_get_block_hash`
-- [x] `sync_info`
-
-#### json rpc
-
-- [ ] `/get_alt_blocks_hashes`
-- [ ] `/get_blocks.bin`
-- [ ] `/get_blocks_by_height.bin`
-- [ ] `/get_hashes.bin`
-- [ ] `/get_height`
-- [ ] `/get_info (not JSON)`
-- [ ] `/get_limit`
-- [ ] `/get_o_indexes.bin`
-- [ ] `/get_outs.bin`
-- [ ] `/get_outs`
-- [ ] `/get_peer_list`
-- [ ] `/get_transaction_pool_hashes.bin`
-- [ ] `/get_transaction_pool_stats`
-- [ ] `/get_transactions`
-- [ ] `/in_peers`
-- [ ] `/is_key_image_spent`
-- [ ] `/mining_status`
-- [ ] `/out_peers`
-- [ ] `/save_bc`
-- [ ] `/send_raw_transaction`
-- [ ] `/set_limit`
-- [ ] `/set_log_categories`
-- [ ] `/set_log_hash_rate`
-- [ ] `/set_log_level`
-- [ ] `/start_mining`
-- [ ] `/start_save_graph`
-- [ ] `/stop_daemon`
-- [ ] `/stop_mining`
-- [ ] `/stop_save_graph`
-- [ ] `/update`
-- [x] `/get_transaction_pool`
+See [LICENSE](./LICENSE).
 
 
-## thanks
+## Thanks
+
+Big thanks to the Monero community and other projects around cryptonote:
 
 - `#monero-dev` (https://matrix.to/#/#freenode_#monero-dev:matrix.org)
+- https://reddit.com/r/Monero
 - https://github.com/cdiv1e12/py-levin
 - https://github.com/cryptonotefoundation/cryptonote
 - https://github.com/LeTurt/turtlegod
