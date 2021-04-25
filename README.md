@@ -30,18 +30,27 @@ import (
 )
 
 func ListNodePeers(ctx context.Context, addr string) error {
+        // start a client - this will actually establish a TCP `connect()`ion 
+        // with the other node.
+        //
 	client, err := levin.NewClient(ctx, addr)
 	if err != nil {
 		return fmt.Errorf("new client '%s': %w", addr, err)
 	}
 
+        // close the connection when done
+        //
 	defer client.Close()
 
+        // perform the handshake
+        //
 	pl, err := client.Handshake(ctx)
 	if err != nil {
 		return fmt.Errorf("handshake: %w", err)
 	}
 
+        // list the peers reported back (250 max per monero's implementation)
+        //
 	for addr := range pl.Peers {
 		fmt.Println(addr)
 	}
