@@ -3,10 +3,9 @@ package levin
 import (
 	"fmt"
 	"net"
-	"runtime"
 )
 
-type LocalPeerList struct {
+type Node struct {
 	Peers map[string]*Peer
 
 	Id      uint64
@@ -16,7 +15,7 @@ type LocalPeerList struct {
 	TopVersion    uint8
 }
 
-func (l *LocalPeerList) GetPeers() map[string]*Peer {
+func (l *Node) GetPeers() map[string]*Peer {
 	return l.Peers
 }
 
@@ -90,8 +89,8 @@ func ParsePeerList(entry Entry) map[string]*Peer {
 }
 
 // TODO less panic'ing
-func NewLocalPeerListFromEntries(entries Entries) LocalPeerList {
-	lpl := LocalPeerList{}
+func NewNodeFromEntries(entries Entries) Node {
+	lpl := Node{}
 
 	for _, entry := range entries {
 
@@ -121,8 +120,6 @@ func NewLocalPeerListFromEntries(entries Entries) LocalPeerList {
 			lpl.Peers = ParsePeerList(entry)
 		}
 	}
-
-	runtime.Breakpoint()
 
 	return lpl
 }

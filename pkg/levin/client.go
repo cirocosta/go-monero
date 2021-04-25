@@ -61,7 +61,7 @@ func (c *Client) Close() error {
 	return nil
 }
 
-func (c *Client) Handshake(ctx context.Context) (*LocalPeerList, error) {
+func (c *Client) Handshake(ctx context.Context) (*Node, error) {
 	payload := (&PortableStorage{
 		Entries: []Entry{
 			{
@@ -117,7 +117,7 @@ again:
 		return nil, fmt.Errorf("new portable storage from bytes: %w", err)
 	}
 
-	peerList := NewLocalPeerListFromEntries(ps.Entries)
+	peerList := NewNodeFromEntries(ps.Entries)
 	return &peerList, nil
 }
 
