@@ -3,20 +3,26 @@ package main
 import (
 	"context"
 	"fmt"
+	"net"
 	"os"
+	"strings"
 	"time"
+
+	"github.com/oschwald/geoip2-golang"
+	"golang.org/x/net/proxy"
 
 	"github.com/cirocosta/go-monero/pkg/crawler"
 	"github.com/cirocosta/go-monero/pkg/levin"
-	"golang.org/x/net/proxy"
 )
 
 type CrawlCommand struct {
-	Ip      string        `long:"ip"      default:"xps.utxo.com.br" description:"p2p address"`
-	Port    uint16        `long:"port"    default:"18080"           description:"p2p port"`
-	Timeout time.Duration `long:"timeout" default:"20s"             description:"maximum execution time"`
-	Output  string        `long:"output"  default:"nodes.csv"       description:"file to write peers to"`
-	Proxy   string        `long:"proxy" short:"x" description:"socks5 proxy addr"`
+	Ip      string        `long:"ip"      default:"198.98.116.72" description:"p2p address"`
+	Port    uint16        `long:"port"    default:"18080"         description:"p2p port"`
+	Timeout time.Duration `long:"timeout" default:"20s"           description:"maximum execution time"`
+	Output  string        `long:"output"  default:"nodes.csv"     description:"file to write peers to"`
+
+	Proxy         string `long:"proxy" short:"x" description:"socks5 proxy addr"`
+	GeoIpDatabase string `long:"geo-ip-db" description:"fpath of a mmdb geoip file"`
 }
 
 func (c *CrawlCommand) Execute(_ []string) error {
@@ -45,27 +51,56 @@ func (c *CrawlCommand) Execute(_ []string) error {
 		opts = append(opts, levin.WithContextDialer(contextDialer))
 	}
 
-	crawler := crawler.NewCrawler(opts...)
-	crawler.TryPutForVisit(&levin.Peer{
+	ccrawler := crawler.NewCrawler(opts...)
+	ccrawler.TryPutForVisit(&levin.Peer{
 		Ip: c.Ip, Port: c.Port,
 	})
 
-	go func() {
-		for node := range crawler.C {
+	processingFuncs := []func(node *crawler.VisitedPeer) string{
+		func(node *crawler.VisitedPeer) string {
 			line := node.Addr() + ","
 			if node.Error != nil {
 				line += node.Error.Error()
 			}
 
-			line += "\n"
+			return line
+		},
+	}
 
-			if _, err := f.WriteString(line); err != nil {
+	if c.GeoIpDatabase != "" {
+		db, err := geoip2.Open(c.GeoIpDatabase)
+		if err != nil {
+			return fmt.Errorf("geoip open: %w", err)
+		}
+		defer db.Close()
+
+		processingFuncs = append(processingFuncs, func(node *crawler.VisitedPeer) string {
+			ip := net.ParseIP(node.Ip())
+
+			record, err := db.Country(ip)
+			if err != nil {
+				panic(fmt.Errorf("db city '%s': %w", ip, err))
+			}
+
+			return record.Country.Names["en"]
+		})
+	}
+
+	go func() {
+		for node := range ccrawler.C {
+			columns := []string{}
+
+			for _, f := range processingFuncs {
+				columns = append(columns, f(node))
+			}
+
+			if _, err := f.WriteString(strings.Join(columns, ",") + "\n"); err != nil {
 				panic(err)
 			}
 		}
 	}()
 
-	if _, err := crawler.Run(ctx); err != nil {
+	if _, err := ccrawler.Run(ctx); err != nil {
 		return fmt.Errorf("crawler run: %w", err)
 	}
 

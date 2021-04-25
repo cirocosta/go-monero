@@ -1,3 +1,4 @@
 /monero
 *.bin
 *.mmdb
+*.csv

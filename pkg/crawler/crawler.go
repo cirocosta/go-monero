@@ -62,6 +62,10 @@ func (n *VisitedPeer) String() string {
 	return n.Addr()
 }
 
+func (n *VisitedPeer) Ip() string {
+	return n.Peer.Ip
+}
+
 func (n *VisitedPeer) Addr() string {
 	return n.Peer.Addr()
 }
