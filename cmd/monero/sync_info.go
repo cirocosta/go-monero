@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -11,6 +12,9 @@ import (
 type SyncInfoCommand struct{}
 
 func (c *SyncInfoCommand) Execute(_ []string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), options.RequestTimeout)
+	defer cancel()
+
 	client, err := daemonrpc.NewClient(options.Address,
 		daemonrpc.WithHTTPClient(daemonrpc.NewHTTPClient(options.Verbose)),
 	)
@@ -18,7 +22,7 @@ func (c *SyncInfoCommand) Execute(_ []string) error {
 		return fmt.Errorf("new client for '%s': %w", options.Address, err)
 	}
 
-	resp, err := client.SyncInfo()
+	resp, err := client.SyncInfo(ctx)
 	if err != nil {
 		return fmt.Errorf("get block count: %w", err)
 	}

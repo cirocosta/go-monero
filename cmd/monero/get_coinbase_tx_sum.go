@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"os"
@@ -14,6 +15,9 @@ type GetCoinbaseTxSumCommand struct {
 }
 
 func (c *GetCoinbaseTxSumCommand) Execute(_ []string) error {
+	ctx, cancel := context.WithTimeout(context.Background(), options.RequestTimeout)
+	defer cancel()
+
 	client, err := daemonrpc.NewClient(options.Address,
 		daemonrpc.WithHTTPClient(daemonrpc.NewHTTPClient(options.Verbose)),
 	)
@@ -21,7 +25,7 @@ func (c *GetCoinbaseTxSumCommand) Execute(_ []string) error {
 		return fmt.Errorf("new client for '%s': %w", options.Address, err)
 	}
 
-	resp, err := client.GetCoinbaseTxSum(c.Height, c.Count)
+	resp, err := client.GetCoinbaseTxSum(ctx, c.Height, c.Count)
 	if err != nil {
 		return fmt.Errorf("get block count: %w", err)
 	}

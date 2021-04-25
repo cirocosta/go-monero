@@ -2,6 +2,7 @@ package daemonrpc
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -86,7 +87,9 @@ type RequestEnvelope struct {
 	Params  interface{} `json:"params,omitempty"`
 }
 
-func (c *Client) Other(endpoint string, params interface{}, response interface{}) error {
+// Other makes requests to any other endpoints that are not `/jsonrpc`.
+//
+func (c *Client) Other(ctx context.Context, endpoint string, params interface{}, response interface{}) error {
 	url := *c.url
 	url.Path = endpoint
 
@@ -101,7 +104,7 @@ func (c *Client) Other(endpoint string, params interface{}, response interface{}
 		body = bytes.NewReader(b)
 	}
 
-	req, err := http.NewRequest("GET", url.String(), body)
+	req, err := http.NewRequestWithContext(ctx, "GET", url.String(), body)
 	if err != nil {
 		return fmt.Errorf("new req '%s': %w", url.String(), err)
 	}
@@ -115,7 +118,7 @@ func (c *Client) Other(endpoint string, params interface{}, response interface{}
 	return nil
 }
 
-func (c *Client) JsonRPC(method string, params interface{}, response interface{}) error {
+func (c *Client) JsonRPC(ctx context.Context, method string, params interface{}, response interface{}) error {
 	url := *c.url
 	url.Path = EndpointJsonRPC
 
@@ -129,7 +132,7 @@ func (c *Client) JsonRPC(method string, params interface{}, response interface{}
 		return fmt.Errorf("marshal: %w", err)
 	}
 
-	req, err := http.NewRequest("GET", url.String(), bytes.NewReader(b))
+	req, err := http.NewRequestWithContext(ctx, "GET", url.String(), bytes.NewReader(b))
 	if err != nil {
 		return fmt.Errorf("new req '%s': %w", url.String(), err)
 	}

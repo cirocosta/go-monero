@@ -1,6 +1,9 @@
 package daemonrpc
 
-import "fmt"
+import (
+	"context"
+	"fmt"
+)
 
 const (
 	MethodGetBlockCount    = "get_block_count"
@@ -20,25 +23,23 @@ type GetBlockCountResult struct {
 	Status string `json:"status"`
 }
 
-func (c *Client) GetBlockCount() (*GetBlockCountResult, error) {
-	var (
-		resp = &GetBlockCountResult{}
-	)
+func (c *Client) GetBlockCount(ctx context.Context) (*GetBlockCountResult, error) {
+	var resp = &GetBlockCountResult{}
 
-	if err := c.JsonRPC(MethodGetBlockCount, nil, resp); err != nil {
+	if err := c.JsonRPC(ctx, MethodGetBlockCount, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
 	return resp, nil
 }
 
-func (c *Client) OnGetBlockHash(height uint64) (string, error) {
+func (c *Client) OnGetBlockHash(ctx context.Context, height uint64) (string, error) {
 	var (
 		resp   = ""
 		params = []uint64{height}
 	)
 
-	if err := c.JsonRPC(MethodOnGetBlockHash, params, &resp); err != nil {
+	if err := c.JsonRPC(ctx, MethodOnGetBlockHash, params, &resp); err != nil {
 		return "", fmt.Errorf("get: %w", err)
 	}
 
@@ -57,7 +58,7 @@ type GetBlockTemplateResult struct {
 	Untrusted         bool   `json:"untrusted"`
 }
 
-func (c *Client) GetBlockTemplate(walletAddress string, reserveSize uint) (*GetBlockTemplateResult, error) {
+func (c *Client) GetBlockTemplate(ctx context.Context, walletAddress string, reserveSize uint) (*GetBlockTemplateResult, error) {
 	var (
 		resp   = &GetBlockTemplateResult{}
 		params = map[string]interface{}{
@@ -66,7 +67,7 @@ func (c *Client) GetBlockTemplate(walletAddress string, reserveSize uint) (*GetB
 		}
 	)
 
-	if err := c.JsonRPC(MethodGetBlockTemplate, params, resp); err != nil {
+	if err := c.JsonRPC(ctx, MethodGetBlockTemplate, params, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -100,12 +101,10 @@ type GetConnectionsResult struct {
 	Status string `json:"status"`
 }
 
-func (c *Client) GetConnections() (*GetConnectionsResult, error) {
-	var (
-		resp = &GetConnectionsResult{}
-	)
+func (c *Client) GetConnections(ctx context.Context) (*GetConnectionsResult, error) {
+	var resp = &GetConnectionsResult{}
 
-	if err := c.JsonRPC(MethodGetConnections, nil, resp); err != nil {
+	if err := c.JsonRPC(ctx, MethodGetConnections, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -144,12 +143,10 @@ type GetInfoResult struct {
 	WhitePeerlistSize        int    `json:"white_peerlist_size"`
 }
 
-func (c *Client) GetInfo() (*GetInfoResult, error) {
-	var (
-		resp = &GetInfoResult{}
-	)
+func (c *Client) GetInfo(ctx context.Context) (*GetInfoResult, error) {
+	var resp = &GetInfoResult{}
 
-	if err := c.JsonRPC(MethodGetInfo, nil, resp); err != nil {
+	if err := c.JsonRPC(ctx, MethodGetInfo, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -169,7 +166,7 @@ type GetCoinbaseTxSumResult struct {
 	WideFeeAmount       string `json:"wide_fee_amount"`
 }
 
-func (c *Client) GetCoinbaseTxSum(height, count uint64) (*GetCoinbaseTxSumResult, error) {
+func (c *Client) GetCoinbaseTxSum(ctx context.Context, height, count uint64) (*GetCoinbaseTxSumResult, error) {
 	var (
 		resp   = &GetCoinbaseTxSumResult{}
 		params = map[string]uint64{
@@ -178,7 +175,7 @@ func (c *Client) GetCoinbaseTxSum(height, count uint64) (*GetCoinbaseTxSumResult
 		}
 	)
 
-	if err := c.JsonRPC(MethodGetCoinbaseTxSum, params, resp); err != nil {
+	if err := c.JsonRPC(ctx, MethodGetCoinbaseTxSum, params, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -194,7 +191,7 @@ type GetFeeEstimateResult struct {
 	Untrusted        bool   `json:"untrusted"`
 }
 
-func (c *Client) GetFeeEstimate(graceBlocks uint64) (*GetFeeEstimateResult, error) {
+func (c *Client) GetFeeEstimate(ctx context.Context, graceBlocks uint64) (*GetFeeEstimateResult, error) {
 	var (
 		resp   = new(GetFeeEstimateResult)
 		params = map[string]uint64{
@@ -202,7 +199,7 @@ func (c *Client) GetFeeEstimate(graceBlocks uint64) (*GetFeeEstimateResult, erro
 		}
 	)
 
-	if err := c.JsonRPC(MethodGetFeeEstimate, params, resp); err != nil {
+	if err := c.JsonRPC(ctx, MethodGetFeeEstimate, params, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -249,12 +246,10 @@ type SyncInfoResult struct {
 	} `json:"peers"`
 }
 
-func (c *Client) SyncInfo() (*SyncInfoResult, error) {
-	var (
-		resp = new(SyncInfoResult)
-	)
+func (c *Client) SyncInfo(ctx context.Context) (*SyncInfoResult, error) {
+	var resp = new(SyncInfoResult)
 
-	if err := c.JsonRPC(MethodSyncInfo, nil, resp); err != nil {
+	if err := c.JsonRPC(ctx, MethodSyncInfo, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -290,12 +285,12 @@ type GetTransactionPoolResult struct {
 	Untrusted bool `json:"untrusted"`
 }
 
-func (c *Client) GetTransactionPool() (*GetTransactionPoolResult, error) {
+func (c *Client) GetTransactionPool(ctx context.Context) (*GetTransactionPoolResult, error) {
 	var (
 		resp = new(GetTransactionPoolResult)
 	)
 
-	if err := c.Other(EndpointGetTransactionPool, nil, resp); err != nil {
+	if err := c.Other(ctx, EndpointGetTransactionPool, nil, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
 	}
 
