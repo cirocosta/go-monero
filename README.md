@@ -10,6 +10,10 @@ network free of CGO, either on clearnet or not.
 
 ### library
 
+```console
+$ go get -u -v github.com/cirocosta/go-monero
+```
+
 `go-monero` exposes two high-level packages: `levin` and `daemonrpc`.
 
 The first (`levin`) is used for interacting with the p2p network via plain TCP
