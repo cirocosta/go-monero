@@ -6,14 +6,15 @@ import (
 )
 
 const (
-	MethodGetBlockCount    = "get_block_count"
-	MethodGetBlockTemplate = "get_block_template"
-	MethodGetCoinbaseTxSum = "get_coinbase_tx_sum"
-	MethodGetConnections   = "get_connections"
-	MethodGetFeeEstimate   = "get_fee_estimate"
-	MethodGetInfo          = "get_info"
-	MethodOnGetBlockHash   = "on_get_block_hash"
-	MethodSyncInfo         = "sync_info"
+	MethodGetBlockCount      = "get_block_count"
+	MethodGetBlockTemplate   = "get_block_template"
+	MethodGetCoinbaseTxSum   = "get_coinbase_tx_sum"
+	MethodGetConnections     = "get_connections"
+	MethodGetFeeEstimate     = "get_fee_estimate"
+	MethodGetInfo            = "get_info"
+	MethodGetLastBlockHeader = "get_last_block_header"
+	MethodOnGetBlockHash     = "on_get_block_hash"
+	MethodSyncInfo           = "sync_info"
 
 	EndpointGetTransactionPool      = "/get_transaction_pool"
 	EndpointGetTransactionPoolStats = "/get_transaction_pool_stats"
@@ -148,6 +149,41 @@ func (c *Client) GetInfo(ctx context.Context) (*GetInfoResult, error) {
 	var resp = &GetInfoResult{}
 
 	if err := c.JsonRPC(ctx, MethodGetInfo, nil, resp); err != nil {
+		return nil, fmt.Errorf("get: %w", err)
+	}
+
+	return resp, nil
+}
+
+type GetLastBlockHeaderResult struct {
+	BlockSize                 int    `json:"block_size"`
+	BlockWeight               int    `json:"block_weight"`
+	CumulativeDifficulty      int64  `json:"cumulative_difficulty"`
+	CumulativeDifficultyTop64 int    `json:"cumulative_difficulty_top64"`
+	Depth                     int    `json:"depth"`
+	Difficulty                int64  `json:"difficulty"`
+	DifficultyTop64           int    `json:"difficulty_top64"`
+	Hash                      string `json:"hash"`
+	Height                    int    `json:"height"`
+	LongTermWeight            int    `json:"long_term_weight"`
+	MajorVersion              int    `json:"major_version"`
+	MinerTxHash               string `json:"miner_tx_hash"`
+	MinorVersion              int    `json:"minor_version"`
+	Nonce                     int    `json:"nonce"`
+	NumTxes                   int    `json:"num_txes"`
+	OrphanStatus              bool   `json:"orphan_status"`
+	PowHash                   string `json:"pow_hash"`
+	PrevHash                  string `json:"prev_hash"`
+	Reward                    int64  `json:"reward"`
+	Timestamp                 int    `json:"timestamp"`
+	WideCumulativeDifficulty  string `json:"wide_cumulative_difficulty"`
+	WideDifficulty            string `json:"wide_difficulty"`
+}
+
+func (c *Client) GetLastBlockHeader(ctx context.Context) (*GetLastBlockHeaderResult, error) {
+	var resp = &GetLastBlockHeaderResult{}
+
+	if err := c.JsonRPC(ctx, MethodGetLastBlockHeader, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
