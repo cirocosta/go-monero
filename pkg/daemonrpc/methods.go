@@ -15,7 +15,8 @@ const (
 	MethodOnGetBlockHash   = "on_get_block_hash"
 	MethodSyncInfo         = "sync_info"
 
-	EndpointGetTransactionPool = "/get_transaction_pool"
+	EndpointGetTransactionPool      = "/get_transaction_pool"
+	EndpointGetTransactionPoolStats = "/get_transaction_pool_stats"
 )
 
 type GetBlockCountResult struct {
@@ -291,6 +292,43 @@ func (c *Client) GetTransactionPool(ctx context.Context) (*GetTransactionPoolRes
 	)
 
 	if err := c.Other(ctx, EndpointGetTransactionPool, nil, resp); err != nil {
+		return nil, fmt.Errorf("other: %w", err)
+	}
+
+	return resp, nil
+}
+
+type GetTransactionPoolStatsResult struct {
+	Credits   int `json:"credits"`
+	PoolStats struct {
+		BytesMax   int `json:"bytes_max"`
+		BytesMed   int `json:"bytes_med"`
+		BytesMin   int `json:"bytes_min"`
+		BytesTotal int `json:"bytes_total"`
+		FeeTotal   int `json:"fee_total"`
+		Histo      []struct {
+			Bytes int `json:"bytes"`
+			Txs   int `json:"txs"`
+		} `json:"histo"`
+		Histo98Pc       int `json:"histo_98pc"`
+		Num10M          int `json:"num_10m"`
+		NumDoubleSpends int `json:"num_double_spends"`
+		NumFailing      int `json:"num_failing"`
+		NumNotRelayed   int `json:"num_not_relayed"`
+		Oldest          int `json:"oldest"`
+		TxsTotal        int `json:"txs_total"`
+	} `json:"pool_stats"`
+	Status    string `json:"status"`
+	TopHash   string `json:"top_hash"`
+	Untrusted bool   `json:"untrusted"`
+}
+
+func (c *Client) GetTransactionPoolStats(ctx context.Context) (*GetTransactionPoolStatsResult, error) {
+	var (
+		resp = new(GetTransactionPoolStatsResult)
+	)
+
+	if err := c.Other(ctx, EndpointGetTransactionPoolStats, nil, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
 	}
 
