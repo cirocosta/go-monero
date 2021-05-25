@@ -156,28 +156,30 @@ func (c *Client) GetInfo(ctx context.Context) (*GetInfoResult, error) {
 }
 
 type GetLastBlockHeaderResult struct {
-	BlockSize                 int    `json:"block_size"`
-	BlockWeight               int    `json:"block_weight"`
-	CumulativeDifficulty      int64  `json:"cumulative_difficulty"`
-	CumulativeDifficultyTop64 int    `json:"cumulative_difficulty_top64"`
-	Depth                     int    `json:"depth"`
-	Difficulty                int64  `json:"difficulty"`
-	DifficultyTop64           int    `json:"difficulty_top64"`
-	Hash                      string `json:"hash"`
-	Height                    int    `json:"height"`
-	LongTermWeight            int    `json:"long_term_weight"`
-	MajorVersion              int    `json:"major_version"`
-	MinerTxHash               string `json:"miner_tx_hash"`
-	MinorVersion              int    `json:"minor_version"`
-	Nonce                     int    `json:"nonce"`
-	NumTxes                   int    `json:"num_txes"`
-	OrphanStatus              bool   `json:"orphan_status"`
-	PowHash                   string `json:"pow_hash"`
-	PrevHash                  string `json:"prev_hash"`
-	Reward                    int64  `json:"reward"`
-	Timestamp                 int    `json:"timestamp"`
-	WideCumulativeDifficulty  string `json:"wide_cumulative_difficulty"`
-	WideDifficulty            string `json:"wide_difficulty"`
+	BlockHeader struct {
+		BlockSize                 int    `json:"block_size"`
+		BlockWeight               int    `json:"block_weight"`
+		CumulativeDifficulty      int64  `json:"cumulative_difficulty"`
+		CumulativeDifficultyTop64 int    `json:"cumulative_difficulty_top64"`
+		Depth                     int    `json:"depth"`
+		Difficulty                int64  `json:"difficulty"`
+		DifficultyTop64           int    `json:"difficulty_top64"`
+		Hash                      string `json:"hash"`
+		Height                    int    `json:"height"`
+		LongTermWeight            int    `json:"long_term_weight"`
+		MajorVersion              int    `json:"major_version"`
+		MinerTxHash               string `json:"miner_tx_hash"`
+		MinorVersion              int    `json:"minor_version"`
+		Nonce                     int    `json:"nonce"`
+		NumTxes                   int    `json:"num_txes"`
+		OrphanStatus              bool   `json:"orphan_status"`
+		PowHash                   string `json:"pow_hash"`
+		PrevHash                  string `json:"prev_hash"`
+		Reward                    int64  `json:"reward"`
+		Timestamp                 int    `json:"timestamp"`
+		WideCumulativeDifficulty  string `json:"wide_cumulative_difficulty"`
+		WideDifficulty            string `json:"wide_difficulty"`
+	} `json:"block_header"`
 }
 
 func (c *Client) GetLastBlockHeader(ctx context.Context) (*GetLastBlockHeaderResult, error) {
