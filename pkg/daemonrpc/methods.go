@@ -12,6 +12,8 @@ const (
 	MethodGetConnections     = "get_connections"
 	MethodGetFeeEstimate     = "get_fee_estimate"
 	MethodGetInfo            = "get_info"
+	MethodGetBans            = "get_bans"
+	MethodGetAlternateChains = "get_alternate_chains"
 	MethodGetLastBlockHeader = "get_last_block_header"
 	MethodOnGetBlockHash     = "on_get_block_hash"
 	MethodSyncInfo           = "sync_info"
@@ -19,6 +21,51 @@ const (
 	EndpointGetTransactionPool      = "/get_transaction_pool"
 	EndpointGetTransactionPoolStats = "/get_transaction_pool_stats"
 )
+
+type GetBansResult struct {
+	Bans []struct {
+		Host    string `json:"host"`
+		IP      int    `json:"ip"`
+		Seconds int    `json:"seconds"`
+	} `json:"bans"`
+	Status    string `json:"status"`
+	Untrusted bool   `json:"untrusted"`
+}
+
+func (c *Client) GetBans(ctx context.Context) (*GetBansResult, error) {
+	var resp = &GetBansResult{}
+
+	if err := c.JsonRPC(ctx, MethodGetBans, nil, resp); err != nil {
+		return nil, fmt.Errorf("get: %w", err)
+	}
+
+	return resp, nil
+}
+
+type GetAlternateChainsResult struct {
+	Chains []struct {
+		BlockHash            string   `json:"block_hash"`
+		BlockHashes          []string `json:"block_hashes"`
+		Difficulty           int64    `json:"difficulty"`
+		DifficultyTop64      int      `json:"difficulty_top64"`
+		Height               int      `json:"height"`
+		Length               int      `json:"length"`
+		MainChainParentBlock string   `json:"main_chain_parent_block"`
+		WideDifficulty       string   `json:"wide_difficulty"`
+	} `json:"chains"`
+	Status    string `json:"status"`
+	Untrusted bool   `json:"untrusted"`
+}
+
+func (c *Client) GetAlternateChains(ctx context.Context) (*GetAlternateChainsResult, error) {
+	var resp = &GetAlternateChainsResult{}
+
+	if err := c.JsonRPC(ctx, MethodGetAlternateChains, nil, resp); err != nil {
+		return nil, fmt.Errorf("get: %w", err)
+	}
+
+	return resp, nil
+}
 
 type GetBlockCountResult struct {
 	Count  uint64 `json:"count"`
