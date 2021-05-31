@@ -7,6 +7,8 @@ import (
 )
 
 const (
+	MethodGetAlternateChains = "get_alternate_chains"
+	MethodGetBans            = "get_bans"
 	MethodGetBlock           = "get_block"
 	MethodGetBlockCount      = "get_block_count"
 	MethodGetBlockTemplate   = "get_block_template"
@@ -14,16 +16,15 @@ const (
 	MethodGetConnections     = "get_connections"
 	MethodGetFeeEstimate     = "get_fee_estimate"
 	MethodGetInfo            = "get_info"
-	MethodGetBans            = "get_bans"
-	MethodGetAlternateChains = "get_alternate_chains"
 	MethodGetLastBlockHeader = "get_last_block_header"
-	MethodOnGetBlockHash     = "on_get_block_hash"
 	MethodHardForkInfo       = "hard_fork_info"
+	MethodOnGetBlockHash     = "on_get_block_hash"
 	MethodSyncInfo           = "sync_info"
 
+	EndpointGetHeight               = "/get_height"
+	EndpointGetPeerList             = "/get_peer_list"
 	EndpointGetTransactionPool      = "/get_transaction_pool"
 	EndpointGetTransactionPoolStats = "/get_transaction_pool_stats"
-	EndpointGetPeerList             = "/get_peer_list"
 	EndpointGetTransactions         = "/get_transactions"
 )
 
@@ -242,7 +243,7 @@ type GetLastBlockHeaderResult struct {
 		Difficulty                int64  `json:"difficulty"`
 		DifficultyTop64           int    `json:"difficulty_top64"`
 		Hash                      string `json:"hash"`
-		Height                    int    `json:"height"`
+		Height                    uint64 `json:"height"`
 		LongTermWeight            int    `json:"long_term_weight"`
 		MajorVersion              int    `json:"major_version"`
 		MinerTxHash               string `json:"miner_tx_hash"`
@@ -662,6 +663,23 @@ func (c *Client) GetTransactions(ctx context.Context, txns []string) (*GetTransa
 		"txs_hashes":     txns,
 		"decode_as_json": true,
 	}, resp); err != nil {
+		return nil, fmt.Errorf("other: %w", err)
+	}
+
+	return resp, nil
+}
+
+type GetHeightResult struct {
+	Hash      string `json:"hash"`
+	Height    uint64 `json:"height"`
+	Status    string `json:"status"`
+	Untrusted bool   `json:"untrusted"`
+}
+
+func (c *Client) GetHeight(ctx context.Context) (*GetHeightResult, error) {
+	var resp = &GetHeightResult{}
+
+	if err := c.Other(ctx, EndpointGetHeight, nil, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
 	}
 
