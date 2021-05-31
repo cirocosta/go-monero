@@ -16,11 +16,37 @@ const (
 	MethodGetAlternateChains = "get_alternate_chains"
 	MethodGetLastBlockHeader = "get_last_block_header"
 	MethodOnGetBlockHash     = "on_get_block_hash"
+	MethodHardForkInfo       = "hard_fork_info"
 	MethodSyncInfo           = "sync_info"
 
 	EndpointGetTransactionPool      = "/get_transaction_pool"
 	EndpointGetTransactionPoolStats = "/get_transaction_pool_stats"
 )
+
+type HardForkInfoResult struct {
+	Credits        int    `json:"credits"`
+	EarliestHeight int    `json:"earliest_height"`
+	Enabled        bool   `json:"enabled"`
+	State          int    `json:"state"`
+	Status         string `json:"status"`
+	Threshold      int    `json:"threshold"`
+	TopHash        string `json:"top_hash"`
+	Untrusted      bool   `json:"untrusted"`
+	Version        int    `json:"version"`
+	Votes          int    `json:"votes"`
+	Voting         int    `json:"voting"`
+	Window         int    `json:"window"`
+}
+
+func (c *Client) HardForkInfo(ctx context.Context) (*HardForkInfoResult, error) {
+	var resp = &HardForkInfoResult{}
+
+	if err := c.JsonRPC(ctx, MethodHardForkInfo, nil, resp); err != nil {
+		return nil, fmt.Errorf("get: %w", err)
+	}
+
+	return resp, nil
+}
 
 type GetBansResult struct {
 	Bans []struct {
