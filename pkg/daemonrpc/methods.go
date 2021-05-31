@@ -587,23 +587,26 @@ type GetTransactionsResult struct {
 	Untrusted bool     `json:"untrusted"`
 }
 
-func (r *GetTransactionsResult) GetTransactions() ([]*GetTransactionnsResultJSONTxn, error) {
-	txns := make([]*GetTransactionnsResultJSONTxn, len(r.Txs))
+func (r *GetTransactionsResult) GetTransactions() ([]*GetTransactionsResultJSONTxn, error) {
+	txns := make([]*GetTransactionsResultJSONTxn, len(r.Txs))
 
 	for idx, txn := range r.Txs {
 		if len(txn.AsJSON) == 0 {
 			return nil, fmt.Errorf("txn '%s' w/ empty `.as_json`", txn.TxHash)
 		}
 
-		if err := json.Unmarshal([]byte(txn.AsJSON), txns[idx]); err != nil {
+		t := &GetTransactionsResultJSONTxn{}
+		if err := json.Unmarshal([]byte(txn.AsJSON), t); err != nil {
 			return nil, fmt.Errorf("unmarshal txn '%s': %w", txn.TxHash, err)
 		}
+
+		txns[idx] = t
 	}
 
 	return txns, nil
 }
 
-type GetTransactionnsResultJSONTxn struct {
+type GetTransactionsResultJSONTxn struct {
 	Version    int `json:"version"`
 	UnlockTime int `json:"unlock_time"`
 	Vin        []struct {
