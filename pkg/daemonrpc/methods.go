@@ -2,6 +2,7 @@ package daemonrpc
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 )
 
@@ -22,6 +23,7 @@ const (
 	EndpointGetTransactionPool      = "/get_transaction_pool"
 	EndpointGetTransactionPoolStats = "/get_transaction_pool_stats"
 	EndpointGetPeerList             = "/get_peer_list"
+	EndpointGetTransactions         = "/get_transactions"
 )
 
 type HardForkInfoResult struct {
@@ -399,9 +401,7 @@ type GetTransactionPoolResult struct {
 }
 
 func (c *Client) GetTransactionPool(ctx context.Context) (*GetTransactionPoolResult, error) {
-	var (
-		resp = new(GetTransactionPoolResult)
-	)
+	var resp = &GetTransactionPoolResult{}
 
 	if err := c.Other(ctx, EndpointGetTransactionPool, nil, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
@@ -469,11 +469,108 @@ type GetPeerListResult struct {
 }
 
 func (c *Client) GetPeerList(ctx context.Context) (*GetPeerListResult, error) {
-	var (
-		resp = new(GetPeerListResult)
-	)
+	var resp = &GetPeerListResult{}
 
 	if err := c.Other(ctx, EndpointGetPeerList, nil, resp); err != nil {
+		return nil, fmt.Errorf("other: %w", err)
+	}
+
+	return resp, nil
+}
+
+type GetTransactionsResult struct {
+	Credits int    `json:"credits"`
+	Status  string `json:"status"`
+	TopHash string `json:"top_hash"`
+	Txs     []struct {
+		AsHex           string `json:"as_hex"`
+		AsJSON          string `json:"as_json"`
+		BlockHeight     int    `json:"block_height"`
+		BlockTimestamp  int    `json:"block_timestamp"`
+		DoubleSpendSeen bool   `json:"double_spend_seen"`
+		InPool          bool   `json:"in_pool"`
+		OutputIndices   []int  `json:"output_indices"`
+		PrunableAsHex   string `json:"prunable_as_hex"`
+		PrunableHash    string `json:"prunable_hash"`
+		PrunedAsHex     string `json:"pruned_as_hex"`
+		TxHash          string `json:"tx_hash"`
+	} `json:"txs"`
+	TxsAsHex  []string `json:"txs_as_hex"`
+	Untrusted bool     `json:"untrusted"`
+}
+
+func (r *GetTransactionsResult) GetTransactions() ([]*GetTransactionnsResultJSONTxn, error) {
+	txns := make([]*GetTransactionnsResultJSONTxn, len(r.Txs))
+
+	for idx, txn := range r.Txs {
+		if len(txn.AsJSON) == 0 {
+			return nil, fmt.Errorf("txn '%s' w/ empty `.as_json`", txn.TxHash)
+		}
+
+		if err := json.Unmarshal([]byte(txn.AsJSON), txns[idx]); err != nil {
+			return nil, fmt.Errorf("unmarshal txn '%s': %w", txn.TxHash, err)
+		}
+	}
+
+	return txns, nil
+}
+
+type GetTransactionnsResultJSONTxn struct {
+	Version    int `json:"version"`
+	UnlockTime int `json:"unlock_time"`
+	Vin        []struct {
+		Key struct {
+			Amount     int    `json:"amount"`
+			KeyOffsets []int  `json:"key_offsets"`
+			KImage     string `json:"k_image"`
+		} `json:"key"`
+	} `json:"vin"`
+	Vout []struct {
+		Amount int `json:"amount"`
+		Target struct {
+			Key string `json:"key"`
+		} `json:"target"`
+	} `json:"vout"`
+	Extra         []int `json:"extra"`
+	RctSignatures struct {
+		Type     int `json:"type"`
+		Txnfee   int `json:"txnFee"`
+		Ecdhinfo []struct {
+			Amount string `json:"amount"`
+		} `json:"ecdhInfo"`
+		Outpk []string `json:"outPk"`
+	} `json:"rct_signatures"`
+	RctsigPrunable struct {
+		Nbp int `json:"nbp"`
+		Bp  []struct {
+			A      string   `json:"A"`
+			S      string   `json:"S"`
+			T1     string   `json:"T1"`
+			T2     string   `json:"T2"`
+			Taux   string   `json:"taux"`
+			Mu     string   `json:"mu"`
+			L      []string `json:"L"`
+			R      []string `json:"R"`
+			LowerA string   `json:"a"`
+			B      string   `json:"b"`
+			T      string   `json:"t"`
+		} `json:"bp"`
+		Clsags []struct {
+			S  []string `json:"s"`
+			C1 string   `json:"c1"`
+			D  string   `json:"D"`
+		} `json:"CLSAGs"`
+		Pseudoouts []string `json:"pseudoOuts"`
+	} `json:"rctsig_prunable"`
+}
+
+func (c *Client) GetTransactions(ctx context.Context, txns []string) (*GetTransactionsResult, error) {
+	var resp = &GetTransactionsResult{}
+
+	if err := c.Other(ctx, EndpointGetTransactions, map[string]interface{}{
+		"txs_hashes":     txns,
+		"decode_as_json": true,
+	}, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
 	}
 
