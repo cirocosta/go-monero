@@ -112,19 +112,27 @@ Help Options:
   -h, --help     Show this help message
 
 Available commands:
-  crawl                 Crawl over the network to find all peers
+  crawl                       Crawl over the network to find all peers
 
-  p2p-peer-list         Find out the list of local peers known by a node
+  p2p-peer-list               Find out the list of local peers known by a node
 
-  get-block-count       Get the block count
-  get-block-template    Get a block template on which mining a new block
-  get-coinbase-tx-sum   Get the coinbase amount and the fees amount for n last blocks starting at particular height
-  get-connections       Retrieve information about incoming and outgoing connections to your node (restricted)
-  get-fee-estimate      Gives an estimation on fees per byte
-  get-info              Retrieve general information about the state of your node and the network. (restricted)
-  get-transaction-pool  Get all transactions in the pool
-  on-get-block-hash     Look up a block's hash by its height
-  sync-info             Get synchronisation information (restricted)
+  get-alternate-chains        Get alternate chains
+  get-bans                    Get bans
+  get-block                   Get block
+  get-block-count             Get the block count
+  get-block-template          Get a block template on which mining a new block
+  get-coinbase-tx-sum         Get the coinbase amount and the fees amount for n last blocks starting at particular height
+  get-connections             Retrieve information about incoming and outgoing connections to your node (restricted)
+  get-fee-estimate            Gives an estimation on fees per byte
+  get-info                    Retrieve general information about the state of your node and the network. (restricted)
+  get-last-block-header       Get the header of the last block
+  get-peer-list               Get peer list
+  get-transaction-pool        Get all transactions in the pool
+  get-transaction-pool-stats  Get the transaction pool statistics
+  get-transactions            Retrieve transactions
+  hard-fork-info              Get hard fork info
+  on-get-block-hash           Look up a block's hash by its height
+  sync-info                   Get synchronisation information (restricted)
 ```
 
 ## License
