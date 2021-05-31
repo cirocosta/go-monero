@@ -21,6 +21,7 @@ const (
 
 	EndpointGetTransactionPool      = "/get_transaction_pool"
 	EndpointGetTransactionPoolStats = "/get_transaction_pool_stats"
+	EndpointGetPeerList             = "/get_peer_list"
 )
 
 type HardForkInfoResult struct {
@@ -440,6 +441,39 @@ func (c *Client) GetTransactionPoolStats(ctx context.Context) (*GetTransactionPo
 	)
 
 	if err := c.Other(ctx, EndpointGetTransactionPoolStats, nil, resp); err != nil {
+		return nil, fmt.Errorf("other: %w", err)
+	}
+
+	return resp, nil
+}
+
+type GetPeerListResult struct {
+	GrayList []struct {
+		Host     string `json:"host"`
+		ID       uint64 `json:"id"`
+		IP       int    `json:"ip"`
+		LastSeen int    `json:"last_seen"`
+		Port     int    `json:"port"`
+	} `json:"gray_list"`
+	Status    string `json:"status"`
+	Untrusted bool   `json:"untrusted"`
+	WhiteList []struct {
+		Host        string `json:"host"`
+		ID          uint64 `json:"id"`
+		IP          int    `json:"ip"`
+		LastSeen    int    `json:"last_seen"`
+		Port        int    `json:"port"`
+		PruningSeed int    `json:"pruning_seed"`
+		RPCPort     int    `json:"rpc_port"`
+	} `json:"white_list"`
+}
+
+func (c *Client) GetPeerList(ctx context.Context) (*GetPeerListResult, error) {
+	var (
+		resp = new(GetPeerListResult)
+	)
+
+	if err := c.Other(ctx, EndpointGetPeerList, nil, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
 	}
 

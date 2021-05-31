@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
 	"fmt"
 	"net"
+	"os"
 
 	"github.com/gosuri/uitable"
 	"github.com/oschwald/geoip2-golang"
@@ -34,6 +36,8 @@ func run() error {
 	if err != nil {
 		return fmt.Errorf("db city: %w", err)
 	}
+
+	json.NewEncoder(os.Stdout).Encode(record)
 
 	table := uitable.New()
 	table.AddRow("Continent:", record.Continent.Names["en"])
