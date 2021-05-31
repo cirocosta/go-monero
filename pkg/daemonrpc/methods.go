@@ -26,6 +26,7 @@ const (
 	EndpointGetTransactionPool      = "/get_transaction_pool"
 	EndpointGetTransactionPoolStats = "/get_transaction_pool_stats"
 	EndpointGetTransactions         = "/get_transactions"
+	EndpointGetNetStats             = "/get_net_stats"
 )
 
 type HardForkInfoResult struct {
@@ -680,6 +681,26 @@ func (c *Client) GetHeight(ctx context.Context) (*GetHeightResult, error) {
 	var resp = &GetHeightResult{}
 
 	if err := c.Other(ctx, EndpointGetHeight, nil, resp); err != nil {
+		return nil, fmt.Errorf("other: %w", err)
+	}
+
+	return resp, nil
+}
+
+type GetNetStatsResult struct {
+	StartTime       int    `json:"start_time"`
+	Status          string `json:"status"`
+	TotalBytesIn    uint64 `json:"total_bytes_in"`
+	TotalBytesOut   uint64 `json:"total_bytes_out"`
+	TotalPacketsIn  uint64 `json:"total_packets_in"`
+	TotalPacketsOut uint64 `json:"total_packets_out"`
+	Untrusted       bool   `json:"untrusted"`
+}
+
+func (c *Client) GetNetStats(ctx context.Context) (*GetNetStatsResult, error) {
+	var resp = &GetNetStatsResult{}
+
+	if err := c.Other(ctx, EndpointGetNetStats, nil, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
 	}
 
