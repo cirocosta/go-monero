@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	MethodGetBlock           = "get_block"
 	MethodGetBlockCount      = "get_block_count"
 	MethodGetBlockTemplate   = "get_block_template"
 	MethodGetCoinbaseTxSum   = "get_coinbase_tx_sum"
@@ -291,6 +292,93 @@ func (c *Client) GetCoinbaseTxSum(ctx context.Context, height, count uint64) (*G
 	)
 
 	if err := c.JsonRPC(ctx, MethodGetCoinbaseTxSum, params, resp); err != nil {
+		return nil, fmt.Errorf("get: %w", err)
+	}
+
+	return resp, nil
+}
+
+type GetBlockResult struct {
+	Blob        string `json:"blob"`
+	BlockHeader struct {
+		BlockSize                 int    `json:"block_size"`
+		BlockWeight               int    `json:"block_weight"`
+		CumulativeDifficulty      int64  `json:"cumulative_difficulty"`
+		CumulativeDifficultyTop64 int    `json:"cumulative_difficulty_top64"`
+		Depth                     int    `json:"depth"`
+		Difficulty                int    `json:"difficulty"`
+		DifficultyTop64           int    `json:"difficulty_top64"`
+		Hash                      string `json:"hash"`
+		Height                    int    `json:"height"`
+		LongTermWeight            int    `json:"long_term_weight"`
+		MajorVersion              int    `json:"major_version"`
+		MinerTxHash               string `json:"miner_tx_hash"`
+		MinorVersion              int    `json:"minor_version"`
+		Nonce                     int    `json:"nonce"`
+		NumTxes                   int    `json:"num_txes"`
+		OrphanStatus              bool   `json:"orphan_status"`
+		PowHash                   string `json:"pow_hash"`
+		PrevHash                  string `json:"prev_hash"`
+		Reward                    int64  `json:"reward"`
+		Timestamp                 int    `json:"timestamp"`
+		WideCumulativeDifficulty  string `json:"wide_cumulative_difficulty"`
+		WideDifficulty            string `json:"wide_difficulty"`
+	} `json:"block_header"`
+	Credits     int    `json:"credits"`
+	JSON        string `json:"json"`
+	MinerTxHash string `json:"miner_tx_hash"`
+	Status      string `json:"status"`
+	TopHash     string `json:"top_hash"`
+	Untrusted   bool   `json:"untrusted"`
+}
+
+type GetBlockResultJSON struct {
+	MajorVersion int    `json:"major_version"`
+	MinorVersion int    `json:"minor_version"`
+	Timestamp    int    `json:"timestamp"`
+	PrevID       string `json:"prev_id"`
+	Nonce        int    `json:"nonce"`
+	MinerTx      struct {
+		Version    int `json:"version"`
+		UnlockTime int `json:"unlock_time"`
+		Vin        []struct {
+			Gen struct {
+				Height int `json:"height"`
+			} `json:"gen"`
+		} `json:"vin"`
+		Vout []struct {
+			Amount int64 `json:"amount"`
+			Target struct {
+				Key string `json:"key"`
+			} `json:"target"`
+		} `json:"vout"`
+		Extra         []int `json:"extra"`
+		RctSignatures struct {
+			Type int `json:"type"`
+		} `json:"rct_signatures"`
+	} `json:"miner_tx"`
+	TxHashes []string `json:"tx_hashes"`
+}
+
+func (j *GetBlockResult) InnerJSON() (*GetBlockResultJSON, error) {
+	res := &GetBlockResultJSON{}
+
+	if err := json.Unmarshal([]byte(j.JSON), res); err != nil {
+		return nil, nil
+	}
+
+	return res, nil
+}
+
+func (c *Client) GetBlock(ctx context.Context, height uint64) (*GetBlockResult, error) {
+	var (
+		resp   = new(GetBlockResult)
+		params = map[string]uint64{
+			"height": height,
+		}
+	)
+
+	if err := c.JsonRPC(ctx, MethodGetBlock, params, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 

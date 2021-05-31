@@ -9,12 +9,12 @@ import (
 	"github.com/cirocosta/go-monero/pkg/daemonrpc"
 )
 
-type GetTransactionsCommand struct {
-	Txns   []string `long:"txn" required:"true"`
-	Unwrap bool     `long:"unwrap"`
+type GetBlockCommand struct {
+	Height uint64 `long:"height" required:"true"`
+	Unwrap bool   `long:"unwrap"`
 }
 
-func (c *GetTransactionsCommand) Execute(_ []string) error {
+func (c *GetBlockCommand) Execute(_ []string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), options.RequestTimeout)
 	defer cancel()
 
@@ -25,9 +25,9 @@ func (c *GetTransactionsCommand) Execute(_ []string) error {
 		return fmt.Errorf("new client for '%s': %w", options.Address, err)
 	}
 
-	resp, err := client.GetTransactions(ctx, c.Txns)
+	resp, err := client.GetBlock(ctx, c.Height)
 	if err != nil {
-		return fmt.Errorf("get block count: %w", err)
+		return fmt.Errorf("get block: %w", err)
 	}
 
 	encoder := json.NewEncoder(os.Stdout)
@@ -41,22 +41,22 @@ func (c *GetTransactionsCommand) Execute(_ []string) error {
 		return nil
 	}
 
-	txns, err := resp.GetTransactions()
+	inner, err := resp.InnerJSON()
 	if err != nil {
-		return fmt.Errorf("get txns: %w", err)
+		return fmt.Errorf("inner json: %w", err)
 	}
 
-	if err := encoder.Encode(txns); err != nil {
-		return fmt.Errorf("encode txns: %w", err)
+	if err := encoder.Encode(inner); err != nil {
+		return fmt.Errorf("encode: %w", err)
 	}
 
 	return nil
 }
 
 func init() {
-	parser.AddCommand("get-transactions",
-		"Retrieve transactions",
-		"Retrieve transactions",
-		&GetTransactionsCommand{},
+	parser.AddCommand("get-block",
+		"Get block",
+		"Get block",
+		&GetBlockCommand{},
 	)
 }
