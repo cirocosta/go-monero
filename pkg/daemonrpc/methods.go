@@ -21,6 +21,7 @@ const (
 	MethodOnGetBlockHash     = "on_get_block_hash"
 	MethodSyncInfo           = "sync_info"
 	MethodRPCAccessTracking  = "rpc_access_tracking"
+	MethodRelayTx            = "relay_tx"
 
 	EndpointGetHeight               = "/get_height"
 	EndpointGetPeerList             = "/get_peer_list"
@@ -144,6 +145,28 @@ func (c *Client) OnGetBlockHash(ctx context.Context, height uint64) (string, err
 
 	if err := c.JsonRPC(ctx, MethodOnGetBlockHash, params, &resp); err != nil {
 		return "", fmt.Errorf("get: %w", err)
+	}
+
+	return resp, nil
+}
+
+type RelayTxResult struct {
+	Credits   int    `json:"credits"`
+	Status    string `json:"status"`
+	TopHash   string `json:"top_hash"`
+	Untrusted bool   `json:"untrusted"`
+}
+
+func (c *Client) RelayTx(ctx context.Context, txns []string) (*RelayTxResult, error) {
+	var (
+		resp   = &RelayTxResult{}
+		params = map[string]interface{}{
+			"txids": txns,
+		}
+	)
+
+	if err := c.JsonRPC(ctx, MethodRelayTx, params, resp); err != nil {
+		return nil, fmt.Errorf("get: %w", err)
 	}
 
 	return resp, nil
