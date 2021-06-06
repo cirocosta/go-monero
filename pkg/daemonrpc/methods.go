@@ -20,6 +20,7 @@ const (
 	MethodHardForkInfo       = "hard_fork_info"
 	MethodOnGetBlockHash     = "on_get_block_hash"
 	MethodSyncInfo           = "sync_info"
+	MethodRPCAccessTracking  = "rpc_access_tracking"
 
 	EndpointGetHeight               = "/get_height"
 	EndpointGetPeerList             = "/get_peer_list"
@@ -28,6 +29,27 @@ const (
 	EndpointGetTransactions         = "/get_transactions"
 	EndpointGetNetStats             = "/get_net_stats"
 )
+
+type RPCAccessTrackingResult struct {
+	Data []struct {
+		Count   uint64 `json:"count"`
+		Credits uint64 `json:"credits"`
+		RPC     string `json:"rpc"`
+		Time    uint64 `json:"time"`
+	} `json:"data"`
+	Status    string `json:"status"`
+	Untrusted bool   `json:"untrusted"`
+}
+
+func (c *Client) RPCAccessTracking(ctx context.Context) (*RPCAccessTrackingResult, error) {
+	var resp = &RPCAccessTrackingResult{}
+
+	if err := c.JsonRPC(ctx, MethodRPCAccessTracking, nil, resp); err != nil {
+		return nil, fmt.Errorf("get: %w", err)
+	}
+
+	return resp, nil
+}
 
 type HardForkInfoResult struct {
 	Credits        int    `json:"credits"`
