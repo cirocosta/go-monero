@@ -38,7 +38,7 @@ func NewHTTPClient(verbose bool) *http.Client {
 		Timeout: 15 * time.Second,
 	}
 
-	if verbose == true {
+	if verbose {
 		client.Transport = NewDumpTransport(http.DefaultTransport)
 	}
 
