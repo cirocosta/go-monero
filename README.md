@@ -14,7 +14,7 @@ network free of CGO, either on clearnet or not.
 $ go get -u -v github.com/cirocosta/go-monero
 ```
 
-`go-monero` exposes two high-level packages: `levin` and `daemonrpc`.
+`go-monero` exposes two high-level packages: `levin` and `rpc`.
 
 The first (`levin`) is used for interacting with the p2p network via plain TCP
 (optionally, Tor and I2P can also be used via socks5 proxy - see options). For
@@ -59,7 +59,7 @@ func ListNodePeers(ctx context.Context, addr string) error {
 }
 ```
 
-The second (`daemonrpc`), is used to communicate with `monerod` via its HTTP
+The second (`rpc`), is used to communicate with `monerod` via its HTTP
 endpoints. Note that not all endpoints/fields are exposed on a given port - if
 it's being served in a restricted manner, you'll have access to less endpoints
 than you see in the documentation
@@ -72,11 +72,11 @@ import (
         "fmt"
         "context"
 
-        "github.com/cirocosta/go-monero/pkg/daemonrpc"
+        "github.com/cirocosta/go-monero/pkg/rpc"
 )
 
 func ShowBlockHeight (ctx context.Context, addr string) error {
-	client, err := daemonrpc.NewClient(addr)
+	client, err := rpc.NewClient(addr)
 	if err != nil {
 		return fmt.Errorf("new client for '%s': %w", addr, err)
 	}

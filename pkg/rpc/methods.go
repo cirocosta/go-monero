@@ -1,4 +1,4 @@
-package daemonrpc
+package rpc
 
 import (
 	"context"

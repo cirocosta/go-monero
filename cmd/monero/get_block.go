@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/cirocosta/go-monero/pkg/daemonrpc"
+	"github.com/cirocosta/go-monero/pkg/rpc"
 )
 
 type GetBlockCommand struct {
@@ -18,8 +18,8 @@ func (c *GetBlockCommand) Execute(_ []string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), options.RequestTimeout)
 	defer cancel()
 
-	client, err := daemonrpc.NewClient(options.Address,
-		daemonrpc.WithHTTPClient(daemonrpc.NewHTTPClient(options.Verbose)),
+	client, err := rpc.NewClient(options.Address,
+		rpc.WithHTTPClient(rpc.NewHTTPClient(options.Verbose)),
 	)
 	if err != nil {
 		return fmt.Errorf("new client for '%s': %w", options.Address, err)

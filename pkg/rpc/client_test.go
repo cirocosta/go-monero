@@ -1,4 +1,4 @@
-package daemonrpc_test
+package rpc_test
 
 import (
 	"context"
@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/cirocosta/go-monero/pkg/daemonrpc"
+	"github.com/cirocosta/go-monero/pkg/rpc"
 )
 
 func TestClient(t *testing.T) {
@@ -22,7 +22,7 @@ func TestClient(t *testing.T) {
 
 		var (
 			ctx    = context.Background()
-			client *daemonrpc.Client
+			client *rpc.Client
 			err    error
 		)
 
@@ -30,7 +30,7 @@ func TestClient(t *testing.T) {
 			daemon := httptest.NewServer(http.HandlerFunc(nil))
 			daemon.Close()
 
-			client, err = daemonrpc.NewClient(daemon.URL, daemonrpc.WithHTTPClient(daemon.Client()))
+			client, err = rpc.NewClient(daemon.URL, rpc.WithHTTPClient(daemon.Client()))
 			require.NoError(t, err)
 
 			err = client.JsonRPC(ctx, "method", nil, nil)
@@ -44,7 +44,7 @@ func TestClient(t *testing.T) {
 			daemon := httptest.NewServer(http.HandlerFunc(handler))
 			defer daemon.Close()
 
-			client, err = daemonrpc.NewClient(daemon.URL, daemonrpc.WithHTTPClient(daemon.Client()))
+			client, err = rpc.NewClient(daemon.URL, rpc.WithHTTPClient(daemon.Client()))
 			require.NoError(t, err)
 
 			err = client.JsonRPC(ctx, "method", nil, nil)
@@ -60,7 +60,7 @@ func TestClient(t *testing.T) {
 			daemon := httptest.NewServer(http.HandlerFunc(handler))
 			defer daemon.Close()
 
-			client, err = daemonrpc.NewClient(daemon.URL, daemonrpc.WithHTTPClient(daemon.Client()))
+			client, err = rpc.NewClient(daemon.URL, rpc.WithHTTPClient(daemon.Client()))
 			require.NoError(t, err)
 
 			err = client.JsonRPC(ctx, "method", nil, nil)
@@ -82,17 +82,17 @@ func TestClient(t *testing.T) {
 			daemon := httptest.NewServer(http.HandlerFunc(handler))
 			defer daemon.Close()
 
-			client, err = daemonrpc.NewClient(daemon.URL, daemonrpc.WithHTTPClient(daemon.Client()))
+			client, err = rpc.NewClient(daemon.URL, rpc.WithHTTPClient(daemon.Client()))
 			require.NoError(t, err)
 
 			err = client.JsonRPC(ctx, "method", nil, nil)
-			assert.Equal(t, daemonrpc.EndpointJsonRPC, endpoint)
+			assert.Equal(t, rpc.EndpointJsonRPC, endpoint)
 			assert.Equal(t, method, "GET")
 		})
 
 		it("encodes rpc in request", func() {
 			var (
-				body = &daemonrpc.RequestEnvelope{}
+				body = &rpc.RequestEnvelope{}
 
 				params = map[string]interface{}{
 					"foo": "bar",
@@ -108,7 +108,7 @@ func TestClient(t *testing.T) {
 			daemon := httptest.NewServer(http.HandlerFunc(handler))
 			defer daemon.Close()
 
-			client, err = daemonrpc.NewClient(daemon.URL, daemonrpc.WithHTTPClient(daemon.Client()))
+			client, err = rpc.NewClient(daemon.URL, rpc.WithHTTPClient(daemon.Client()))
 			require.NoError(t, err)
 
 			err = client.JsonRPC(ctx, "rpc-method", params, nil)
@@ -126,7 +126,7 @@ func TestClient(t *testing.T) {
 			daemon := httptest.NewServer(http.HandlerFunc(handler))
 			defer daemon.Close()
 
-			client, err = daemonrpc.NewClient(daemon.URL, daemonrpc.WithHTTPClient(daemon.Client()))
+			client, err = rpc.NewClient(daemon.URL, rpc.WithHTTPClient(daemon.Client()))
 			require.NoError(t, err)
 
 			result := map[string]string{}
@@ -145,7 +145,7 @@ func TestClient(t *testing.T) {
 			daemon := httptest.NewServer(http.HandlerFunc(handler))
 			defer daemon.Close()
 
-			client, err = daemonrpc.NewClient(daemon.URL, daemonrpc.WithHTTPClient(daemon.Client()))
+			client, err = rpc.NewClient(daemon.URL, rpc.WithHTTPClient(daemon.Client()))
 			require.NoError(t, err)
 
 			result := map[string]string{}
