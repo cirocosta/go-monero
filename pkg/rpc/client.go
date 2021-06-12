@@ -43,7 +43,7 @@ type Client struct {
 	address *url.URL
 }
 
-// clientOptions is a set of options that can be overriden to tweak the
+// clientOptions is a set of options that can be overridden to tweak the
 // client's behavior.
 //
 type clientOptions struct {
