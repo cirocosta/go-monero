@@ -16,7 +16,7 @@ import (
 )
 
 func TestClient(t *testing.T) {
-	spec.Run(t, "JsonRPC", func(t *testing.T, when spec.G, it spec.S) {
+	spec.Run(t, "JSONRPC", func(t *testing.T, when spec.G, it spec.S) {
 		var (
 			ctx    = context.Background()
 			client *rpc.Client
@@ -30,7 +30,7 @@ func TestClient(t *testing.T) {
 			client, err = rpc.NewClient(daemon.URL, rpc.WithHTTPClient(daemon.Client()))
 			require.NoError(t, err)
 
-			err = client.JsonRPC(ctx, "method", nil, nil)
+			err = client.JSONRPC(ctx, "method", nil, nil)
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "do:")
 		})
@@ -44,7 +44,7 @@ func TestClient(t *testing.T) {
 			client, err = rpc.NewClient(daemon.URL, rpc.WithHTTPClient(daemon.Client()))
 			require.NoError(t, err)
 
-			err = client.JsonRPC(ctx, "method", nil, nil)
+			err = client.JSONRPC(ctx, "method", nil, nil)
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "decode")
 		})
@@ -60,7 +60,7 @@ func TestClient(t *testing.T) {
 			client, err = rpc.NewClient(daemon.URL, rpc.WithHTTPClient(daemon.Client()))
 			require.NoError(t, err)
 
-			err = client.JsonRPC(ctx, "method", nil, nil)
+			err = client.JSONRPC(ctx, "method", nil, nil)
 			assert.Error(t, err)
 			assert.Contains(t, err.Error(), "non-2xx status")
 		})
@@ -82,8 +82,8 @@ func TestClient(t *testing.T) {
 			client, err = rpc.NewClient(daemon.URL, rpc.WithHTTPClient(daemon.Client()))
 			require.NoError(t, err)
 
-			err = client.JsonRPC(ctx, "method", nil, nil)
-			assert.Equal(t, rpc.EndpointJsonRPC, endpoint)
+			err = client.JSONRPC(ctx, "method", nil, nil)
+			assert.Equal(t, rpc.EndpointJSONRPC, endpoint)
 			assert.Equal(t, method, "GET")
 		})
 
@@ -108,9 +108,9 @@ func TestClient(t *testing.T) {
 			client, err = rpc.NewClient(daemon.URL, rpc.WithHTTPClient(daemon.Client()))
 			require.NoError(t, err)
 
-			err = client.JsonRPC(ctx, "rpc-method", params, nil)
-			assert.Equal(t, body.Id, "0")
-			assert.Equal(t, body.JsonRPC, "2.0")
+			err = client.JSONRPC(ctx, "rpc-method", params, nil)
+			assert.Equal(t, body.ID, "0")
+			assert.Equal(t, body.JSONRPC, "2.0")
 			assert.Equal(t, body.Method, "rpc-method")
 			assert.Equal(t, body.Params, params)
 		})
@@ -128,7 +128,7 @@ func TestClient(t *testing.T) {
 
 			result := map[string]string{}
 
-			err = client.JsonRPC(ctx, "rpc-method", nil, &result)
+			err = client.JSONRPC(ctx, "rpc-method", nil, &result)
 			assert.NoError(t, err)
 
 			assert.Equal(t, result, map[string]string{"foo": "bar"})
@@ -147,7 +147,7 @@ func TestClient(t *testing.T) {
 
 			result := map[string]string{}
 
-			err = client.JsonRPC(ctx, "rpc-method", nil, &result)
+			err = client.JSONRPC(ctx, "rpc-method", nil, &result)
 			assert.Error(t, err)
 
 			assert.Contains(t, err.Error(), "foo")

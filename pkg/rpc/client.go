@@ -13,15 +13,15 @@ import (
 )
 
 const (
-	// endpointJsonRPC is the common endpoint used for all the RPC calls
+	// endpointJSONRPC is the common endpoint used for all the RPC calls
 	// that make use of epee's JSONRPC invocation format for requests and
 	// responses.
 	//
-	endpointJsonRPC = "/json_rpc"
+	endpointJSONRPC = "/json_rpc"
 
-	// versionJsonRPC is the version of the JsonRPC format.
+	// versionJSONRPC is the version of the JSONRPC format.
 	//
-	versionJsonRPC = "2.0"
+	versionJSONRPC = "2.0"
 )
 
 // Client is a wrapper over a plain HTTP client providing methods that
@@ -93,8 +93,8 @@ func NewClient(address string, opts ...ClientOption) (*Client, error) {
 // ResponseEnvelope wraps all responses from the RPC server.
 //
 type ResponseEnvelope struct {
-	Id      string      `json:"id"`
-	JsonRPC string      `json:"jsonrpc"`
+	ID      string      `json:"id"`
+	JSONRPC string      `json:"jsonrpc"`
 	Result  interface{} `json:"result,omitempty"`
 	Error   struct {
 		Code    int    `json:"code"`
@@ -105,8 +105,8 @@ type ResponseEnvelope struct {
 // RequestEnvelope wraps all requests made to the RPC server.
 //
 type RequestEnvelope struct {
-	Id      string      `json:"id"`
-	JsonRPC string      `json:"jsonrpc"`
+	ID      string      `json:"id"`
+	JSONRPC string      `json:"jsonrpc"`
 	Method  string      `json:"method"`
 	Params  interface{} `json:"params,omitempty"`
 }
@@ -142,17 +142,17 @@ func (c *Client) Request(ctx context.Context, endpoint string, params interface{
 	return nil
 }
 
-// JsonRPC issues a request for a particular method under the JsonRPC endpoint
+// JSONRPC issues a request for a particular method under the JSONRPC endpoint
 // with the proper envolope for its requests and unwrapping of results for
 // responses.
 //
-func (c *Client) JsonRPC(ctx context.Context, method string, params interface{}, response interface{}) error {
+func (c *Client) JSONRPC(ctx context.Context, method string, params interface{}, response interface{}) error {
 	address := *c.address
-	address.Path = endpointJsonRPC
+	address.Path = endpointJSONRPC
 
 	b, err := json.Marshal(&RequestEnvelope{
-		Id:      "0",
-		JsonRPC: versionJsonRPC,
+		ID:      "0",
+		JSONRPC: versionJSONRPC,
 		Method:  method,
 		Params:  params,
 	})

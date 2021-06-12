@@ -1,3 +1,3 @@
 package rpc
 
-var EndpointJsonRPC = endpointJsonRPC
+var EndpointJSONRPC = endpointJSONRPC
