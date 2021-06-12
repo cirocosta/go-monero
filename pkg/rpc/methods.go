@@ -404,7 +404,7 @@ func (j *GetBlockResult) InnerJSON() (*GetBlockResultJSON, error) {
 	res := &GetBlockResultJSON{}
 
 	if err := json.Unmarshal([]byte(j.JSON), res); err != nil {
-		return nil, nil
+		return nil, fmt.Errorf("unmarshal: %w", err)
 	}
 
 	return res, nil
