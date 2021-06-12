@@ -1,10 +1,11 @@
 # go-monero
 
-A Go library (and CLI) for interacting with Monero daemons via RPC or the P2P
-network free of CGO, either on clearnet or not.
+> [godoc](https://pkg.go.dev/github.com/cirocosta/go-monero).
 
-- want/need help? reach out to `utxobr` on
-  https://matrix.to/#/#monero-community:matrix.org (`#monero-dev`)
+
+A Go library (and CLI) for interacting with Monero daemons via RPC or the P2P
+network, free of CGO, either on clearnet or not.
+
 
 ## Quick start
 
@@ -17,9 +18,11 @@ $ go get -u -v github.com/cirocosta/go-monero
 `go-monero` exposes two high-level packages: `levin` and `rpc`.
 
 The first (`levin`) is used for interacting with the p2p network via plain TCP
-(optionally, Tor and I2P can also be used via socks5 proxy - see options). For
-instance, to reach out to a node (of a particular address `addr`) and grab its
-list of connected peers (information that comes out of the initial handshake):
+(optionally, Tor and I2P can also be used via socks5 proxy - see options). 
+
+For instance, to reach out to a node (of a particular address `addr`) and grab
+its list of connected peers (information that comes out of the initial
+handshake):
 
 ```golang
 import (
@@ -86,7 +89,7 @@ func ShowBlockHeight (ctx context.Context, addr string) error {
 		return fmt.Errorf("get block count: %w", err)
 	}
 
-        fmt.Println(resp.Count)
+  fmt.Println(resp.Count)
 	return nil
 }
 ```
@@ -100,6 +103,7 @@ the functionality that the library provides.
 ```console
 $ GO111MODULE=on go get github.com/cirocosta/go-monero/cmd/monero
 
+
 $ monero --help
 Usage:
   monero [OPTIONS] <command>
@@ -112,8 +116,6 @@ Help Options:
   -h, --help     Show this help message
 
 Available commands:
-  crawl                       Crawl over the network to find all peers
-
   p2p-peer-list               Find out the list of local peers known by a node
 
   get-alternate-chains        Get alternate chains
@@ -135,6 +137,7 @@ Available commands:
   sync-info                   Get synchronisation information (restricted)
 ```
 
+
 ## License
 
 See [LICENSE](./LICENSE).
@@ -149,6 +152,7 @@ Big thanks to the Monero community and other projects around cryptonote:
 - https://github.com/cdiv1e12/py-levin
 - https://github.com/cryptonotefoundation/cryptonote
 - https://github.com/LeTurt/turtlegod
+
 
 ## Donate
 
