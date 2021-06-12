@@ -8,7 +8,8 @@ import (
 	"io"
 	"net/http"
 	"net/url"
-	"time"
+
+	mhttp "github.com/cirocosta/go-monero/pkg/http"
 )
 
 const (
@@ -54,19 +55,6 @@ func WithHTTPClient(v *http.Client) func(o *ClientOptions) {
 	}
 }
 
-func NewHTTPClient(verbose bool) *http.Client {
-	client := &http.Client{
-		Timeout: 15 * time.Second,
-	}
-
-	if verbose {
-		client.Transport = NewDumpTransport(http.DefaultTransport)
-	}
-
-	return client
-
-}
-
 // NewClient instantiates a new Client that is able to communicate with
 // monerod's RPC endpoints.
 //
@@ -75,7 +63,7 @@ func NewHTTPClient(verbose bool) *http.Client {
 //
 func NewClient(address string, opts ...ClientOption) (*Client, error) {
 	options := &ClientOptions{
-		HTTPClient: NewHTTPClient(false),
+		HTTPClient: mhttp.NewHTTPClient(false),
 	}
 
 	for _, opt := range opts {

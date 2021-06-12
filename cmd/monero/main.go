@@ -2,26 +2,20 @@ package main
 
 import (
 	"os"
-	"time"
 
 	"github.com/jessevdk/go-flags"
 	log "github.com/sirupsen/logrus"
 )
 
+// configure global logging
+//
 func init() {
 	log.SetOutput(os.Stdout)
 	log.SetLevel(log.InfoLevel)
 }
 
+var options RPCOptions
 var parser = flags.NewParser(&options, flags.Default)
-
-type Options struct {
-	Verbose        bool          `short:"v" env:"MONEROD_VERBOSE" long:"verbose" description:"dump http requests and responses to stderr"`
-	Address        string        `short:"a" env:"MONEROD_ADDRESS" default:"http://xps.utxo.com.br" long:"address" description:"RPC server address" required:"true"`
-	RequestTimeout time.Duration `short:"t" env:"MONEROD_TIMEOUT" long:"timeout" description:"request timeout" default:"10s"`
-}
-
-var options Options
 
 func main() {
 	if _, err := parser.Parse(); err != nil {

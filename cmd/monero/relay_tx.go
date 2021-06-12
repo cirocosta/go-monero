@@ -1,12 +1,9 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"fmt"
 	"os"
-
-	"github.com/cirocosta/go-monero/pkg/rpc"
 )
 
 type RelayTxCommand struct {
@@ -14,14 +11,12 @@ type RelayTxCommand struct {
 }
 
 func (c *RelayTxCommand) Execute(_ []string) error {
-	ctx, cancel := context.WithTimeout(context.Background(), options.RequestTimeout)
+	ctx, cancel := options.Context()
 	defer cancel()
 
-	client, err := rpc.NewClient(options.Address,
-		rpc.WithHTTPClient(rpc.NewHTTPClient(options.Verbose)),
-	)
+	client, err := options.Client()
 	if err != nil {
-		return fmt.Errorf("new client for '%s': %w", options.Address, err)
+		return fmt.Errorf("client: %w", err)
 	}
 
 	resp, err := client.RelayTx(ctx, c.Txns)

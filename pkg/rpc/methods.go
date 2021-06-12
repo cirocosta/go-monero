@@ -7,28 +7,28 @@ import (
 )
 
 const (
-	MethodGetAlternateChains = "get_alternate_chains"
-	MethodGetBans            = "get_bans"
-	MethodGetBlock           = "get_block"
-	MethodGetBlockCount      = "get_block_count"
-	MethodGetBlockTemplate   = "get_block_template"
-	MethodGetCoinbaseTxSum   = "get_coinbase_tx_sum"
-	MethodGetConnections     = "get_connections"
-	MethodGetFeeEstimate     = "get_fee_estimate"
-	MethodGetInfo            = "get_info"
-	MethodGetLastBlockHeader = "get_last_block_header"
-	MethodHardForkInfo       = "hard_fork_info"
-	MethodOnGetBlockHash     = "on_get_block_hash"
-	MethodSyncInfo           = "sync_info"
-	MethodRPCAccessTracking  = "rpc_access_tracking"
-	MethodRelayTx            = "relay_tx"
+	methodGetAlternateChains = "get_alternate_chains"
+	methodGetBans            = "get_bans"
+	methodGetBlock           = "get_block"
+	methodGetBlockCount      = "get_block_count"
+	methodGetBlockTemplate   = "get_block_template"
+	methodGetCoinbaseTxSum   = "get_coinbase_tx_sum"
+	methodGetConnections     = "get_connections"
+	methodGetFeeEstimate     = "get_fee_estimate"
+	methodGetInfo            = "get_info"
+	methodGetLastBlockHeader = "get_last_block_header"
+	methodHardForkInfo       = "hard_fork_info"
+	methodOnGetBlockHash     = "on_get_block_hash"
+	methodSyncInfo           = "sync_info"
+	methodRPCAccessTracking  = "rpc_access_tracking"
+	methodRelayTx            = "relay_tx"
 
-	EndpointGetHeight               = "/get_height"
-	EndpointGetPeerList             = "/get_peer_list"
-	EndpointGetTransactionPool      = "/get_transaction_pool"
-	EndpointGetTransactionPoolStats = "/get_transaction_pool_stats"
-	EndpointGetTransactions         = "/get_transactions"
-	EndpointGetNetStats             = "/get_net_stats"
+	endpointGetHeight               = "/get_height"
+	endpointGetPeerList             = "/get_peer_list"
+	endpointGetTransactionPool      = "/get_transaction_pool"
+	endpointGetTransactionPoolStats = "/get_transaction_pool_stats"
+	endpointGetTransactions         = "/get_transactions"
+	endpointGetNetStats             = "/get_net_stats"
 )
 
 type RPCAccessTrackingResult struct {
@@ -45,7 +45,7 @@ type RPCAccessTrackingResult struct {
 func (c *Client) RPCAccessTracking(ctx context.Context) (*RPCAccessTrackingResult, error) {
 	var resp = &RPCAccessTrackingResult{}
 
-	if err := c.JsonRPC(ctx, MethodRPCAccessTracking, nil, resp); err != nil {
+	if err := c.JsonRPC(ctx, methodRPCAccessTracking, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -70,7 +70,7 @@ type HardForkInfoResult struct {
 func (c *Client) HardForkInfo(ctx context.Context) (*HardForkInfoResult, error) {
 	var resp = &HardForkInfoResult{}
 
-	if err := c.JsonRPC(ctx, MethodHardForkInfo, nil, resp); err != nil {
+	if err := c.JsonRPC(ctx, methodHardForkInfo, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -90,7 +90,7 @@ type GetBansResult struct {
 func (c *Client) GetBans(ctx context.Context) (*GetBansResult, error) {
 	var resp = &GetBansResult{}
 
-	if err := c.JsonRPC(ctx, MethodGetBans, nil, resp); err != nil {
+	if err := c.JsonRPC(ctx, methodGetBans, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -115,7 +115,7 @@ type GetAlternateChainsResult struct {
 func (c *Client) GetAlternateChains(ctx context.Context) (*GetAlternateChainsResult, error) {
 	var resp = &GetAlternateChainsResult{}
 
-	if err := c.JsonRPC(ctx, MethodGetAlternateChains, nil, resp); err != nil {
+	if err := c.JsonRPC(ctx, methodGetAlternateChains, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -130,7 +130,7 @@ type GetBlockCountResult struct {
 func (c *Client) GetBlockCount(ctx context.Context) (*GetBlockCountResult, error) {
 	var resp = &GetBlockCountResult{}
 
-	if err := c.JsonRPC(ctx, MethodGetBlockCount, nil, resp); err != nil {
+	if err := c.JsonRPC(ctx, methodGetBlockCount, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -143,7 +143,7 @@ func (c *Client) OnGetBlockHash(ctx context.Context, height uint64) (string, err
 		params = []uint64{height}
 	)
 
-	if err := c.JsonRPC(ctx, MethodOnGetBlockHash, params, &resp); err != nil {
+	if err := c.JsonRPC(ctx, methodOnGetBlockHash, params, &resp); err != nil {
 		return "", fmt.Errorf("get: %w", err)
 	}
 
@@ -165,7 +165,7 @@ func (c *Client) RelayTx(ctx context.Context, txns []string) (*RelayTxResult, er
 		}
 	)
 
-	if err := c.JsonRPC(ctx, MethodRelayTx, params, resp); err != nil {
+	if err := c.JsonRPC(ctx, methodRelayTx, params, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -193,7 +193,7 @@ func (c *Client) GetBlockTemplate(ctx context.Context, walletAddress string, res
 		}
 	)
 
-	if err := c.JsonRPC(ctx, MethodGetBlockTemplate, params, resp); err != nil {
+	if err := c.JsonRPC(ctx, methodGetBlockTemplate, params, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -230,7 +230,7 @@ type GetConnectionsResult struct {
 func (c *Client) GetConnections(ctx context.Context) (*GetConnectionsResult, error) {
 	var resp = &GetConnectionsResult{}
 
-	if err := c.JsonRPC(ctx, MethodGetConnections, nil, resp); err != nil {
+	if err := c.JsonRPC(ctx, methodGetConnections, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -272,7 +272,7 @@ type GetInfoResult struct {
 func (c *Client) GetInfo(ctx context.Context) (*GetInfoResult, error) {
 	var resp = &GetInfoResult{}
 
-	if err := c.JsonRPC(ctx, MethodGetInfo, nil, resp); err != nil {
+	if err := c.JsonRPC(ctx, methodGetInfo, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -309,7 +309,7 @@ type GetLastBlockHeaderResult struct {
 func (c *Client) GetLastBlockHeader(ctx context.Context) (*GetLastBlockHeaderResult, error) {
 	var resp = &GetLastBlockHeaderResult{}
 
-	if err := c.JsonRPC(ctx, MethodGetLastBlockHeader, nil, resp); err != nil {
+	if err := c.JsonRPC(ctx, methodGetLastBlockHeader, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -338,7 +338,7 @@ func (c *Client) GetCoinbaseTxSum(ctx context.Context, height, count uint64) (*G
 		}
 	)
 
-	if err := c.JsonRPC(ctx, MethodGetCoinbaseTxSum, params, resp); err != nil {
+	if err := c.JsonRPC(ctx, methodGetCoinbaseTxSum, params, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -425,7 +425,7 @@ func (c *Client) GetBlock(ctx context.Context, height uint64) (*GetBlockResult, 
 		}
 	)
 
-	if err := c.JsonRPC(ctx, MethodGetBlock, params, resp); err != nil {
+	if err := c.JsonRPC(ctx, methodGetBlock, params, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -449,7 +449,7 @@ func (c *Client) GetFeeEstimate(ctx context.Context, graceBlocks uint64) (*GetFe
 		}
 	)
 
-	if err := c.JsonRPC(ctx, MethodGetFeeEstimate, params, resp); err != nil {
+	if err := c.JsonRPC(ctx, methodGetFeeEstimate, params, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -499,7 +499,7 @@ type SyncInfoResult struct {
 func (c *Client) SyncInfo(ctx context.Context) (*SyncInfoResult, error) {
 	var resp = new(SyncInfoResult)
 
-	if err := c.JsonRPC(ctx, MethodSyncInfo, nil, resp); err != nil {
+	if err := c.JsonRPC(ctx, methodSyncInfo, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
 	}
 
@@ -538,7 +538,7 @@ type GetTransactionPoolResult struct {
 func (c *Client) GetTransactionPool(ctx context.Context) (*GetTransactionPoolResult, error) {
 	var resp = &GetTransactionPoolResult{}
 
-	if err := c.Other(ctx, EndpointGetTransactionPool, nil, resp); err != nil {
+	if err := c.Other(ctx, endpointGetTransactionPool, nil, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
 	}
 
@@ -575,7 +575,7 @@ func (c *Client) GetTransactionPoolStats(ctx context.Context) (*GetTransactionPo
 		resp = new(GetTransactionPoolStatsResult)
 	)
 
-	if err := c.Other(ctx, EndpointGetTransactionPoolStats, nil, resp); err != nil {
+	if err := c.Other(ctx, endpointGetTransactionPoolStats, nil, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
 	}
 
@@ -606,7 +606,7 @@ type GetPeerListResult struct {
 func (c *Client) GetPeerList(ctx context.Context) (*GetPeerListResult, error) {
 	var resp = &GetPeerListResult{}
 
-	if err := c.Other(ctx, EndpointGetPeerList, nil, resp); err != nil {
+	if err := c.Other(ctx, endpointGetPeerList, nil, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
 	}
 
@@ -705,7 +705,7 @@ type GetTransactionsResultJSONTxn struct {
 func (c *Client) GetTransactions(ctx context.Context, txns []string) (*GetTransactionsResult, error) {
 	var resp = &GetTransactionsResult{}
 
-	if err := c.Other(ctx, EndpointGetTransactions, map[string]interface{}{
+	if err := c.Other(ctx, endpointGetTransactions, map[string]interface{}{
 		"txs_hashes":     txns,
 		"decode_as_json": true,
 	}, resp); err != nil {
@@ -725,7 +725,7 @@ type GetHeightResult struct {
 func (c *Client) GetHeight(ctx context.Context) (*GetHeightResult, error) {
 	var resp = &GetHeightResult{}
 
-	if err := c.Other(ctx, EndpointGetHeight, nil, resp); err != nil {
+	if err := c.Other(ctx, endpointGetHeight, nil, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
 	}
 
@@ -745,7 +745,7 @@ type GetNetStatsResult struct {
 func (c *Client) GetNetStats(ctx context.Context) (*GetNetStatsResult, error) {
 	var resp = &GetNetStatsResult{}
 
-	if err := c.Other(ctx, EndpointGetNetStats, nil, resp); err != nil {
+	if err := c.Other(ctx, endpointGetNetStats, nil, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
 	}
 
