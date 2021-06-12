@@ -3,17 +3,14 @@ package levin_test
 import (
 	"testing"
 
+	"github.com/cirocosta/go-monero/pkg/levin"
 	"github.com/sclevine/spec"
 	"github.com/sclevine/spec/report"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/cirocosta/go-monero/pkg/levin"
 )
 
 func TestLevin(t *testing.T) {
-
 	spec.Run(t, "NewHeaderFromBytes", func(t *testing.T, when spec.G, it spec.S) {
-
 		it("fails w/ wrong size", func() {
 			bytes := []byte{
 				0xff,
@@ -115,11 +112,9 @@ func TestLevin(t *testing.T) {
 			assert.Equal(t, header.Flags, levin.LevinPacketReponse)
 			assert.Equal(t, header.Version, levin.LevinProtocolVersion)
 		})
-
 	})
 
 	spec.Run(t, "NewRequestHeader", func(t *testing.T, when spec.G, it spec.S) {
-
 		it("assembles properly w/ ping", func() {
 			bytes := levin.NewRequestHeader(levin.CommandPing, 1).Bytes()
 
@@ -151,6 +146,5 @@ func TestLevin(t *testing.T) {
 				0x01, 0x00, 0x00, 0x00, // version
 			})
 		})
-
 	}, spec.Report(report.Log{}), spec.Parallel(), spec.Random())
 }

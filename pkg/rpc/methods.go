@@ -36,7 +36,7 @@ type RPCAccessTrackingResult struct {
 }
 
 func (c *Client) RPCAccessTracking(ctx context.Context) (*RPCAccessTrackingResult, error) {
-	var resp = &RPCAccessTrackingResult{}
+	resp := &RPCAccessTrackingResult{}
 
 	if err := c.JsonRPC(ctx, methodRPCAccessTracking, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
@@ -61,7 +61,7 @@ type HardForkInfoResult struct {
 }
 
 func (c *Client) HardForkInfo(ctx context.Context) (*HardForkInfoResult, error) {
-	var resp = &HardForkInfoResult{}
+	resp := &HardForkInfoResult{}
 
 	if err := c.JsonRPC(ctx, methodHardForkInfo, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
@@ -81,7 +81,7 @@ type GetBansResult struct {
 }
 
 func (c *Client) GetBans(ctx context.Context) (*GetBansResult, error) {
-	var resp = &GetBansResult{}
+	resp := &GetBansResult{}
 
 	if err := c.JsonRPC(ctx, methodGetBans, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
@@ -106,7 +106,7 @@ type GetAlternateChainsResult struct {
 }
 
 func (c *Client) GetAlternateChains(ctx context.Context) (*GetAlternateChainsResult, error) {
-	var resp = &GetAlternateChainsResult{}
+	resp := &GetAlternateChainsResult{}
 
 	if err := c.JsonRPC(ctx, methodGetAlternateChains, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
@@ -121,7 +121,7 @@ type GetBlockCountResult struct {
 }
 
 func (c *Client) GetBlockCount(ctx context.Context) (*GetBlockCountResult, error) {
-	var resp = &GetBlockCountResult{}
+	resp := &GetBlockCountResult{}
 
 	if err := c.JsonRPC(ctx, methodGetBlockCount, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
@@ -221,7 +221,7 @@ type GetConnectionsResult struct {
 }
 
 func (c *Client) GetConnections(ctx context.Context) (*GetConnectionsResult, error) {
-	var resp = &GetConnectionsResult{}
+	resp := &GetConnectionsResult{}
 
 	if err := c.JsonRPC(ctx, methodGetConnections, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
@@ -263,7 +263,7 @@ type GetInfoResult struct {
 }
 
 func (c *Client) GetInfo(ctx context.Context) (*GetInfoResult, error) {
-	var resp = &GetInfoResult{}
+	resp := &GetInfoResult{}
 
 	if err := c.JsonRPC(ctx, methodGetInfo, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
@@ -300,7 +300,7 @@ type GetLastBlockHeaderResult struct {
 }
 
 func (c *Client) GetLastBlockHeader(ctx context.Context) (*GetLastBlockHeaderResult, error) {
-	var resp = &GetLastBlockHeaderResult{}
+	resp := &GetLastBlockHeaderResult{}
 
 	if err := c.JsonRPC(ctx, methodGetLastBlockHeader, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)
@@ -490,7 +490,7 @@ type SyncInfoResult struct {
 }
 
 func (c *Client) SyncInfo(ctx context.Context) (*SyncInfoResult, error) {
-	var resp = new(SyncInfoResult)
+	resp := new(SyncInfoResult)
 
 	if err := c.JsonRPC(ctx, methodSyncInfo, nil, resp); err != nil {
 		return nil, fmt.Errorf("get: %w", err)

@@ -15,5 +15,4 @@ func NewHTTPClient(verbose bool) *http.Client {
 	}
 
 	return client
-
 }

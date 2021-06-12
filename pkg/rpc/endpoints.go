@@ -45,7 +45,7 @@ type GetTransactionPoolResult struct {
 }
 
 func (c *Client) GetTransactionPool(ctx context.Context) (*GetTransactionPoolResult, error) {
-	var resp = &GetTransactionPoolResult{}
+	resp := &GetTransactionPoolResult{}
 
 	if err := c.Request(ctx, endpointGetTransactionPool, nil, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
@@ -80,9 +80,7 @@ type GetTransactionPoolStatsResult struct {
 }
 
 func (c *Client) GetTransactionPoolStats(ctx context.Context) (*GetTransactionPoolStatsResult, error) {
-	var (
-		resp = new(GetTransactionPoolStatsResult)
-	)
+	resp := new(GetTransactionPoolStatsResult)
 
 	if err := c.Request(ctx, endpointGetTransactionPoolStats, nil, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
@@ -113,7 +111,7 @@ type GetPeerListResult struct {
 }
 
 func (c *Client) GetPeerList(ctx context.Context) (*GetPeerListResult, error) {
-	var resp = &GetPeerListResult{}
+	resp := &GetPeerListResult{}
 
 	if err := c.Request(ctx, endpointGetPeerList, nil, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
@@ -130,7 +128,7 @@ type GetHeightResult struct {
 }
 
 func (c *Client) GetHeight(ctx context.Context) (*GetHeightResult, error) {
-	var resp = &GetHeightResult{}
+	resp := &GetHeightResult{}
 
 	if err := c.Request(ctx, endpointGetHeight, nil, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
@@ -150,7 +148,7 @@ type GetNetStatsResult struct {
 }
 
 func (c *Client) GetNetStats(ctx context.Context) (*GetNetStatsResult, error) {
-	var resp = &GetNetStatsResult{}
+	resp := &GetNetStatsResult{}
 
 	if err := c.Request(ctx, endpointGetNetStats, nil, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
@@ -249,7 +247,7 @@ type GetTransactionsResultJSONTxn struct {
 }
 
 func (c *Client) GetTransactions(ctx context.Context, txns []string) (*GetTransactionsResult, error) {
-	var resp = &GetTransactionsResult{}
+	resp := &GetTransactionsResult{}
 
 	if err := c.Request(ctx, endpointGetTransactions, map[string]interface{}{
 		"txs_hashes":     txns,

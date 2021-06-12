@@ -48,7 +48,6 @@ func ParsePeerList(entry Entry) map[string]*Peer {
 			addr := adr.Entries()
 
 			for _, addrField := range addr {
-
 				if addrField.Name != "addr" {
 					continue
 				}
@@ -73,7 +72,6 @@ func ParsePeerList(entry Entry) map[string]*Peer {
 				}
 
 				if ip != "" && port != 0 {
-
 					peer := &Peer{
 						Ip:   ip,
 						Port: port,
@@ -88,12 +86,11 @@ func ParsePeerList(entry Entry) map[string]*Peer {
 	return peers
 }
 
-// TODO less panic'ing
+// TODO less panic'ing.
 func NewNodeFromEntries(entries Entries) Node {
 	lpl := Node{}
 
 	for _, entry := range entries {
-
 		if entry.Name == "node_data" {
 			for _, field := range entry.Entries() {
 				switch field.Name {

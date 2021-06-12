@@ -23,7 +23,7 @@ const (
 )
 
 const (
-	// Return Codes
+	// Return Codes.
 	LevinOk                               int32 = 0
 	LevinErrorConnection                  int32 = -1
 	LevinErrorConnectionNotFound          int32 = -2
@@ -40,7 +40,7 @@ func IsValidReturnCode(c int32) bool {
 }
 
 const (
-	// p2p admin commands
+	// p2p admin commands.
 	CommandHandshake    uint32 = 1001
 	CommandTimedSync    uint32 = 1002
 	CommandPing         uint32 = 1003

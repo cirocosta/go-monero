@@ -8,18 +8,15 @@ import (
 	"net/http/httptest"
 	"testing"
 
+	"github.com/cirocosta/go-monero/pkg/rpc"
 	"github.com/sclevine/spec"
 	"github.com/sclevine/spec/report"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-
-	"github.com/cirocosta/go-monero/pkg/rpc"
 )
 
 func TestClient(t *testing.T) {
-
 	spec.Run(t, "JsonRPC", func(t *testing.T, when spec.G, it spec.S) {
-
 		var (
 			ctx    = context.Background()
 			client *rpc.Client
@@ -156,6 +153,5 @@ func TestClient(t *testing.T) {
 			assert.Contains(t, err.Error(), "foo")
 			assert.Contains(t, err.Error(), "-1")
 		})
-
 	}, spec.Report(report.Terminal{}), spec.Parallel(), spec.Random())
 }

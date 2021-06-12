@@ -185,7 +185,7 @@ func (c *Client) JsonRPC(ctx context.Context, method string, params interface{},
 	return nil
 }
 
-// submitRequest performs any generic HTTP request to the monero node targetted
+// submitRequest performs any generic HTTP request to the monero node targeted
 // by this client making no assumptions about a particular endpoint.
 //
 func (c *Client) submitRequest(req *http.Request, response interface{}) error {

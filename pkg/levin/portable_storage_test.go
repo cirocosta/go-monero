@@ -3,17 +3,14 @@ package levin_test
 import (
 	"testing"
 
+	"github.com/cirocosta/go-monero/pkg/levin"
 	"github.com/sclevine/spec"
 	"github.com/sclevine/spec/report"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/cirocosta/go-monero/pkg/levin"
 )
 
 func TestPortableStorage(t *testing.T) {
-
 	spec.Run(t, "NewPortableStorageFromBytes", func(t *testing.T, when spec.G, it spec.S) {
-
 		it("fails w/ wrong sigA", func() {
 			bytes := []byte{
 				0xaa, 0xaa, 0xaa, 0xaa,
@@ -101,11 +98,9 @@ func TestPortableStorage(t *testing.T) {
 				},
 			})
 		})
-
 	}, spec.Report(report.Log{}), spec.Parallel(), spec.Random())
 
 	spec.Run(t, "ReadVarIn", func(t *testing.T, when spec.G, it spec.S) {
-
 		it("i <= 63", func() {
 			b := []byte{0x08}
 			n, v := levin.ReadVarInt(b)
@@ -127,11 +122,9 @@ func TestPortableStorage(t *testing.T) {
 			assert.Equal(t, n, 4)
 			assert.Equal(t, v, 16384)
 		})
-
 	}, spec.Report(report.Log{}), spec.Parallel(), spec.Random())
 
 	spec.Run(t, "VarrIn", func(t *testing.T, when spec.G, it spec.S) {
-
 		it("i <= 63", func() {
 			i := 2 // 0b00000010
 
@@ -163,13 +156,10 @@ func TestPortableStorage(t *testing.T) {
 				0x02, 0x00, 0x01, 0x00, // (1 << 16) | 2
 			})
 		})
-
 	}, spec.Report(report.Log{}), spec.Parallel(), spec.Random())
 
 	spec.Run(t, "PortableStorage", func(t *testing.T, when spec.G, it spec.S) {
-
 		it("bytes", func() {
-
 			ps := &levin.PortableStorage{
 				Entries: []levin.Entry{
 					{
@@ -230,6 +220,5 @@ func TestPortableStorage(t *testing.T) {
 
 			}, ps.Bytes())
 		})
-
 	}, spec.Report(report.Log{}), spec.Parallel(), spec.Random())
 }

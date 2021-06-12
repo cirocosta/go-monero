@@ -92,7 +92,6 @@ type PortableStorage struct {
 }
 
 func NewPortableStorageFromBytes(bytes []byte) (*PortableStorage, error) {
-
 	var (
 		size = 0
 		idx  = 0
@@ -150,7 +149,7 @@ func ReadString(bytes []byte) (int, string) {
 }
 
 func ReadObject(bytes []byte) (int, Entries) {
-	var idx = 0
+	idx := 0
 
 	n, i := ReadVarInt(bytes[idx:])
 	idx += n
