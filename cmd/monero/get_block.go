@@ -4,11 +4,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+
+	"github.com/cirocosta/go-monero/pkg/rpc"
 )
 
 type GetBlockCommand struct {
-	Height uint64 `long:"height" required:"true"`
-	Unwrap bool   `long:"unwrap"`
+	Height *uint64 `long:"height"`
+	Hash   *string `long:"hash"`
+	Unwrap bool    `long:"unwrap"`
+
+	Json bool `long:"json" description:"output the raw json response from the endpoint"`
 }
 
 func (c *GetBlockCommand) Execute(_ []string) error {
@@ -20,7 +25,10 @@ func (c *GetBlockCommand) Execute(_ []string) error {
 		return fmt.Errorf("client: %w", err)
 	}
 
-	resp, err := client.GetBlock(ctx, c.Height)
+	resp, err := client.GetBlock(ctx, rpc.GetBlockParameters{
+		Height: c.Height,
+		Hash:   c.Hash,
+	})
 	if err != nil {
 		return fmt.Errorf("get block: %w", err)
 	}

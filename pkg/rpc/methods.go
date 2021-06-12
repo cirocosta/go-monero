@@ -391,32 +391,98 @@ func (c *Client) GetCoinbaseTxSum(ctx context.Context, height, count uint64) (*G
 }
 
 type GetBlockResult struct {
+	// Blob is a hexadecimal representation of the block.
+	//
 	Blob        string `json:"blob"`
 	BlockHeader struct {
-		BlockSize                 int    `json:"block_size"`
-		BlockWeight               int    `json:"block_weight"`
-		CumulativeDifficulty      int64  `json:"cumulative_difficulty"`
-		CumulativeDifficultyTop64 int    `json:"cumulative_difficulty_top64"`
-		Depth                     int    `json:"depth"`
-		Difficulty                int    `json:"difficulty"`
-		DifficultyTop64           int    `json:"difficulty_top64"`
-		Hash                      string `json:"hash"`
-		Height                    int    `json:"height"`
-		LongTermWeight            int    `json:"long_term_weight"`
-		MajorVersion              int    `json:"major_version"`
-		MinerTxHash               string `json:"miner_tx_hash"`
-		MinorVersion              int    `json:"minor_version"`
-		Nonce                     int    `json:"nonce"`
-		NumTxes                   int    `json:"num_txes"`
-		OrphanStatus              bool   `json:"orphan_status"`
-		PowHash                   string `json:"pow_hash"`
-		PrevHash                  string `json:"prev_hash"`
-		Reward                    int64  `json:"reward"`
-		Timestamp                 int    `json:"timestamp"`
-		WideCumulativeDifficulty  string `json:"wide_cumulative_difficulty"`
-		WideDifficulty            string `json:"wide_difficulty"`
+		// BlockSize is the block size in bytes.
+		//
+		BlockSize uint64 `json:"block_size"`
+
+		// BlockWeight TODO
+		//
+		BlockWeight uint64 `json:"block_weight"`
+
+		// CumulativeDifficulty is the cumulative difficulty of all
+		// blocks up to this one.
+		//
+		CumulativeDifficulty uint64 `json:"cumulative_difficulty"`
+		// CumulativeDifficultyTop64 most significant 64 bits of the
+		// 128-bit cumulative difficulty.
+		//
+		CumulativeDifficultyTop64 uint64 `json:"cumulative_difficulty_top64"`
+		// Depth is the number of blocks succeeding this block on the
+		// blockchain. (the larger this number, the oldest this block
+		// is).
+		//
+		Depth uint64 `json:"depth"`
+		// Difficulty is the difficulty that was set for mining this block.
+		//
+		Difficulty uint64 `json:"difficulty"`
+		// DifficultyTop64 corresponds to the most significat 64-bit of
+		// the 128-bit difficulty.
+		//
+		DifficultyTop64 uint64 `json:"difficulty_top64"`
+		// Hash is the hash of this block.
+		//
+		Hash string `json:"hash"`
+		// Height is the number of blocks preceding this block on the blockchain.
+		//
+		Height uint `json:"height"`
+		// LongTermWeight TODO
+		//
+		LongTermWeight uint64 `json:"long_term_weight"`
+		// MajorVersion is the major version of the monero protocol at
+		// this block height.
+		//
+		MajorVersion uint `json:"major_version"`
+		// MinerTxHash TODO
+		//
+		MinerTxHash string `json:"miner_tx_hash"`
+		// MinorVersion is the minor version of the monero protocol at
+		// this block height.
+		//
+		MinorVersion uint `json:"minor_version"`
+		// Nonce is the cryptographic random one-time number used in
+		// mining this block.
+		//
+		Nonce uint64 `json:"nonce"`
+		// NumTxes is the number of transactions in this block, not
+		// counting the coinbase tx.
+		//
+		NumTxes uint `json:"num_txes"`
+		// OrphanStatus indicates whether this block is part of the
+		// longest chain or not (true == not part of it).
+		//
+		OrphanStatus bool `json:"orphan_status"`
+		// PowHash TODO
+		//
+		PowHash string `json:"pow_hash"`
+		// PrevHash is the hash of the block immediately preceding this
+		// block in the chain.
+		//
+		PrevHash string `json:"prev_hash"`
+		// Reward the amount of new atomic-units generated in this
+		// block and rewarded to the miner (1XMR = 1e12 atomic units).
+		//
+		Reward uint64 `json:"reward"`
+		// Timestamp is the unix timestamp at which the block was
+		// recorded into the blockchain.
+		//
+		Timestamp uint64 `json:"timestamp"`
+		// WideCumulativeDifficulty is the cumulative difficulty of all
+		// blocks in the blockchain as a hexadecimal string
+		// representing a 128-bit number.
+		//
+		WideCumulativeDifficulty string `json:"wide_cumulative_difficulty"`
+		// WideDifficulty is the network difficulty as a hexadecimal
+		// string representing a 128-bit number.
+		//
+		WideDifficulty string `json:"wide_difficulty"`
 	} `json:"block_header"`
-	Credits     int    `json:"credits"`
+	Credits int `json:"credits"`
+	// JSON is a json representation of the block - see `GetBlockResultJSON`.
+	//
 	JSON        string `json:"json"`
 	MinerTxHash string `json:"miner_tx_hash"`
 	Status      string `json:"status"`
@@ -425,33 +491,75 @@ type GetBlockResult struct {
 }
 
 type GetBlockResultJSON struct {
-	MajorVersion int    `json:"major_version"`
-	MinorVersion int    `json:"minor_version"`
-	Timestamp    int    `json:"timestamp"`
-	PrevID       string `json:"prev_id"`
-	Nonce        int    `json:"nonce"`
-	MinerTx      struct {
-		Version    int `json:"version"`
+	// MajorVersion (same as in the block header)
+	//
+	MajorVersion uint `json:"major_version"`
+
+	// MinorVersion (same as in the block header)
+	//
+	MinorVersion uint `json:"minor_version"`
+
+	// Timestamp (same as in the block header)
+	//
+	Timestamp uint64 `json:"timestamp"`
+
+	// PrevID (same as `block_hash` in the block header)
+	//
+	PrevID string `json:"prev_id"`
+
+	// Nonce (same as in the block header)
+	//
+	Nonce int `json:"nonce"`
+
+	// MinerTx contains the miner transaction information.
+	//
+	MinerTx struct {
+		// Version is the transaction version number
+		//
+		Version int `json:"version"`
+
+		// UnlockTime is the block height when the coinbase transaction becomes spendable.
+		//
 		UnlockTime int `json:"unlock_time"`
-		Vin        []struct {
+
+		// Vin lists the transaction inputs.
+		//
+		Vin []struct {
 			Gen struct {
 				Height int `json:"height"`
 			} `json:"gen"`
 		} `json:"vin"`
+
+		// Vout lists the transaction outputs.
+		//
 		Vout []struct {
 			Amount int64 `json:"amount"`
 			Target struct {
 				Key string `json:"key"`
 			} `json:"target"`
 		} `json:"vout"`
-		Extra         []int `json:"extra"`
+		// Extra (aka the transaction id) can be used to include any
+		// random 32byte/64char hex string.
+		//
+		Extra []int `json:"extra"`
+
+		// RctSignatures contain the signatures of tx signers.
+		//
+		// ps.: coinbase txs DO NOT have signatures.
+		//
 		RctSignatures struct {
 			Type int `json:"type"`
 		} `json:"rct_signatures"`
 	} `json:"miner_tx"`
+
+	// TxHashes is the list of hashes of non-coinbase transactions in the
+	// block.
+	//
 	TxHashes []string `json:"tx_hashes"`
 }
 
+// InnerJSON parses the content of the JSON embedded in `GetBlockResult`.
+//
 func (j *GetBlockResult) InnerJSON() (*GetBlockResultJSON, error) {
 	res := &GetBlockResultJSON{}
 
@@ -462,14 +570,34 @@ func (j *GetBlockResult) InnerJSON() (*GetBlockResultJSON, error) {
 	return res, nil
 }
 
-func (c *Client) GetBlock(ctx context.Context, height uint64) (*GetBlockResult, error) {
-	var (
-		resp   = new(GetBlockResult)
-		params = map[string]uint64{
-			"height": height,
-		}
-	)
+// GetBlockParameters represents the set of possible parameters that can be used
+// for submitting a call to the `get_block` jsonrpc method.
+//
+type GetBlockParameters struct {
+	Height *uint64 `json:"height"`
+	Hash   *string `json:"string"`
+}
 
+func (p GetBlockParameters) Validate() error {
+	if p.Height == nil && p.Hash == nil {
+		return fmt.Errorf("height or hash must be set")
+	}
+
+	if p.Height != nil && p.Hash != nil {
+		return fmt.Errorf("either height or hash must be set, not both")
+	}
+
+	return nil
+}
+
+// GetBlock fetches full block information from a block at a particular hash OR height.
+//
+func (c *Client) GetBlock(ctx context.Context, params GetBlockParameters) (*GetBlockResult, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("validate: %w", err)
+	}
+
+	resp := &GetBlockResult{}
 	if err := c.JSONRPC(ctx, methodGetBlock, params, resp); err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
