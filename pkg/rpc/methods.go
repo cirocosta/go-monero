@@ -19,9 +19,9 @@ const (
 	methodGetLastBlockHeader = "get_last_block_header"
 	methodHardForkInfo       = "hard_fork_info"
 	methodOnGetBlockHash     = "on_get_block_hash"
-	methodSyncInfo           = "sync_info"
 	methodRPCAccessTracking  = "rpc_access_tracking"
 	methodRelayTx            = "relay_tx"
+	methodSyncInfo           = "sync_info"
 )
 
 type AccessTrackingResult struct {

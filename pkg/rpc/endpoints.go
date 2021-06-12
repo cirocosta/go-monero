@@ -8,11 +8,11 @@ import (
 
 const (
 	endpointGetHeight               = "/get_height"
+	endpointGetNetStats             = "/get_net_stats"
 	endpointGetPeerList             = "/get_peer_list"
 	endpointGetTransactionPool      = "/get_transaction_pool"
 	endpointGetTransactionPoolStats = "/get_transaction_pool_stats"
 	endpointGetTransactions         = "/get_transactions"
-	endpointGetNetStats             = "/get_net_stats"
 )
 
 type GetTransactionPoolResult struct {
