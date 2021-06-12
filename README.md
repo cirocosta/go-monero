@@ -149,3 +149,9 @@ Big thanks to the Monero community and other projects around cryptonote:
 - https://github.com/cdiv1e12/py-levin
 - https://github.com/cryptonotefoundation/cryptonote
 - https://github.com/LeTurt/turtlegod
+
+## Donate
+
+![xmr address](./assets/donate.png)
+
+891B5keCnwXN14hA9FoAzGFtaWmcuLjTDT5aRTp65juBLkbNpEhLNfgcBn6aWdGuBqBnSThqMPsGRjWVQadCrhoAT6CnSL3

@@ -12,13 +12,34 @@ import (
 )
 
 const (
-	EndpointJsonRPC = "/json_rpc"
-	VersionJsonRPC  = "2.0"
+	// endpointJsonRPC is the common endpoint used for all the RPC calls
+	// that make use of epee's JSONRPC invocation format for requests and
+	// responses.
+	//
+	endpointJsonRPC = "/json_rpc"
+
+	// versionJsonRPC is the version of the JsonRPC format.
+	//
+	versionJsonRPC = "2.0"
 )
 
+// Client is a wrapper over a plain HTTP client providing methods that
+// correspond to all RPC invocations to a `monerod` daemon, including
+// restricted and non-restricted ones.
+//
 type Client struct {
+	// http is the underlying http client that takes care of sending
+	// requests and receiving the responses.
+	//
+	// To provide your own, make use of `WithHTTPClient` when instantiating
+	// the client via the `NewClient` constructor.
+	//
 	http *http.Client
-	url  *url.URL
+
+	// address is the address of the monerod instance serving the RPC
+	// endpoints.
+	//
+	address *url.URL
 }
 
 type ClientOptions struct {
@@ -46,6 +67,12 @@ func NewHTTPClient(verbose bool) *http.Client {
 
 }
 
+// NewClient instantiates a new Client that is able to communicate with
+// monerod's RPC endpoints.
+//
+// The `address` might be either restricted (typically <ip>:18089) or not
+// (typically <ip>:18081).
+//
 func NewClient(address string, opts ...ClientOption) (*Client, error) {
 	options := &ClientOptions{
 		HTTPClient: NewHTTPClient(false),
@@ -61,8 +88,8 @@ func NewClient(address string, opts ...ClientOption) (*Client, error) {
 	}
 
 	return &Client{
-		url:  parsedAddress,
-		http: options.HTTPClient,
+		address: parsedAddress,
+		http:    options.HTTPClient,
 	}, nil
 }
 
@@ -90,8 +117,8 @@ type RequestEnvelope struct {
 // Other makes requests to any other endpoints that are not `/jsonrpc`.
 //
 func (c *Client) Other(ctx context.Context, endpoint string, params interface{}, response interface{}) error {
-	url := *c.url
-	url.Path = endpoint
+	address := *c.address
+	address.Path = endpoint
 
 	var body io.Reader
 
@@ -104,9 +131,9 @@ func (c *Client) Other(ctx context.Context, endpoint string, params interface{},
 		body = bytes.NewReader(b)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "GET", url.String(), body)
+	req, err := http.NewRequestWithContext(ctx, "GET", address.String(), body)
 	if err != nil {
-		return fmt.Errorf("new req '%s': %w", url.String(), err)
+		return fmt.Errorf("new req '%s': %w", address.String(), err)
 	}
 
 	req.Header.Add("Content-Type", "application/json")
@@ -119,12 +146,12 @@ func (c *Client) Other(ctx context.Context, endpoint string, params interface{},
 }
 
 func (c *Client) JsonRPC(ctx context.Context, method string, params interface{}, response interface{}) error {
-	url := *c.url
-	url.Path = EndpointJsonRPC
+	address := *c.address
+	address.Path = endpointJsonRPC
 
 	b, err := json.Marshal(&RequestEnvelope{
 		Id:      "0",
-		JsonRPC: "2.0",
+		JsonRPC: versionJsonRPC,
 		Method:  method,
 		Params:  params,
 	})
@@ -132,9 +159,9 @@ func (c *Client) JsonRPC(ctx context.Context, method string, params interface{},
 		return fmt.Errorf("marshal: %w", err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, "GET", url.String(), bytes.NewReader(b))
+	req, err := http.NewRequestWithContext(ctx, "GET", address.String(), bytes.NewReader(b))
 	if err != nil {
-		return fmt.Errorf("new req '%s': %w", url.String(), err)
+		return fmt.Errorf("new req '%s': %w", address.String(), err)
 	}
 
 	req.Header.Add("Content-Type", "application/json")
