@@ -133,15 +133,30 @@ func (c *Client) HardForkInfo(ctx context.Context) (*HardForkInfoResult, error) 
 }
 
 type GetBansResult struct {
+	// Bans contains the list of banned nodes.
+	//
 	Bans []struct {
-		Host    string `json:"host"`
-		IP      int    `json:"ip"`
-		Seconds int    `json:"seconds"`
+		// Host is the string representation of the node that is banned.
+		//
+		Host string `json:"host"`
+
+		// IP is the integer representation of the host banned.
+		//
+		IP int `json:"ip"`
+
+		// Seconds is the local unix time (from the node's perspective)
+		// that the IP is banned until.
+		// TODO confirm - I think this is not right
+		Seconds uint `json:"seconds"`
 	} `json:"bans"`
 	Status    string `json:"status"`
 	Untrusted bool   `json:"untrusted"`
 }
 
+// GetBans retrieves the list of banned IPs.
+//
+// (restrited)
+//
 func (c *Client) GetBans(ctx context.Context) (*GetBansResult, error) {
 	resp := &GetBansResult{}
 
