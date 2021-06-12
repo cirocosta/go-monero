@@ -1,3 +1,6 @@
+install:
+	go install -v ./cmd/monero
+
 build:
 	go build -v ./cmd/monero
 
