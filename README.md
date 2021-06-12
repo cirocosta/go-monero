@@ -6,6 +6,9 @@
 A Go library (and CLI) for interacting with Monero daemons via RPC or the P2P
 network, free of CGO, either on clearnet or not.
 
+- something weird? reach out to `utxobr` on
+  https://matrix.to/#/#monero-community:matrix.org (`#monero-dev`)
+
 
 ## Quick start
 
