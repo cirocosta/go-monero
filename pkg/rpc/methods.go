@@ -144,9 +144,9 @@ type GetBansResult struct {
 		//
 		IP int `json:"ip"`
 
-		// Seconds is the local unix time (from the node's perspective)
-		// that the IP is banned until.
-		// TODO confirm - I think this is not right
+		// Seconds represents how many seconds are left for the ban to
+		// be lifted.
+		//
 		Seconds uint `json:"seconds"`
 	} `json:"bans"`
 	Status    string `json:"status"`

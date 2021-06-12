@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/cirocosta/go-monero/pkg/rpc"
 )
@@ -38,7 +39,7 @@ func (c *GetBansCommand) display(v *rpc.GetBansResult) {
 	for _, ban := range v.Bans {
 		table.AddRow("Host:", ban.Host)
 		table.AddRow("IP:", ban.IP)
-		table.AddRow("Seconds:", ban.Seconds)
+		table.AddRow("Time left:", time.Duration(ban.Seconds)*time.Second)
 		table.AddRow("")
 	}
 
