@@ -25,7 +25,7 @@ func (c *GetBlockCommand) Execute(_ []string) error {
 		return fmt.Errorf("client: %w", err)
 	}
 
-	resp, err := client.GetBlock(ctx, rpc.GetBlockParameters{
+	resp, err := client.GetBlock(ctx, rpc.GetBlockRequestParameters{
 		Height: c.Height,
 		Hash:   c.Hash,
 	})

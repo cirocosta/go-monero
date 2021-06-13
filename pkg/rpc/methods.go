@@ -7,21 +7,22 @@ import (
 )
 
 const (
-	methodGetAlternateChains = "get_alternate_chains"
-	methodGetBans            = "get_bans"
-	methodGetBlock           = "get_block"
-	methodGetBlockCount      = "get_block_count"
-	methodGetBlockTemplate   = "get_block_template"
-	methodGetCoinbaseTxSum   = "get_coinbase_tx_sum"
-	methodGetConnections     = "get_connections"
-	methodGetFeeEstimate     = "get_fee_estimate"
-	methodGetInfo            = "get_info"
-	methodGetLastBlockHeader = "get_last_block_header"
-	methodHardForkInfo       = "hard_fork_info"
-	methodOnGetBlockHash     = "on_get_block_hash"
-	methodRPCAccessTracking  = "rpc_access_tracking"
-	methodRelayTx            = "relay_tx"
-	methodSyncInfo           = "sync_info"
+	methodGetAlternateChains   = "get_alternate_chains"
+	methodGetBans              = "get_bans"
+	methodGetBlock             = "get_block"
+	methodGetBlockCount        = "get_block_count"
+	methodGetBlockHeaderByHash = "get_block_header_by_hash"
+	methodGetBlockTemplate     = "get_block_template"
+	methodGetCoinbaseTxSum     = "get_coinbase_tx_sum"
+	methodGetConnections       = "get_connections"
+	methodGetFeeEstimate       = "get_fee_estimate"
+	methodGetInfo              = "get_info"
+	methodGetLastBlockHeader   = "get_last_block_header"
+	methodHardForkInfo         = "hard_fork_info"
+	methodOnGetBlockHash       = "on_get_block_hash"
+	methodRPCAccessTracking    = "rpc_access_tracking"
+	methodRelayTx              = "relay_tx"
+	methodSyncInfo             = "sync_info"
 )
 
 type GetAlternateChainsResult struct {
@@ -393,7 +394,10 @@ func (c *Client) GetCoinbaseTxSum(ctx context.Context, height, count uint64) (*G
 type GetBlockResult struct {
 	// Blob is a hexadecimal representation of the block.
 	//
-	Blob        string `json:"blob"`
+	Blob string `json:"blob"`
+
+	// BlockHeader contains the details from the block header.
+	//
 	BlockHeader struct {
 		// BlockSize is the block size in bytes.
 		//
@@ -407,42 +411,53 @@ type GetBlockResult struct {
 		// blocks up to this one.
 		//
 		CumulativeDifficulty uint64 `json:"cumulative_difficulty"`
+
 		// CumulativeDifficultyTop64 most significant 64 bits of the
 		// 128-bit cumulative difficulty.
 		//
 		CumulativeDifficultyTop64 uint64 `json:"cumulative_difficulty_top64"`
+
 		// Depth is the number of blocks succeeding this block on the
 		// blockchain. (the larger this number, the oldest this block
 		// is).
 		//
 		Depth uint64 `json:"depth"`
+
 		// Difficulty is the difficulty that was set for mining this block.
 		//
 		Difficulty uint64 `json:"difficulty"`
+
 		// DifficultyTop64 corresponds to the most significat 64-bit of
 		// the 128-bit difficulty.
 		//
 		DifficultyTop64 uint64 `json:"difficulty_top64"`
+
 		// Hash is the hash of this block.
 		//
 		Hash string `json:"hash"`
+
 		// Height is the number of blocks preceding this block on the blockchain.
 		//
 		Height uint `json:"height"`
+
 		// LongTermWeight TODO
 		//
 		LongTermWeight uint64 `json:"long_term_weight"`
+
 		// MajorVersion is the major version of the monero protocol at
 		// this block height.
 		//
 		MajorVersion uint `json:"major_version"`
+
 		// MinerTxHash TODO
 		//
 		MinerTxHash string `json:"miner_tx_hash"`
+
 		// MinorVersion is the minor version of the monero protocol at
 		// this block height.
 		//
 		MinorVersion uint `json:"minor_version"`
+
 		// Nonce is the cryptographic random one-time number used in
 		// mining this block.
 		//
@@ -480,10 +495,15 @@ type GetBlockResult struct {
 		//
 		WideDifficulty string `json:"wide_difficulty"`
 	} `json:"block_header"`
+
 	Credits int `json:"credits"`
+
 	// JSON is a json representation of the block - see `GetBlockResultJSON`.
 	//
-	JSON        string `json:"json"`
+	JSON string `json:"json"`
+
+	// MinerTxHash is the hash of the coinbase transaction
+	//
 	MinerTxHash string `json:"miner_tx_hash"`
 	Status      string `json:"status"`
 	TopHash     string `json:"top_hash"`
@@ -570,15 +590,108 @@ func (j *GetBlockResult) InnerJSON() (*GetBlockResultJSON, error) {
 	return res, nil
 }
 
-// GetBlockParameters represents the set of possible parameters that can be used
+// GetBlockHeaderByHashRequestParameters represents the set of possible parameters that can be used
 // for submitting a call to the `get_block` jsonrpc method.
 //
-type GetBlockParameters struct {
+type GetBlockHeaderByHashRequestParameters struct {
+	Hashes []string `json:"hashes"`
+	Hash   *string  `json:"hash"`
+}
+
+func (p GetBlockHeaderByHashRequestParameters) Validate() error {
+	if p.Hashes == nil && p.Hash == nil {
+		return fmt.Errorf("'hashes' or 'hash' must be set")
+	}
+
+	if p.Hashes != nil && p.Hash != nil {
+		return fmt.Errorf("either 'hashes' or 'hash' must be set, not both")
+	}
+
+	return nil
+}
+
+type GetBlockHeaderByHashResult struct {
+	BlockHeader struct {
+		BlockSize                 int    `json:"block_size"`
+		CumulativeDifficulty      int    `json:"cumulative_difficulty"`
+		CumulativeDifficultyTop64 int    `json:"cumulative_difficulty_top64"`
+		Depth                     int    `json:"depth"`
+		Difficulty                int    `json:"difficulty"`
+		DifficultyTop64           int    `json:"difficulty_top64"`
+		Hash                      string `json:"hash"`
+		Height                    int    `json:"height"`
+		MajorVersion              int    `json:"major_version"`
+		MinerTxHash               string `json:"miner_tx_hash"`
+		MinorVersion              int    `json:"minor_version"`
+		Nonce                     int    `json:"nonce"`
+		NumTxes                   int    `json:"num_txes"`
+		OrphanStatus              bool   `json:"orphan_status"`
+		PowHash                   string `json:"pow_hash"`
+		PrevHash                  string `json:"prev_hash"`
+		Reward                    int    `json:"reward"`
+		Timestamp                 int    `json:"timestamp"`
+		WideCumulativeDifficulty  string `json:"wide_cumulative_difficulty"`
+		WideDifficulty            string `json:"wide_difficulty"`
+	} `json:"block_header"`
+	BlockHeaders []struct {
+		BlockSize                 int    `json:"block_size"`
+		BlockWeight               int    `json:"block_weight"`
+		CumulativeDifficulty      int64  `json:"cumulative_difficulty"`
+		CumulativeDifficultyTop64 int    `json:"cumulative_difficulty_top64"`
+		Depth                     int    `json:"depth"`
+		Difficulty                int64  `json:"difficulty"`
+		DifficultyTop64           int    `json:"difficulty_top64"`
+		Hash                      string `json:"hash"`
+		Height                    int    `json:"height"`
+		LongTermWeight            int    `json:"long_term_weight"`
+		MajorVersion              int    `json:"major_version"`
+		MinerTxHash               string `json:"miner_tx_hash"`
+		MinorVersion              int    `json:"minor_version"`
+		Nonce                     int    `json:"nonce"`
+		NumTxes                   int    `json:"num_txes"`
+		OrphanStatus              bool   `json:"orphan_status"`
+		PowHash                   string `json:"pow_hash"`
+		PrevHash                  string `json:"prev_hash"`
+		Reward                    int64  `json:"reward"`
+		Timestamp                 int    `json:"timestamp"`
+		WideCumulativeDifficulty  string `json:"wide_cumulative_difficulty"`
+		WideDifficulty            string `json:"wide_difficulty"`
+	} `json:"block_headers"`
+	Credits   int    `json:"credits"`
+	Status    string `json:"status"`
+	TopHash   string `json:"top_hash"`
+	Untrusted bool   `json:"untrusted"`
+}
+
+// GetBlockHeaderByHash retrieves block header information for either one or
+// multiple blocks.
+//
+// Dending on the input, different parts of the result will be filled:
+//   - `hashes`: BlockHeaders array is filled
+//   - `hash`: BlockHeader is filled
+//
+func (c *Client) GetBlockHeaderByHash(ctx context.Context, params GetBlockHeaderByHashRequestParameters) (*GetBlockHeaderByHashResult, error) {
+	if err := params.Validate(); err != nil {
+		return nil, fmt.Errorf("validate: %w", err)
+	}
+
+	resp := &GetBlockHeaderByHashResult{}
+	if err := c.JSONRPC(ctx, methodGetBlockHeaderByHash, params, resp); err != nil {
+		return nil, fmt.Errorf("jsonrpc: %w", err)
+	}
+
+	return resp, nil
+}
+
+// GetBlockRequestParameters represents the set of possible parameters that can be used
+// for submitting a call to the `get_block` jsonrpc method.
+//
+type GetBlockRequestParameters struct {
 	Height *uint64 `json:"height"`
 	Hash   *string `json:"string"`
 }
 
-func (p GetBlockParameters) Validate() error {
+func (p GetBlockRequestParameters) Validate() error {
 	if p.Height == nil && p.Hash == nil {
 		return fmt.Errorf("height or hash must be set")
 	}
@@ -592,7 +705,7 @@ func (p GetBlockParameters) Validate() error {
 
 // GetBlock fetches full block information from a block at a particular hash OR height.
 //
-func (c *Client) GetBlock(ctx context.Context, params GetBlockParameters) (*GetBlockResult, error) {
+func (c *Client) GetBlock(ctx context.Context, params GetBlockRequestParameters) (*GetBlockResult, error) {
 	if err := params.Validate(); err != nil {
 		return nil, fmt.Errorf("validate: %w", err)
 	}
