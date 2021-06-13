@@ -10,6 +10,7 @@ const (
 	endpointGetHeight               = "/get_height"
 	endpointGetNetStats             = "/get_net_stats"
 	endpointGetPeerList             = "/get_peer_list"
+	endpointGetPublicNodes          = "/get_public_nodes"
 	endpointGetTransactionPool      = "/get_transaction_pool"
 	endpointGetTransactionPoolStats = "/get_transaction_pool_stats"
 	endpointGetTransactions         = "/get_transactions"
@@ -114,6 +115,40 @@ func (c *Client) GetPeerList(ctx context.Context) (*GetPeerListResult, error) {
 	resp := &GetPeerListResult{}
 
 	if err := c.Request(ctx, endpointGetPeerList, nil, resp); err != nil {
+		return nil, fmt.Errorf("other: %w", err)
+	}
+
+	return resp, nil
+}
+
+type GetPublicNodesResult struct {
+	White []struct {
+		Host              string `json:"host"`
+		LastSeen          uint64 `json:"last_seen"`
+		RPCCreditsPerHash uint64 `json:"rpc_credits_per_hash"`
+		RPCPort           uint16 `json:"rpc_port"`
+	} `json:"white"`
+
+	Gray []struct {
+		Host              string `json:"host"`
+		LastSeen          uint64 `json:"last_seen"`
+		RPCCreditsPerHash uint64 `json:"rpc_credits_per_hash"`
+		RPCPort           uint16 `json:"rpc_port"`
+	} `json:"gray"`
+	Status     string `json:"status"`
+	Unstrusted bool   `json:"untrusted"`
+}
+
+type GetPublicNodesRequestParameters struct {
+	Gray           bool `json:"gray"`
+	White          bool `json:"white"`
+	IncludeBlocked bool `json:"include_blocked"`
+}
+
+func (c *Client) GetPublicNodes(ctx context.Context, params GetPublicNodesRequestParameters) (*GetPublicNodesResult, error) {
+	resp := &GetPublicNodesResult{}
+
+	if err := c.Request(ctx, endpointGetPublicNodes, params, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
 	}
 
