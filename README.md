@@ -106,37 +106,42 @@ the functionality that the library provides.
 ```console
 $ GO111MODULE=on go get github.com/cirocosta/go-monero/cmd/monero
 
-
 $ monero --help
 Usage:
   monero [OPTIONS] <command>
 
 Application Options:
   -v, --verbose  dump http requests and responses to stderr [$MONEROD_VERBOSE]
-  -a, --address= RPC server address [$MONEROD_ADDRESS]
+  -t, --timeout= request timeout (default: 10s) [$MONEROD_TIMEOUT]
+  -a, --address= address of the node to target (default: http://localhost:18081) [$MONEROD_ADDRESS]
 
 Help Options:
   -h, --help     Show this help message
 
 Available commands:
-  p2p-peer-list               Find out the list of local peers known by a node
-
   get-alternate-chains        Get alternate chains
   get-bans                    Get bans
   get-block                   Get block
   get-block-count             Get the block count
+  get-block-header-by-hash    Get block header by hash
   get-block-template          Get a block template on which mining a new block
   get-coinbase-tx-sum         Get the coinbase amount and the fees amount for n last blocks starting at particular height
   get-connections             Retrieve information about incoming and outgoing connections to your node (restricted)
   get-fee-estimate            Gives an estimation on fees per byte
+  get-height                  Get current block height
   get-info                    Retrieve general information about the state of your node and the network. (restricted)
   get-last-block-header       Get the header of the last block
+  get-net-stats               Get network statistics
   get-peer-list               Get peer list
+  get-public-nodes            Get public nodes
   get-transaction-pool        Get all transactions in the pool
   get-transaction-pool-stats  Get the transaction pool statistics
   get-transactions            Retrieve transactions
   hard-fork-info              Get hard fork info
   on-get-block-hash           Look up a block's hash by its height
+  p2p-peer-list               Find out the list of local peers known by a node
+  relay-tx                    Relay txns
+  rpc-access-tracking         RPC Access Tracking
   sync-info                   Get synchronisation information (restricted)
 ```
 
