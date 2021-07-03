@@ -32,7 +32,7 @@ import (
         "fmt"
         "context"
 
-        "github.com/cirocosta/go-monero/pkg/levin
+        "github.com/cirocosta/go-monero/pkg/levin"
 )
 
 func ListNodePeers(ctx context.Context, addr string) error {
