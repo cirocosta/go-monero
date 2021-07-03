@@ -1,0 +1,61 @@
+linters:
+  enable:
+    - asciicheck
+    - bodyclose
+    - cyclop
+    - deadcode
+    - dogsled
+    - dupl
+    - durationcheck
+    - errcheck
+    - errorlint
+    - exhaustive
+    - exportloopref
+    - forbidigo
+    - forcetypeassert
+    - funlen
+    - gocognit
+    - goconst
+    - gocritic
+    - gocyclo
+    - godot
+    - godox
+    - goerr113
+    - goimports
+    - gosec
+    - govet
+    - ifshort
+    - ineffassign
+    - lll
+    - makezero
+    - misspell
+    - nakedret
+    - nestif
+    - nilerr
+    - nlreturn
+    - noctx
+    - nolintlint
+    - paralleltest
+    - prealloc
+    - predeclared
+    - revive
+    - staticcheck
+    - structcheck
+    - testpackage
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - varcheck
+    - wastedassign
+    - whitespace
+    - wrapcheck
+
+linters-settings:
+  goimports:
+    local-prefixes: github.com/cirocosta/go-monero
+  exhaustive:
+    default-signifies-exhaustive: true
+
+run:
+  timeout: 5m

@@ -3,7 +3,7 @@ module github.com/cirocosta/go-monero
 go 1.16
 
 require (
-	github.com/fatih/color v1.12.0 // indirect
+	github.com/golangci/golangci-lint v1.41.1
 	github.com/gosuri/uitable v0.0.4
 	github.com/jessevdk/go-flags v1.5.0
 	github.com/mattn/go-isatty v0.0.13 // indirect
