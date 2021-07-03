@@ -13,6 +13,7 @@ const (
 	methodGetBlockCount        = "get_block_count"
 	methodGetBlockHeaderByHash = "get_block_header_by_hash"
 	methodGetBlockTemplate     = "get_block_template"
+	methodGenerateBlocks       = "generateblocks"
 	methodGetCoinbaseTxSum     = "get_coinbase_tx_sum"
 	methodGetConnections       = "get_connections"
 	methodGetFeeEstimate       = "get_fee_estimate"
@@ -24,54 +25,6 @@ const (
 	methodRelayTx              = "relay_tx"
 	methodSyncInfo             = "sync_info"
 )
-
-type GetAlternateChainsResult struct {
-	// Chains is the array of alternate chains seen by the node.
-	//
-	Chains []struct {
-		// BlockHash is the hash of the first diverging block of this alternative chain.
-		//
-		BlockHash string `json:"block_hash"`
-
-		// BlockHashes TODO
-		//
-		BlockHashes []string `json:"block_hashes"`
-
-		// Difficulty is the cumulative difficulty of all blocks in the alternative chain.
-		//
-		Difficulty int64 `json:"difficulty"`
-
-		// DifficultyTop64 is the most-significat 64 bits of the
-		// 128-bit network difficulty.
-		//
-		DifficultyTop64 int `json:"difficulty_top64"`
-
-		// Height is the block height of the first diverging block of this alternative chain.
-		//
-		Height int `json:"height"`
-
-		// Length is the length in blocks of this alternative chain, after divergence.
-		//
-		Length int `json:"length"`
-
-		// MainChainParentBlock TODO
-		//
-		MainChainParentBlock string `json:"main_chain_parent_block"`
-
-		// WideDifficulty is the network difficulty as a hexadecimal
-		// string representing a 128-bit number.
-		//
-		WideDifficulty string `json:"wide_difficulty"`
-	} `json:"chains"`
-
-	// Status dictates whether the request worked or not. "OK" means good.
-	Status string `json:"status"`
-
-	// States if the result is obtained using the bootstrap mode, and is
-	// therefore not trusted (`true`), or when the daemon is fully synced
-	// and thus handles the RPC locally (`false`).
-	Untrusted bool `json:"untrusted"`
-}
 
 // GetAlternateChains displays alternative chains seen by the node.
 //
@@ -87,19 +40,13 @@ func (c *Client) GetAlternateChains(ctx context.Context) (*GetAlternateChainsRes
 	return resp, nil
 }
 
-type AccessTrackingResult struct {
-	Data []struct {
-		Count   uint64 `json:"count"`
-		Credits uint64 `json:"credits"`
-		RPC     string `json:"rpc"`
-		Time    uint64 `json:"time"`
-	} `json:"data"`
-	Status    string `json:"status"`
-	Untrusted bool   `json:"untrusted"`
-}
-
-func (c *Client) RPCAccessTracking(ctx context.Context) (*AccessTrackingResult, error) {
-	resp := &AccessTrackingResult{}
+// RPCAccessTracking retrieves statistics that the monero daemon keeps track of
+// about the use of each RPC method and endpoint.
+//
+// (restricted)
+//
+func (c *Client) RPCAccessTracking(ctx context.Context) (*RPCAccessTrackingResult, error) {
+	resp := &RPCAccessTrackingResult{}
 
 	if err := c.JSONRPC(ctx, methodRPCAccessTracking, nil, resp); err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
@@ -108,21 +55,8 @@ func (c *Client) RPCAccessTracking(ctx context.Context) (*AccessTrackingResult, 
 	return resp, nil
 }
 
-type HardForkInfoResult struct {
-	Credits        int    `json:"credits"`
-	EarliestHeight int    `json:"earliest_height"`
-	Enabled        bool   `json:"enabled"`
-	State          int    `json:"state"`
-	Status         string `json:"status"`
-	Threshold      int    `json:"threshold"`
-	TopHash        string `json:"top_hash"`
-	Untrusted      bool   `json:"untrusted"`
-	Version        int    `json:"version"`
-	Votes          int    `json:"votes"`
-	Voting         int    `json:"voting"`
-	Window         int    `json:"window"`
-}
-
+// HardForkInfo looks up informaiton about the last hard fork.
+//
 func (c *Client) HardForkInfo(ctx context.Context) (*HardForkInfoResult, error) {
 	resp := &HardForkInfoResult{}
 
@@ -133,35 +67,52 @@ func (c *Client) HardForkInfo(ctx context.Context) (*HardForkInfoResult, error) 
 	return resp, nil
 }
 
-type GetBansResult struct {
-	// Bans contains the list of banned nodes.
-	//
-	Bans []struct {
-		// Host is the string representation of the node that is banned.
-		//
-		Host string `json:"host"`
-
-		// IP is the integer representation of the host banned.
-		//
-		IP int `json:"ip"`
-
-		// Seconds represents how many seconds are left for the ban to
-		// be lifted.
-		//
-		Seconds uint `json:"seconds"`
-	} `json:"bans"`
-	Status    string `json:"status"`
-	Untrusted bool   `json:"untrusted"`
-}
-
 // GetBans retrieves the list of banned IPs.
 //
-// (restrited)
+// (restricted)
 //
 func (c *Client) GetBans(ctx context.Context) (*GetBansResult, error) {
 	resp := &GetBansResult{}
 
 	if err := c.JSONRPC(ctx, methodGetBans, nil, resp); err != nil {
+		return nil, fmt.Errorf("jsonrpc: %w", err)
+	}
+
+	return resp, nil
+}
+
+// GenerateBlocksRequestParameters is the set of parameters to be passed to the
+// GenerateBlocks RPC method.
+//
+type GenerateBlocksRequestParameters struct {
+	// AmountOfBlocks
+	//
+	AmountOfBlocks uint64
+
+	// WalletAddress
+	//
+	WalletAddress string
+
+	// PreviousBlock
+	//
+	PreviousBlock string
+
+	// StartingNonce
+	//
+	StartingNonce uint32
+}
+
+// GenerateBlocks combines functionality from `GetBlockTemplate` and
+// `SubmitBlock` RPC calls to allow rapid block creation.
+//
+// Difficulty is set permanently to 1 for regtest.
+//
+// (restricted)
+//
+func (c *Client) GenerateBlocks(ctx context.Context) (*GenerateBlocksResult, error) {
+	resp := &GenerateBlocksResult{}
+
+	if err := c.JSONRPC(ctx, methodGenerateBlocks, nil, resp); err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
