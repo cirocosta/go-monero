@@ -399,7 +399,7 @@ type BlockHeader struct {
 
 	// Height is the number of blocks preceding this block on the blockchain.
 	//
-	Height uint `json:"height"`
+	Height uint64 `json:"height"`
 
 	// LongTermWeight TODO
 	//
