@@ -11,7 +11,84 @@ Support for `monero-wallet-rpc` coming soon.
 
 ## Quick start
 
+### Command Line Interface
+
+Under `cmd/monero` you'll find a command line interface that exposes most of
+the functionality that the library provides.
+
+You can either install it by using Go building from scratch
+
+```console
+$ GO111MODULE=on go get github.com/cirocosta/go-monero/cmd/monero
+```
+
+or fetching the binary for your distribution - check out the [releases page](https://github.com/cirocosta/go-monero/releases).
+
+```
+$ monero --help
+Daemon, Wallet, and p2p command line monero CLI
+
+Usage:
+  monero [command]
+
+Available Commands:
+  completion  generate the autocompletion script for the specified shell
+  daemon      execute remote procedure calls against a monero node
+  help        Help about any command
+  p2p         execute p2p commands against a monero node
+  wallet      execute remote procedure calls against a monero wallet rpc server
+
+Flags:
+  -h, --help   help for monero
+
+Use "monero [command] --help" for more information about a command.
+
+
+$ monero daemon --help
+execute remote procedure calls against a monero node
+
+Usage:
+  monero daemon [command]
+
+Available Commands:
+  generate-blocks            generate blocks when in regtest mode
+  get-alternate-chains       display alternative chains as seen by the node
+  get-bans                   all the nodes that have been banned by our node.
+  get-block                  full block information by either block height or hash
+  get-block-count            look up how many blocks are in the longest chain known to the node
+  get-block-header-by-hash   retrieve block(s) header(s) by hash
+  get-block-template         generate a block template for mining a new block
+  get-coinbase-tx-sum        compute the coinbase amount and the fees amount for n last blocks starting at particular height
+  get-connections            information about incoming and outgoing connections.
+  get-fee-estimate           estimate fees in atomic units per kB
+  get-height                 node's current height
+  get-info                   general information about the node and the network
+  get-last-block-header      header of the last block.
+  get-net-stats              networking statistics.
+  get-peer-list              peers lists (white and gray)
+  get-public-nodes           all known peers advertising as public nodes
+  get-transaction-pool       information about valid transactions seen by the node but not yet mined into a block, including spent key image info for the txpool
+  get-transaction-pool-stats statistics about the transaction pool
+  get-transactions           lookup one or more transactions by hash
+  hardfork-info              information regarding hard fork voting and readiness.
+  on-get-block-hash          find out block's hash by height
+  relay-tx                   relay a list of transaction ids
+  rpc-access-tracking        statistics about rpc access
+  sync-info                  daemon's chain synchronization info
+
+Flags:
+  -a, --address string             full address of the monero node to reach out to (default "http://localhost:18081")
+  -h, --help                       help for daemon
+      --request-timeout duration   how long to wait until considering the request a failure (default 1m0s)
+  -v, --verbose                    dump http requests and responses to stderr
+
+Use "monero daemon [command] --help" for more information about a command.
+```
+
+
 ### Library
+
+To consume `go-monero` as a library for your Go project:
 
 ```console
 $ go get -u -v github.com/cirocosta/go-monero
@@ -107,77 +184,6 @@ func ExampleGetHeight() {
 	fmt.Printf("height=%d hash=%s\n", height.Height, height.Hash)
 }
 ```
-
-
-### CLI
-
-Under `cmd/monero` you'll find a command line interface that exposes most of
-the functionality that the library provides.
-
-```console
-$ GO111MODULE=on go get github.com/cirocosta/go-monero/cmd/monero
-
-
-$ monero --help
-Daemon, Wallet, and p2p command line monero CLI
-
-Usage:
-  monero [command]
-
-Available Commands:
-  completion  generate the autocompletion script for the specified shell
-  daemon      execute remote procedure calls against a monero node
-  help        Help about any command
-  p2p         execute p2p commands against a monero node
-  wallet      execute remote procedure calls against a monero wallet rpc server
-
-Flags:
-  -h, --help   help for monero
-
-Use "monero [command] --help" for more information about a command.
-
-
-$ monero daemon --help
-execute remote procedure calls against a monero node
-
-Usage:
-  monero daemon [command]
-
-Available Commands:
-  generate-blocks            generate blocks when in regtest mode
-  get-alternate-chains       display alternative chains as seen by the node
-  get-bans                   all the nodes that have been banned by our node.
-  get-block                  full block information by either block height or hash
-  get-block-count            look up how many blocks are in the longest chain known to the node
-  get-block-header-by-hash   retrieve block(s) header(s) by hash
-  get-block-template         generate a block template for mining a new block
-  get-coinbase-tx-sum        compute the coinbase amount and the fees amount for n last blocks starting at particular height
-  get-connections            information about incoming and outgoing connections.
-  get-fee-estimate           estimate fees in atomic units per kB
-  get-height                 node's current height
-  get-info                   general information about the node and the network
-  get-last-block-header      header of the last block.
-  get-net-stats              networking statistics.
-  get-peer-list              peers lists (white and gray)
-  get-public-nodes           all known peers advertising as public nodes
-  get-transaction-pool       information about valid transactions seen by the node but not yet mined into a block, including spent key image info for the txpool
-  get-transaction-pool-stats statistics about the transaction pool
-  get-transactions           lookup one or more transactions by hash
-  hardfork-info              information regarding hard fork voting and readiness.
-  on-get-block-hash          find out block's hash by height
-  relay-tx                   relay a list of transaction ids
-  rpc-access-tracking        statistics about rpc access
-  sync-info                  daemon's chain synchronization info
-
-Flags:
-  -a, --address string             full address of the monero node to reach out to (default "http://localhost:18081")
-  -h, --help                       help for daemon
-      --request-timeout duration   how long to wait until considering the request a failure (default 1m0s)
-  -v, --verbose                    dump http requests and responses to stderr
-
-Use "monero daemon [command] --help" for more information about a command.
-```
-
 
 ## License
 
