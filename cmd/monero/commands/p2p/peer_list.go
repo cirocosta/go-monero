@@ -26,6 +26,8 @@ func (c *peerListCommand) Cmd() *cobra.Command {
 
 	cmd.Flags().StringVar(&c.NodeAddress, "node-address",
 		"", "address of the node to connect to")
+	cmd.MarkFlagRequired("node-address")
+
 	cmd.Flags().DurationVar(&c.Timeout, "timeout",
 		1*time.Minute, "how long to wait until considering the connection a failure")
 	cmd.Flags().StringVar(&c.Proxy, "proxy",
