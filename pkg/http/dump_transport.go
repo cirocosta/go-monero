@@ -33,6 +33,10 @@ func (d *DumpTransport) RoundTrip(h *http.Request) (*http.Response, error) {
 	fmt.Println(string(dump))
 
 	resp, err := d.R.RoundTrip(h)
+	if err != nil {
+		return nil, err
+	}
+
 	fmt.Println(resp.StatusCode)
 
 	dump, _ = httputil.DumpResponse(resp, true)

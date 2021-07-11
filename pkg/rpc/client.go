@@ -113,7 +113,7 @@ type RequestEnvelope struct {
 
 // Request makes requests to any endpoints, not assuming any particular format.
 //
-func (c *Client) Request(ctx context.Context, endpoint string, params interface{}, response interface{}) error {
+func (c *Client) RawRequest(ctx context.Context, endpoint string, params interface{}, response interface{}) error {
 	address := *c.address
 	address.Path = endpoint
 

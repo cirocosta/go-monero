@@ -1,32 +1,30 @@
 package main
 
 import (
+	"fmt"
 	"os"
 
-	"github.com/jessevdk/go-flags"
-	log "github.com/sirupsen/logrus"
+	"github.com/spf13/cobra"
+
+	"github.com/cirocosta/go-monero/cmd/monero/commands/daemon"
+	"github.com/cirocosta/go-monero/cmd/monero/commands/p2p"
+	"github.com/cirocosta/go-monero/cmd/monero/commands/wallet"
 )
 
-// configure global logging
-//
-func init() {
-	log.SetOutput(os.Stdout)
-	log.SetLevel(log.InfoLevel)
+var rootCmd = &cobra.Command{
+	Use:   "monero",
+	Short: "Daemon, Wallet, and p2p command line monero CLI",
 }
 
-var options RPCOptions
-var parser = flags.NewParser(&options, flags.Default)
+func init() {
+	rootCmd.AddCommand(daemon.RootCommand)
+	rootCmd.AddCommand(wallet.RootCommand)
+	rootCmd.AddCommand(p2p.RootCommand)
+}
 
 func main() {
-	if _, err := parser.Parse(); err != nil {
-		switch flagsErr := err.(type) {
-		case flags.ErrorType:
-			if flagsErr == flags.ErrHelp {
-				os.Exit(0)
-			}
-			os.Exit(1)
-		default:
-			os.Exit(1)
-		}
+	if err := rootCmd.Execute(); err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
 	}
 }
