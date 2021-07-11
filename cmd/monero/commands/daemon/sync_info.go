@@ -18,17 +18,12 @@ type syncInfoCommand struct {
 func (c *syncInfoCommand) Cmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "sync-info",
-		Short: "TODO",
-		Long:  "TODO",
+		Short: "daemon's chain synchronization info",
 		RunE:  c.RunE,
 	}
 
-	cmd.Flags().BoolVar(
-		&c.JSON,
-		"json",
-		false,
-		"whether or not to output the result as json",
-	)
+	cmd.Flags().BoolVar(&c.JSON, "json",
+		false, "whether or not to output the result as json")
 
 	return cmd
 }
