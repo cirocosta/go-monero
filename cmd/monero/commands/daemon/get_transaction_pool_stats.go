@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/spf13/cobra"
 
 	"github.com/cirocosta/go-monero/cmd/monero/display"
@@ -67,7 +68,7 @@ func (c *getTransactionPoolStatsCommand) pretty(v *daemon.GetTransactionPoolStat
 	table.AddRow("Double Spends:", v.PoolStats.NumDoubleSpends)
 	table.AddRow("Failing Transactions:", v.PoolStats.NumFailing)
 	table.AddRow("Not Relayed:", v.PoolStats.NumNotRelayed)
-	table.AddRow("Oldest:", display.Since(time.Unix(v.PoolStats.Oldest, 0)))
+	table.AddRow("Oldest:", humanize.Time(time.Unix(v.PoolStats.Oldest, 0)))
 	table.AddRow("Txns Total:", v.PoolStats.TxsTotal)
 
 	table.AddRow("")

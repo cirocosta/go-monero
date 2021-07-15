@@ -17,8 +17,10 @@ type getHeightCommand struct {
 func (c *getHeightCommand) Cmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get-height",
-		Short: "node's current height",
-		RunE:  c.RunE,
+		Short: "node's current chain height",
+		Long: `Retrieves the current chain height (most recent block height + 1)
+including the hash of the most recent block.`,
+		RunE: c.RunE,
 	}
 
 	cmd.Flags().BoolVar(&c.JSON, "json",

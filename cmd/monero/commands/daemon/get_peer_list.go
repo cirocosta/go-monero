@@ -5,6 +5,7 @@ import (
 	"sort"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/spf13/cobra"
 
 	"github.com/cirocosta/go-monero/cmd/monero/display"
@@ -54,7 +55,7 @@ func (c *getPeerListCommand) RunE(_ *cobra.Command, _ []string) error {
 func (c *getPeerListCommand) pretty(v *daemon.GetPeerListResult) {
 	table := display.NewTable()
 
-	table.AddRow("TYPE", "HOST", "PORT ", "RPC", "LAST SEEN")
+	table.AddRow("TYPE", "HOST", "PORT ", "RPC", "SINCE")
 
 	for _, peer := range v.GrayList {
 		table.AddRow("GRAY", peer.Host, peer.Port, peer.RPCPort, "")
@@ -64,7 +65,7 @@ func (c *getPeerListCommand) pretty(v *daemon.GetPeerListResult) {
 		return v.WhiteList[i].LastSeen < v.WhiteList[j].LastSeen
 	})
 	for _, peer := range v.WhiteList {
-		table.AddRow("WHITE", peer.Host, peer.Port, peer.RPCPort, display.Since(time.Unix(peer.LastSeen, 0)))
+		table.AddRow("WHITE", peer.Host, peer.Port, peer.RPCPort, humanize.Time(time.Unix(peer.LastSeen, 0)))
 	}
 
 	fmt.Println(table)

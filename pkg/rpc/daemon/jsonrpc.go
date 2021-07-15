@@ -9,6 +9,7 @@ import (
 const (
 	methodGetAlternateChains   = "get_alternate_chains"
 	methodGetBans              = "get_bans"
+	methodGetVersion           = "get_version"
 	methodGetBlock             = "get_block"
 	methodGetBlockCount        = "get_block_count"
 	methodGetBlockHeaderByHash = "get_block_header_by_hash"
@@ -75,6 +76,20 @@ func (c *Client) GetBans(ctx context.Context) (*GetBansResult, error) {
 	resp := &GetBansResult{}
 
 	if err := c.JSONRPC(ctx, methodGetBans, nil, resp); err != nil {
+		return nil, fmt.Errorf("jsonrpc: %w", err)
+	}
+
+	return resp, nil
+}
+
+// GetVersion retrieves the version of monerod that the node uses.
+//
+// (restricted)
+//
+func (c *Client) GetVersion(ctx context.Context) (*GetVersionResult, error) {
+	resp := &GetVersionResult{}
+
+	if err := c.JSONRPC(ctx, methodGetVersion, nil, resp); err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 

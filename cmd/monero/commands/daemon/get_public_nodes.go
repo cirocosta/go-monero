@@ -8,6 +8,7 @@ import (
 	"github.com/cirocosta/go-monero/cmd/monero/display"
 	"github.com/cirocosta/go-monero/cmd/monero/options"
 	"github.com/cirocosta/go-monero/pkg/rpc/daemon"
+	"github.com/dustin/go-humanize"
 	"github.com/spf13/cobra"
 )
 
@@ -70,7 +71,7 @@ func (c *getPublicNodesCommand) RunE(_ *cobra.Command, _ []string) error {
 func (c *getPublicNodesCommand) pretty(v *daemon.GetPublicNodesResult) {
 	table := display.NewTable()
 
-	table.AddRow("TYPE", "HOST", "RPC PORT", "LAST SEEN")
+	table.AddRow("TYPE", "HOST", "RPC PORT", "SINCE")
 	for _, peer := range v.GrayList {
 		table.AddRow("GRAY", peer.Host, peer.RPCPort, "")
 	}
@@ -79,7 +80,7 @@ func (c *getPublicNodesCommand) pretty(v *daemon.GetPublicNodesResult) {
 		return v.WhiteList[i].LastSeen < v.WhiteList[j].LastSeen
 	})
 	for _, peer := range v.WhiteList {
-		table.AddRow("WHITE", peer.Host, peer.RPCPort, display.Since(time.Unix(peer.LastSeen, 0)))
+		table.AddRow("WHITE", peer.Host, peer.RPCPort, humanize.Time(time.Unix(peer.LastSeen, 0)))
 	}
 
 	fmt.Println(table)

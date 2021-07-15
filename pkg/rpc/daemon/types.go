@@ -137,6 +137,15 @@ type HardForkInfoResult struct {
 	RPCResultFooter `json:",inline"`
 }
 
+// GetVersionResult is the result of a call to the GetVersion RPC method.
+//
+type GetVersionResult struct {
+	Release bool   `json:"release"`
+	Version uint64 `json:"version"`
+
+	RPCResultFooter `json:",inline"`
+}
+
 // GetBansResult is the result of a call to the GetBans RPC method.
 //
 type GetBansResult struct {
@@ -268,26 +277,26 @@ type GetPeerListResult struct {
 type GetConnectionsResult struct {
 	Connections []struct {
 		Address         string `json:"address"`
-		AvgDownload     int    `json:"avg_download"`
-		AvgUpload       int    `json:"avg_upload"`
+		AvgDownload     uint64 `json:"avg_download"`
+		AvgUpload       uint64 `json:"avg_upload"`
 		ConnectionID    string `json:"connection_id"`
-		CurrentDownload int    `json:"current_download"`
-		CurrentUpload   int    `json:"current_upload"`
-		Height          int    `json:"height"`
+		CurrentDownload uint64 `json:"current_download"`
+		CurrentUpload   uint64 `json:"current_upload"`
+		Height          uint64 `json:"height"`
 		Host            string `json:"host"`
 		Incoming        bool   `json:"incoming"`
 		IP              string `json:"ip"`
-		LiveTime        int64  `json:"live_time"`
+		LiveTime        uint64 `json:"live_time"`
 		LocalIP         bool   `json:"local_ip"`
 		Localhost       bool   `json:"localhost"`
 		PeerID          string `json:"peer_id"`
 		Port            string `json:"port"`
-		RecvCount       int    `json:"recv_count"`
-		RecvIdleTime    int    `json:"recv_idle_time"`
-		SendCount       int    `json:"send_count"`
-		SendIdleTime    int    `json:"send_idle_time"`
+		RecvCount       uint64 `json:"recv_count"`
+		RecvIdleTime    uint64 `json:"recv_idle_time"`
+		SendCount       uint64 `json:"send_count"`
+		SendIdleTime    uint64 `json:"send_idle_time"`
 		State           string `json:"state"`
-		SupportFlags    int    `json:"support_flags"`
+		SupportFlags    uint64 `json:"support_flags"`
 	} `json:"connections"`
 
 	RPCResultFooter `json:",inline"`
@@ -451,7 +460,7 @@ type BlockHeader struct {
 	// Timestamp is the unix timestamp at which the block was
 	// recorded into the blockchain.
 	//
-	Timestamp uint64 `json:"timestamp"`
+	Timestamp int64 `json:"timestamp"`
 
 	// WideCumulativeDifficulty is the cumulative difficulty of all
 	// blocks in the blockchain as a hexadecimal string
@@ -532,7 +541,7 @@ type GetBlockResultJSON struct {
 		// Vout lists the transaction outputs.
 		//
 		Vout []struct {
-			Amount int64 `json:"amount"`
+			Amount uint64 `json:"amount"`
 			Target struct {
 				Key string `json:"key"`
 			} `json:"target"`
@@ -555,6 +564,16 @@ type GetBlockResultJSON struct {
 	// block.
 	//
 	TxHashes []string `json:"tx_hashes"`
+}
+
+func (c *GetBlockResultJSON) MinerOutputs() uint64 {
+	res := uint64(0)
+
+	for _, vout := range c.MinerTx.Vout {
+		res += vout.Amount
+	}
+
+	return res
 }
 
 // SyncInfoResult is the result of a call to the SyncInfo RPC method.
@@ -642,4 +661,103 @@ type GetTransactionPoolStatsResult struct {
 	} `json:"pool_stats"`
 
 	RPCResultFooter `json:",inline"`
+}
+
+type GetTransactionsResult struct {
+	Credits int    `json:"credits"`
+	Status  string `json:"status"`
+	TopHash string `json:"top_hash"`
+	Txs     []struct {
+		AsHex           string `json:"as_hex"`
+		AsJSON          string `json:"as_json"`
+		BlockHeight     uint64 `json:"block_height"`
+		BlockTimestamp  int64  `json:"block_timestamp"`
+		DoubleSpendSeen bool   `json:"double_spend_seen"`
+		InPool          bool   `json:"in_pool"`
+		OutputIndices   []int  `json:"output_indices"`
+		PrunableAsHex   string `json:"prunable_as_hex"`
+		PrunableHash    string `json:"prunable_hash"`
+		PrunedAsHex     string `json:"pruned_as_hex"`
+		TxHash          string `json:"tx_hash"`
+	} `json:"txs"`
+	TxsAsHex  []string `json:"txs_as_hex"`
+	Untrusted bool     `json:"untrusted"`
+}
+
+type TransactionJSON struct {
+	Version    int `json:"version"`
+	UnlockTime int `json:"unlock_time"`
+	Vin        []struct {
+		Key struct {
+			Amount     int    `json:"amount"`
+			KeyOffsets []int  `json:"key_offsets"`
+			KImage     string `json:"k_image"`
+		} `json:"key"`
+	} `json:"vin"`
+	Vout []struct {
+		Amount int `json:"amount"`
+		Target struct {
+			Key string `json:"key"`
+		} `json:"target"`
+	} `json:"vout"`
+	Extra         []int `json:"extra"`
+	RctSignatures struct {
+		Type     int `json:"type"`
+		Txnfee   int `json:"txnFee"`
+		Ecdhinfo []struct {
+			Amount string `json:"amount"`
+		} `json:"ecdhInfo"`
+		Outpk []string `json:"outPk"`
+	} `json:"rct_signatures"`
+	RctsigPrunable struct {
+		Nbp int `json:"nbp"`
+		Bp  []struct {
+			A      string   `json:"A"`
+			S      string   `json:"S"`
+			T1     string   `json:"T1"`
+			T2     string   `json:"T2"`
+			Taux   string   `json:"taux"`
+			Mu     string   `json:"mu"`
+			L      []string `json:"L"`
+			R      []string `json:"R"`
+			LowerA string   `json:"a"`
+			B      string   `json:"b"`
+			T      string   `json:"t"`
+		} `json:"bp"`
+		Clsags []struct {
+			S  []string `json:"s"`
+			C1 string   `json:"c1"`
+			D  string   `json:"D"`
+		} `json:"CLSAGs"`
+		Pseudoouts []string `json:"pseudoOuts"`
+	} `json:"rctsig_prunable"`
+}
+
+type GetTransactionPoolResult struct {
+	Credits        int `json:"credits"`
+	SpentKeyImages []struct {
+		IDHash    string   `json:"id_hash"`
+		TxsHashes []string `json:"txs_hashes"`
+	} `json:"spent_key_images"`
+	Status       string `json:"status"`
+	TopHash      string `json:"top_hash"`
+	Transactions []struct {
+		BlobSize           uint64 `json:"blob_size"`
+		DoNotRelay         bool   `json:"do_not_relay"`
+		DoubleSpendSeen    bool   `json:"double_spend_seen"`
+		Fee                uint64 `json:"fee"`
+		IDHash             string `json:"id_hash"`
+		KeptByBlock        bool   `json:"kept_by_block"`
+		LastFailedHeight   uint64 `json:"last_failed_height"`
+		LastFailedIDHash   string `json:"last_failed_id_hash"`
+		LastRelayedTime    uint64 `json:"last_relayed_time"`
+		MaxUsedBlockHeight uint64 `json:"max_used_block_height"`
+		MaxUsedBlockIDHash string `json:"max_used_block_id_hash"`
+		ReceiveTime        int64  `json:"receive_time"`
+		Relayed            bool   `json:"relayed"`
+		TxBlob             string `json:"tx_blob"`
+		TxJSON             string `json:"tx_json"`
+		Weight             uint64 `json:"weight"`
+	} `json:"transactions"`
+	Untrusted bool `json:"untrusted"`
 }

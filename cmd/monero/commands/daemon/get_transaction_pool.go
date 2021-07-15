@@ -1,15 +1,23 @@
 package daemon
 
 import (
+	"encoding/json"
 	"fmt"
+	"sort"
+	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/spf13/cobra"
 
 	"github.com/cirocosta/go-monero/cmd/monero/display"
 	"github.com/cirocosta/go-monero/cmd/monero/options"
+	"github.com/cirocosta/go-monero/pkg/constant"
+	"github.com/cirocosta/go-monero/pkg/rpc/daemon"
 )
 
-type getTransactionPoolCommand struct{}
+type getTransactionPoolCommand struct {
+	JSON bool
+}
 
 func (c *getTransactionPoolCommand) Cmd() *cobra.Command {
 	cmd := &cobra.Command{
@@ -17,6 +25,9 @@ func (c *getTransactionPoolCommand) Cmd() *cobra.Command {
 		Short: "information about valid transactions seen by the node but not yet mined into a block, including spent key image info for the txpool",
 		RunE:  c.RunE,
 	}
+
+	cmd.Flags().BoolVar(&c.JSON, "json",
+		false, "whether or not to output the result as json")
 
 	return cmd
 }
@@ -35,7 +46,39 @@ func (c *getTransactionPoolCommand) RunE(_ *cobra.Command, _ []string) error {
 		return fmt.Errorf("get block count: %w", err)
 	}
 
-	return display.JSON(resp)
+	if c.JSON {
+		return display.JSON(resp)
+	}
+
+	return c.pretty(resp)
+}
+
+func (c *getTransactionPoolCommand) pretty(v *daemon.GetTransactionPoolResult) error {
+	table := display.NewTable()
+
+	table.AddRow("AGE", "HASH", "FEE (µɱ)", "FEE (µɱ per-kB)", "SIZE", "in/out")
+
+	sort.Slice(v.Transactions, func(i, j int) bool {
+		return v.Transactions[i].ReceiveTime < v.Transactions[j].ReceiveTime
+	})
+	for _, txn := range v.Transactions {
+		txnDetails := &daemon.TransactionJSON{}
+		if err := json.Unmarshal([]byte(txn.TxJSON), txnDetails); err != nil {
+			return fmt.Errorf("unsmarshal txjson: %w", err)
+		}
+
+		table.AddRow(
+			humanize.Time(time.Unix(txn.ReceiveTime, 0)),
+			txn.IDHash,
+			txn.Fee/constant.MicroXMR,
+			fmt.Sprintf("%4.1f", (float64(txn.Fee)/constant.MicroXMR)/(float64(txn.BlobSize)/1024)),
+			humanize.IBytes(txn.BlobSize),
+			fmt.Sprintf("%d/%d", len(txnDetails.Vin), len(txnDetails.Vout)),
+		)
+	}
+
+	fmt.Println(table)
+	return nil
 }
 
 func init() {

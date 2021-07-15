@@ -2,8 +2,10 @@ package daemon
 
 import (
 	"fmt"
+	"sort"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/spf13/cobra"
 
 	"github.com/cirocosta/go-monero/cmd/monero/display"
@@ -53,16 +55,20 @@ func (c *getConnectionsCommand) RunE(_ *cobra.Command, _ []string) error {
 func (c *getConnectionsCommand) pretty(v *daemon.GetConnectionsResult) {
 	table := display.NewTable()
 
-	table.AddRow("ADDR", "IN", "STATE", "TIME", "RECV (kB)", "SEND (kB)")
+	table.AddRow("ADDR", "IN", "STATE", "HEIGHT", "SINCE", "RECV", "SEND")
 
+	sort.Slice(v.Connections, func(i, j int) bool {
+		return v.Connections[i].LiveTime > v.Connections[j].LiveTime
+	})
 	for _, connection := range v.Connections {
 		table.AddRow(
 			connection.Address,
 			connection.Incoming,
 			connection.State,
-			time.Duration(connection.LiveTime)*time.Second,
-			connection.RecvCount/1024,
-			connection.SendCount/1024,
+			connection.Height,
+			humanize.Time(time.Now().Add(-1*time.Duration(connection.LiveTime)*time.Second)),
+			humanize.IBytes(connection.RecvCount),
+			humanize.IBytes(connection.SendCount),
 		)
 	}
 

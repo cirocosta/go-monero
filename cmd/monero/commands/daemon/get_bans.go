@@ -39,7 +39,7 @@ func (c *getBansCommand) RunE(_ *cobra.Command, _ []string) error {
 
 	resp, err := client.GetBans(ctx)
 	if err != nil {
-		return fmt.Errorf("get block count: %w", err)
+		return fmt.Errorf("get bans count: %w", err)
 	}
 
 	if c.JSON {
