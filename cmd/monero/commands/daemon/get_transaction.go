@@ -91,7 +91,7 @@ func (c *getTransactionCommand) pretty(ctx context.Context, v *daemon.GetTransac
 
 	table.AddRow("Hash:", txn.TxHash)
 	table.AddRow("Fee (µɱ):", fee/constant.MicroXMR)
-	table.AddRow("Fee (µɱ per kB):", (fee/constant.MicroXMR)/(float64(size)/1024))
+	table.AddRow("Fee per kB (µɱ):", (fee/constant.MicroXMR)/(float64(size)/1024))
 	table.AddRow("In/Out:", fmt.Sprintf("%d/%d", len(txnDetails.Vin), len(txnDetails.Vout)))
 	table.AddRow("Size:", humanize.IBytes(uint64(len(txn.AsHex))/2))
 
