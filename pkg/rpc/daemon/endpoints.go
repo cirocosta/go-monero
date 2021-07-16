@@ -8,6 +8,7 @@ import (
 
 const (
 	endpointGetHeight               = "/get_height"
+	endpointGetOuts                 = "/get_outs"
 	endpointGetNetStats             = "/get_net_stats"
 	endpointGetPeerList             = "/get_peer_list"
 	endpointGetPublicNodes          = "/get_public_nodes"
@@ -56,6 +57,29 @@ func (c *Client) GetPublicNodes(ctx context.Context, params GetPublicNodesReques
 	resp := &GetPublicNodesResult{}
 
 	if err := c.RawRequest(ctx, endpointGetPublicNodes, params, resp); err != nil {
+		return nil, fmt.Errorf("other: %w", err)
+	}
+
+	return resp, nil
+}
+
+func (c *Client) GetOuts(ctx context.Context, outputs []uint, gettxid bool) (*GetOutsResult, error) {
+	resp := &GetOutsResult{}
+
+	type output struct {
+		Index uint `json:"index"`
+	}
+
+	params := struct {
+		Outputs []output `json:"outputs"`
+		GetTxID bool     `json:"get_txid,omitempty"`
+	}{GetTxID: gettxid}
+
+	for _, out := range outputs {
+		params.Outputs = append(params.Outputs, output{out})
+	}
+
+	if err := c.RawRequest(ctx, endpointGetOuts, params, resp); err != nil {
 		return nil, fmt.Errorf("other: %w", err)
 	}
 

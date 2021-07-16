@@ -302,6 +302,18 @@ type GetConnectionsResult struct {
 	RPCResultFooter `json:",inline"`
 }
 
+type GetOutsResult struct {
+	Outs []struct {
+		Height   uint64 `json:"height"`
+		Key      string `json:"key"`
+		Mask     string `json:"mask"`
+		Txid     string `json:"txid"`
+		Unlocked bool   `json:"unlocked"`
+	} `json:"outs"`
+
+	RPCResultFooter `json:",inline"`
+}
+
 // GetHeightResult is the result of a call to the GetHeight RPC method.
 //
 type GetHeightResult struct {
