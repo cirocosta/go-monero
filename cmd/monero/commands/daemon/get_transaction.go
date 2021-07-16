@@ -86,8 +86,12 @@ func (c *getTransactionCommand) pretty(ctx context.Context, v *daemon.GetTransac
 	if txn.InPool == false {
 	}
 
+	fee := float64(txnDetails.RctSignatures.Txnfee)
+	size := len(txn.AsHex) / 2
+
 	table.AddRow("Hash:", txn.TxHash)
-	table.AddRow("Fee (µɱ):", txnDetails.RctSignatures.Txnfee/constant.MicroXMR)
+	table.AddRow("Fee (µɱ):", fee/constant.MicroXMR)
+	table.AddRow("Fee (µɱ per kB):", (fee/constant.MicroXMR)/(float64(size)/1024))
 	table.AddRow("In/Out:", fmt.Sprintf("%d/%d", len(txnDetails.Vin), len(txnDetails.Vout)))
 	table.AddRow("Size:", humanize.IBytes(uint64(len(txn.AsHex))/2))
 

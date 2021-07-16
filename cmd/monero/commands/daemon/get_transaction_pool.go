@@ -56,7 +56,7 @@ func (c *getTransactionPoolCommand) RunE(_ *cobra.Command, _ []string) error {
 func (c *getTransactionPoolCommand) pretty(v *daemon.GetTransactionPoolResult) error {
 	table := display.NewTable()
 
-	table.AddRow("AGE", "HASH", "FEE (µɱ)", "FEE (µɱ per-kB)", "SIZE", "in/out")
+	table.AddRow("AGE", "HASH", "FEE (µɱ)", "FEE (µɱ per kB)", "IN/OUT", "SIZE")
 
 	sort.Slice(v.Transactions, func(i, j int) bool {
 		return v.Transactions[i].ReceiveTime < v.Transactions[j].ReceiveTime
@@ -71,9 +71,9 @@ func (c *getTransactionPoolCommand) pretty(v *daemon.GetTransactionPoolResult) e
 			humanize.Time(time.Unix(txn.ReceiveTime, 0)),
 			txn.IDHash,
 			txn.Fee/constant.MicroXMR,
-			fmt.Sprintf("%4.1f", (float64(txn.Fee)/constant.MicroXMR)/(float64(txn.BlobSize)/1024)),
-			humanize.IBytes(txn.BlobSize),
+			fmt.Sprintf("%6.1f", (float64(txn.Fee)/constant.MicroXMR)/(float64(txn.BlobSize)/1024)),
 			fmt.Sprintf("%d/%d", len(txnDetails.Vin), len(txnDetails.Vout)),
+			humanize.IBytes(txn.BlobSize),
 		)
 	}
 
