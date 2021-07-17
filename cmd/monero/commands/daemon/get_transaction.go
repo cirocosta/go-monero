@@ -144,7 +144,8 @@ func (c *getTransactionCommand) prettyOutputs(
 	txnDetails *daemon.TransactionJSON,
 ) error {
 	table := display.NewTable()
-	table.AddRow("OUTPUTS")
+	table.AddRow("Outputs")
+	table.AddRow()
 	table.AddRow("", "STEALTH ADDR", "AMOUNT", "AMOUNT IDX")
 	for idx, vout := range txnDetails.Vout {
 		table.AddRow(
@@ -184,9 +185,11 @@ func (c *getTransactionCommand) prettyInputs(
 			return fmt.Errorf("outs: %w", err)
 		}
 
+		fmt.Println()
 		table := display.NewTable()
 		table.AddRow("Input Key Image:", vin.Key.KImage)
 		fmt.Println(table)
+		fmt.Println()
 
 		table = display.NewTable()
 		table.AddRow("", "RING MEMBER", "TXID", "BLK", "AGE")
