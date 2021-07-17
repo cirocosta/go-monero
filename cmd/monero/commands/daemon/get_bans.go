@@ -2,6 +2,7 @@ package daemon
 
 import (
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -54,6 +55,10 @@ func (c *getBansCommand) pretty(v *daemon.GetBansResult) {
 	table := display.NewTable()
 
 	table.AddRow("HOST", "TIME LEFT")
+
+	sort.Slice(v.Bans, func(i, j int) bool {
+		return v.Bans[i].Seconds > v.Bans[j].Seconds
+	})
 	for _, ban := range v.Bans {
 		table.AddRow(ban.Host, time.Duration(ban.Seconds)*time.Second)
 	}
