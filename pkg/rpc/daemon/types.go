@@ -702,7 +702,7 @@ type TransactionJSON struct {
 	Vin        []struct {
 		Key struct {
 			Amount     int    `json:"amount"`
-			KeyOffsets []int  `json:"key_offsets"`
+			KeyOffsets []uint `json:"key_offsets"`
 			KImage     string `json:"k_image"`
 		} `json:"key"`
 	} `json:"vin"`
@@ -712,7 +712,7 @@ type TransactionJSON struct {
 			Key string `json:"key"`
 		} `json:"target"`
 	} `json:"vout"`
-	Extra         []int `json:"extra"`
+	Extra         []byte `json:"extra"`
 	RctSignatures struct {
 		Type     int `json:"type"`
 		Txnfee   int `json:"txnFee"`

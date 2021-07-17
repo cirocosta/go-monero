@@ -2,6 +2,7 @@ package daemon
 
 import (
 	"context"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"time"
@@ -74,6 +75,10 @@ func (c *getTransactionCommand) RunE(_ *cobra.Command, _ []string) error {
 }
 
 func (c *getTransactionCommand) pretty(ctx context.Context, v *daemon.GetTransactionsResult) error {
+	if len(v.Txs) == 0 {
+		return nil
+	}
+
 	table := display.NewTable()
 	txn := v.Txs[0]
 
@@ -83,9 +88,6 @@ func (c *getTransactionCommand) pretty(ctx context.Context, v *daemon.GetTransac
 	}
 
 	confirmations := uint64(0)
-	if txn.InPool == false {
-	}
-
 	fee := float64(txnDetails.RctSignatures.Txnfee)
 	size := len(txn.AsHex) / 2
 
@@ -94,6 +96,7 @@ func (c *getTransactionCommand) pretty(ctx context.Context, v *daemon.GetTransac
 	table.AddRow("Fee per kB (µɱ):", (fee/constant.MicroXMR)/(float64(size)/1024))
 	table.AddRow("In/Out:", fmt.Sprintf("%d/%d", len(txnDetails.Vin), len(txnDetails.Vout)))
 	table.AddRow("Size:", humanize.IBytes(uint64(len(txn.AsHex))/2))
+	table.AddRow("Public Key:", hex.EncodeToString(txnDetails.Extra[1:33]))
 
 	if txn.InPool == false {
 		table.AddRow("Age:", humanize.Time(time.Unix(txn.BlockTimestamp, 0)))
@@ -109,27 +112,16 @@ func (c *getTransactionCommand) pretty(ctx context.Context, v *daemon.GetTransac
 	} else {
 		table.AddRow("Confirmations:", 0)
 	}
-	fmt.Println(table)
-	fmt.Println("")
 
-	table = display.NewTable()
-	table.AddRow("INPUTS")
-	table.AddRow("KEY IMAGE", "AMOUNT", "KEY OFFSETS")
-	for _, vin := range txnDetails.Vin {
-		table.AddRow(
-			vin.Key.KImage,
-			vin.Key.Amount,
-			vin.Key.KeyOffsets,
-		)
-	}
 	fmt.Println(table)
 	fmt.Println("")
 
 	table = display.NewTable()
 	table.AddRow("OUTPUTS")
-	table.AddRow("STEALTH ADDR", "AMOUNT", "AMOUNT IDX")
+	table.AddRow("", "STEALTH ADDR", "AMOUNT", "AMOUNT IDX")
 	for idx, vout := range txnDetails.Vout {
 		table.AddRow(
+			idx,
 			vout.Target.Key,
 			vout.Amount,
 			txn.OutputIndices[idx],
@@ -137,6 +129,26 @@ func (c *getTransactionCommand) pretty(ctx context.Context, v *daemon.GetTransac
 	}
 
 	fmt.Println(table)
+	fmt.Println("")
+
+	for _, vin := range txnDetails.Vin {
+		outsResp, err := c.client.GetOuts(ctx, vin.Key.KeyOffsets, true)
+		if err != nil {
+			return fmt.Errorf("outs: %w", err)
+		}
+
+		table = display.NewTable()
+		table.AddRow("Input Key Image:", vin.Key.KImage)
+		fmt.Println(table)
+
+		table = display.NewTable()
+		table.AddRow("", "RING MEMBER", "TXID", "BLK", "AGE")
+		for idx, out := range outsResp.Outs {
+			table.AddRow(idx, out.Key, out.Txid, out.Height)
+		}
+		fmt.Println(table)
+		fmt.Println()
+	}
 
 	return nil
 }
