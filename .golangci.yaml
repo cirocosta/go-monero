@@ -57,5 +57,8 @@ linters-settings:
   exhaustive:
     default-signifies-exhaustive: true
 
+issues:
+  fix: true
+
 run:
   timeout: 5m

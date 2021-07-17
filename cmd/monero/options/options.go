@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
 	mhttp "github.com/cirocosta/go-monero/pkg/http"
 	"github.com/cirocosta/go-monero/pkg/rpc"
@@ -37,6 +36,8 @@ func (o *options) Context() (context.Context, context.CancelFunc) {
 // Client instantiates a new daemon RPC client based on the options filled.
 //
 func (o *options) Client() (*daemon.Client, error) {
+	fmt.Println("ADDRESS:", o.address)
+
 	client, err := rpc.NewClient(o.address,
 		rpc.WithHTTPClient(mhttp.NewHTTPClient(o.verbose)),
 	)
@@ -69,32 +70,12 @@ func (o *options) WalletClient() (*wallet.Client, error) {
 // can be filled either via comand arguments or environment variables.
 //
 func Bind(cmd *cobra.Command) {
-	viper.AutomaticEnv()
-	viper.SetEnvPrefix("MONERO_")
+	cmd.PersistentFlags().BoolVarP(&RootOptions.verbose, "verbose", "v",
+		false, "dump http requests and responses to stderr")
 
-	cmd.PersistentFlags().BoolVarP(
-		&RootOptions.verbose,
-		"verbose",
-		"v",
-		false,
-		"dump http requests and responses to stderr",
-	)
-	viper.BindPFlag("verbose", cmd.PersistentFlags().Lookup("verbose"))
+	cmd.PersistentFlags().StringVarP(&RootOptions.address, "address", "a",
+		"http://localhost:18081", "full address of the monero node to reach out to")
 
-	cmd.PersistentFlags().StringVarP(
-		&RootOptions.address,
-		"address",
-		"a",
-		"http://localhost:18081",
-		"full address of the monero node to reach out to",
-	)
-	viper.BindPFlag("address", cmd.PersistentFlags().Lookup("address"))
-
-	cmd.PersistentFlags().DurationVar(
-		&RootOptions.requestTimeout,
-		"request-timeout",
-		1*time.Minute,
-		"how long to wait until considering the request a failure",
-	)
-	viper.BindPFlag("request-timeout", cmd.PersistentFlags().Lookup("request-timeout"))
+	cmd.PersistentFlags().DurationVar(&RootOptions.requestTimeout, "request-timeout",
+		1*time.Minute, "how long to wait until considering the request a failure")
 }
