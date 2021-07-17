@@ -24,6 +24,44 @@ $ GO111MODULE=on go get github.com/cirocosta/go-monero/cmd/monero
 
 or fetching the binary for your distribution - check out the [releases page](https://github.com/cirocosta/go-monero/releases).
 
+### Example
+
+```console
+$ monero daemon get-transaction --txn 53c1ef0cff73d12294e3055400826905efc397814aacd7208921a9abfd1f6328
+Hash:                   53c1ef0cff73d12294e3055400826905efc397814aacd7208921a9abfd1f6328
+Fee (µɱ):               9.13
+Fee per kB (µɱ):        6.416691832532602
+In/Out:                 1/2
+Size:                   1.4 KiB
+Public Key:             fbc0ac2c62514f68134f543ce5c4efe51ec55a0952eb188dadf22dccc3c5ffdf
+Age:                    20 minutes ago
+Block:                  2406735
+Confirmations:          4
+
+Outputs
+
+        STEALTH ADDR                                                            AMOUNT  AMOUNT IDX
+0       574e3a3dda7cde249a81c0a0637ce78999e114dd478479e3e04680ffdcd34c97        ?       35307867
+1       7d3e93ecfa2bd8c27f7a2bbd57488c1121924e58591b32e99be42da6ae249e9c        ?       35307868
+
+
+Input Key Image:        2cd588cbc9214e1b683a8c3f0d7c25b8e61779806051356dee1fac6cf42c0c7e
+
+        RING MEMBER                                                             TXID                                                                    BLK     AGE
+0       ef729a26d047508fb1b37a553053c8959eac6191bbc5b7c2845aa608d7f48d08        1ed88a49d533e01a222ca12c2fa74fa1797a667509e1e1b6e754cb90944639b0        2342514 2 months ago
+1       33351ad5aed5df1c4b38d995c9461112899223bee8a156a77eebad43a2f62c21        e0782b630670dba4062aec0a1f9678181e8321dcaf22638cf7a6033957d5e4f9        2382635 1 month ago
+2       df5b27b873dc93e4237031cc598062db86e011e3eec021dd57043076d4e4bfca        a96889571eab740fffd242ac5742b1af83471a5afc0b6ee8e163c4f4fa29574e        2397359 1 week ago
+3       f30b7e8a36b38d95dcbbbdf7f291f452d540d02d3d87c791a106682462ef62b7        a3eede407f1069c959c75295a0c0dc15ffae55c5b17ebfffa0ac70f9304fd943        2401095 1 week ago
+4       f684f88cd52ef0c39b3466c68eef1c71590ccf42f0936ae2996b1bd0f20dddcc        de3a7e7b8ced8d272cd039c8d12c81f5297766f2cdfd86910b634d47f6faf3c3        2401120 1 week ago
+5       96b6addb19dfa8ea78b167dd46acd04d90e4628c17f9cb21ed82f6a0e2ce6c55        13c9063f09e0559eb354a674fcff8dad2288cbf198b64c2d32a5ab8315039dc5        2402375 6 days ago
+6       cd573966c65055537747004e702f6cf7d7d32a50a1eed4e8291eca102d0072b4        4639ecf7293c8fd58cf2b34acaf9dd147e53018270b2cd2ddb4e719b28e34e9b        2403122 5 days ago
+7       b9c6c95c099426624936d142c2e0a09e641cad0295d468e0bca487502abafe51        04800ff34ee29f63a583d84567f90a3e8ee5f018c17ca4ccbb6afb3305b3bdd9        2404029 3 days ago
+8       c4b4d2549c9a73115747ea664d85e4becb502287224eb5bd7b5b41394cd67976        6ebad604e6d81afba32773401f3006f74a51c69e50a98b55e5bd0f0910f08dea        2405504 1 day ago
+9       36516e699ceffb665b1cb2bae1e116da03927718a4b391ecaf9f216661494138        e996d5b951ed1484b10d025f96404f54140164d225c044cb2fcb67458b022cc0        2406458 9 hours ago
+10      91ab8220d7d87e465fd53521f2714388074b66bc0ae3d2b7ec89f949ca6d6718        9dd40e49611f14380b53202d4d669ce0a141ac308204e9d3e917cb2453f88716        2406541 6 hours ago
+```
+
+
 ```console
 $ monero --help
 Daemon, Wallet, and p2p command line monero CLI
