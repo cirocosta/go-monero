@@ -169,6 +169,12 @@ type GetBansResult struct {
 	RPCResultFooter `json:",inline"`
 }
 
+// SetBansResult is the result of a call to the SetBans RPC method.
+//
+type SetBansResult struct {
+	RPCResultFooter `json:",inline"`
+}
+
 // GetFeeEstimateResult is the result of a call to the GetFeeEstimate RPC
 // method.
 //

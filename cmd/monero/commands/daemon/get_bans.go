@@ -19,7 +19,7 @@ type getBansCommand struct {
 func (c *getBansCommand) Cmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "get-bans",
-		Short: "all the nodes that have been banned by our node.",
+		Short: "all the nodes that have been banned by our node",
 		RunE:  c.RunE,
 	}
 
@@ -40,7 +40,7 @@ func (c *getBansCommand) RunE(_ *cobra.Command, _ []string) error {
 
 	resp, err := client.GetBans(ctx)
 	if err != nil {
-		return fmt.Errorf("get bans count: %w", err)
+		return fmt.Errorf("get bans: %w", err)
 	}
 
 	if c.JSON {

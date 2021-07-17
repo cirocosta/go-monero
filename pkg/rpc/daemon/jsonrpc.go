@@ -12,8 +12,8 @@ const (
 	methodGetBans                = "get_bans"
 	methodGetBlock               = "get_block"
 	methodGetBlockCount          = "get_block_count"
-	methodGetBlockHeaderByHeight = "get_block_header_by_height"
 	methodGetBlockHeaderByHash   = "get_block_header_by_hash"
+	methodGetBlockHeaderByHeight = "get_block_header_by_height"
 	methodGetBlockTemplate       = "get_block_template"
 	methodGetCoinbaseTxSum       = "get_coinbase_tx_sum"
 	methodGetConnections         = "get_connections"
@@ -25,6 +25,7 @@ const (
 	methodOnGetBlockHash         = "on_get_block_hash"
 	methodRPCAccessTracking      = "rpc_access_tracking"
 	methodRelayTx                = "relay_tx"
+	methodSetBans                = "set_bans"
 	methodSyncInfo               = "sync_info"
 )
 
@@ -77,6 +78,30 @@ func (c *Client) GetBans(ctx context.Context) (*GetBansResult, error) {
 	resp := &GetBansResult{}
 
 	if err := c.JSONRPC(ctx, methodGetBans, nil, resp); err != nil {
+		return nil, fmt.Errorf("jsonrpc: %w", err)
+	}
+
+	return resp, nil
+}
+
+type SetBansBan struct {
+	Host    string `json:"host"`
+	Ban     bool   `json:"ban"`
+	Seconds int64  `json:"seconds"`
+}
+
+type SetBansRequestParameters struct {
+	Bans []SetBansBan `json:"bans"`
+}
+
+// SetBans bans a particular host.
+//
+// (restricted)
+//
+func (c *Client) SetBans(ctx context.Context, params SetBansRequestParameters) (*SetBansResult, error) {
+	resp := &SetBansResult{}
+
+	if err := c.JSONRPC(ctx, methodSetBans, params, resp); err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
