@@ -21,24 +21,26 @@ var RootOptions = &options{}
 // package.
 //
 type options struct {
-	verbose        bool
-	requestTimeout time.Duration
-	address        string
+	address string
+	mhttp.HTTPClientConfig
 }
 
 // Context generates a new `context.Context` already honouring the deadline
 // specified in the options.
 //
 func (o *options) Context() (context.Context, context.CancelFunc) {
-	return context.WithTimeout(context.Background(), o.requestTimeout)
+	return context.WithTimeout(context.Background(), o.RequestTimeout)
 }
 
 // Client instantiates a new daemon RPC client based on the options filled.
 //
 func (o *options) Client() (*daemon.Client, error) {
-	client, err := rpc.NewClient(o.address,
-		rpc.WithHTTPClient(mhttp.NewHTTPClient(o.verbose)),
-	)
+	httpClient, err := mhttp.NewHTTPClient(o.HTTPClientConfig)
+	if err != nil {
+		return nil, fmt.Errorf("new httpclient: %w", err)
+	}
+
+	client, err := rpc.NewClient(o.address, rpc.WithHTTPClient(httpClient))
 	if err != nil {
 		return nil, fmt.Errorf("new daemon client for '%s': %w",
 			o.address, err,
@@ -52,9 +54,12 @@ func (o *options) Client() (*daemon.Client, error) {
 // filled.
 //
 func (o *options) WalletClient() (*wallet.Client, error) {
-	client, err := rpc.NewClient(o.address,
-		rpc.WithHTTPClient(mhttp.NewHTTPClient(o.verbose)),
-	)
+	httpClient, err := mhttp.NewHTTPClient(o.HTTPClientConfig)
+	if err != nil {
+		return nil, fmt.Errorf("new httpclient: %w", err)
+	}
+
+	client, err := rpc.NewClient(o.address, rpc.WithHTTPClient(httpClient))
 	if err != nil {
 		return nil, fmt.Errorf("new daemon client for '%s': %w",
 			o.address, err,
@@ -68,12 +73,24 @@ func (o *options) WalletClient() (*wallet.Client, error) {
 // can be filled either via comand arguments or environment variables.
 //
 func Bind(cmd *cobra.Command) {
-	cmd.PersistentFlags().BoolVarP(&RootOptions.verbose, "verbose", "v",
+	cmd.PersistentFlags().BoolVarP(&RootOptions.Verbose, "verbose", "v",
 		false, "dump http requests and responses to stderr")
 
 	cmd.PersistentFlags().StringVarP(&RootOptions.address, "address", "a",
 		"http://localhost:18081", "full address of the monero node to reach out to")
 
-	cmd.PersistentFlags().DurationVar(&RootOptions.requestTimeout, "request-timeout",
+	cmd.PersistentFlags().BoolVarP(&RootOptions.TLSSkipVerify, "tls-skip-verify", "k",
+		false, "skip verification of certificate chain and host name")
+
+	cmd.PersistentFlags().StringVar(&RootOptions.TLSClientCert, "tls-client-cert",
+		"", "tls client certificate to use when connecting")
+
+	cmd.PersistentFlags().StringVar(&RootOptions.TLSClientKey, "tls-client-key",
+		"", "tls client key to use when connecting")
+
+	cmd.PersistentFlags().StringVar(&RootOptions.TLSCACert, "tls-ca-cert",
+		"", "certificate authority to load")
+
+	cmd.PersistentFlags().DurationVar(&RootOptions.RequestTimeout, "request-timeout",
 		1*time.Minute, "how long to wait until considering the request a failure")
 }

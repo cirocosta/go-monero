@@ -71,12 +71,18 @@ func WithHTTPClient(v *http.Client) func(o *clientOptions) {
 // (typically <ip>:18081).
 //
 func NewClient(address string, opts ...ClientOption) (*Client, error) {
-	options := &clientOptions{
-		HTTPClient: mhttp.NewHTTPClient(false),
-	}
+	options := &clientOptions{}
 
 	for _, opt := range opts {
 		opt(options)
+	}
+
+	if options.HTTPClient == nil {
+		httpClient, err := mhttp.NewHTTPClient(mhttp.HTTPClientConfig{})
+		if err != nil {
+			return nil, fmt.Errorf("new http client: %w", err)
+		}
+		options.HTTPClient = httpClient
 	}
 
 	parsedAddress, err := url.Parse(address)
