@@ -36,8 +36,6 @@ func (o *options) Context() (context.Context, context.CancelFunc) {
 // Client instantiates a new daemon RPC client based on the options filled.
 //
 func (o *options) Client() (*daemon.Client, error) {
-	fmt.Println("ADDRESS:", o.address)
-
 	client, err := rpc.NewClient(o.address,
 		rpc.WithHTTPClient(mhttp.NewHTTPClient(o.verbose)),
 	)
