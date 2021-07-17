@@ -8,11 +8,12 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/cirocosta/go-monero/pkg/rpc"
 	"github.com/sclevine/spec"
 	"github.com/sclevine/spec/report"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/cirocosta/go-monero/pkg/rpc"
 )
 
 func TestClient(t *testing.T) {

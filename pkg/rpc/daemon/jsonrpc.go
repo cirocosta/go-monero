@@ -31,7 +31,7 @@ const (
 
 // GetAlternateChains displays alternative chains seen by the node.
 //
-// (restricted)
+// (restricted).
 //
 func (c *Client) GetAlternateChains(ctx context.Context) (*GetAlternateChainsResult, error) {
 	resp := &GetAlternateChainsResult{}
@@ -46,7 +46,7 @@ func (c *Client) GetAlternateChains(ctx context.Context) (*GetAlternateChainsRes
 // RPCAccessTracking retrieves statistics that the monero daemon keeps track of
 // about the use of each RPC method and endpoint.
 //
-// (restricted)
+// (restricted).
 //
 func (c *Client) RPCAccessTracking(ctx context.Context) (*RPCAccessTrackingResult, error) {
 	resp := &RPCAccessTrackingResult{}
@@ -72,7 +72,7 @@ func (c *Client) HardForkInfo(ctx context.Context) (*HardForkInfoResult, error) 
 
 // GetBans retrieves the list of banned IPs.
 //
-// (restricted)
+// (restricted).
 //
 func (c *Client) GetBans(ctx context.Context) (*GetBansResult, error) {
 	resp := &GetBansResult{}
@@ -96,7 +96,7 @@ type SetBansRequestParameters struct {
 
 // SetBans bans a particular host.
 //
-// (restricted)
+// (restricted).
 //
 func (c *Client) SetBans(ctx context.Context, params SetBansRequestParameters) (*SetBansResult, error) {
 	resp := &SetBansResult{}
@@ -110,7 +110,7 @@ func (c *Client) SetBans(ctx context.Context, params SetBansRequestParameters) (
 
 // GetVersion retrieves the version of monerod that the node uses.
 //
-// (restricted)
+// (restricted).
 //
 func (c *Client) GetVersion(ctx context.Context) (*GetVersionResult, error) {
 	resp := &GetVersionResult{}
@@ -149,7 +149,7 @@ type GenerateBlocksRequestParameters struct {
 //
 // Difficulty is set permanently to 1 for regtest.
 //
-// (restricted)
+// (restricted).
 //
 func (c *Client) GenerateBlocks(ctx context.Context, params GenerateBlocksRequestParameters) (*GenerateBlocksResult, error) {
 	resp := &GenerateBlocksResult{}

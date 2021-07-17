@@ -5,11 +5,12 @@ import (
 	"sort"
 	"time"
 
+	"github.com/dustin/go-humanize"
+	"github.com/spf13/cobra"
+
 	"github.com/cirocosta/go-monero/cmd/monero/display"
 	"github.com/cirocosta/go-monero/cmd/monero/options"
 	"github.com/cirocosta/go-monero/pkg/rpc/daemon"
-	"github.com/dustin/go-humanize"
-	"github.com/spf13/cobra"
 )
 
 type getPublicNodesCommand struct {

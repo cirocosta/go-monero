@@ -3,10 +3,11 @@ package levin_test
 import (
 	"testing"
 
-	"github.com/cirocosta/go-monero/pkg/levin"
 	"github.com/sclevine/spec"
 	"github.com/sclevine/spec/report"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/cirocosta/go-monero/pkg/levin"
 )
 
 func TestPortableStorage(t *testing.T) {

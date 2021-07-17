@@ -43,7 +43,7 @@ type GetAlternateChainsResult struct {
 		//
 		Difficulty int64 `json:"difficulty"`
 
-		// DifficultyTop64 is the most-significat 64 bits of the
+		// DifficultyTop64 is the most-significant 64 bits of the
 		// 128-bit network difficulty.
 		//
 		DifficultyTop64 int `json:"difficulty_top64"`
@@ -415,7 +415,7 @@ type BlockHeader struct {
 	//
 	Difficulty uint64 `json:"difficulty"`
 
-	// DifficultyTop64 corresponds to the most significat 64-bit of
+	// DifficultyTop64 corresponds to the most significant 64-bit of
 	// the 128-bit difficulty.
 	//
 	DifficultyTop64 uint64 `json:"difficulty_top64"`

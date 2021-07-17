@@ -203,7 +203,6 @@ func (c *getTransactionCommand) prettyInputs(
 			table.AddRow(idx, out.Key, out.Txid, out.Height,
 				humanize.Time(time.Unix(blockHeaderResp.BlockHeader.Timestamp, 0)),
 			)
-
 		}
 		fmt.Println(table)
 		fmt.Println()
