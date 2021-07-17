@@ -641,6 +641,14 @@ type GetLastBlockHeaderResult struct {
 	RPCResultFooter `json:",inline"`
 }
 
+// GetBlockHeaderByHeightResult is the result of a call to the GetBlockHeaderByHeight RPC method.
+//
+type GetBlockHeaderByHeightResult struct {
+	BlockHeader BlockHeader `json:"block_header"`
+
+	RPCResultFooter `json:",inline"`
+}
+
 // GetBlockHeaderByHashResult is the result of a call to the GetBlockHeaderByHash RPC method.
 //
 type GetBlockHeaderByHashResult struct {

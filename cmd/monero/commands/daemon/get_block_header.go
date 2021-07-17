@@ -10,16 +10,17 @@ import (
 	"github.com/cirocosta/go-monero/pkg/rpc/daemon"
 )
 
-type getBlockHeaderByHashCommand struct {
+type getBlockHeaderCommand struct {
 	Hashes []string
+	Height uint64
 	Unwrap bool
 
 	JSON bool
 }
 
-func (c *getBlockHeaderByHashCommand) Cmd() *cobra.Command {
+func (c *getBlockHeaderCommand) Cmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "get-block-header-by-hash",
+		Use:   "get-block-header",
 		Short: "retrieve block(s) header(s) by hash",
 		RunE:  c.RunE,
 	}
@@ -27,14 +28,15 @@ func (c *getBlockHeaderByHashCommand) Cmd() *cobra.Command {
 	cmd.Flags().BoolVar(&c.JSON, "json",
 		false, "whether or not to output the result as json")
 
+	cmd.Flags().Uint64Var(&c.Height, "height",
+		0, "height of a block to fetch")
 	cmd.Flags().StringArrayVar(&c.Hashes, "hash",
 		[]string{}, "hash of the block to get the header of")
-	cmd.MarkFlagRequired("hash")
 
 	return cmd
 }
 
-func (c *getBlockHeaderByHashCommand) RunE(_ *cobra.Command, _ []string) error {
+func (c *getBlockHeaderCommand) RunE(_ *cobra.Command, _ []string) error {
 	ctx, cancel := options.RootOptions.Context()
 	defer cancel()
 
@@ -43,21 +45,29 @@ func (c *getBlockHeaderByHashCommand) RunE(_ *cobra.Command, _ []string) error {
 		return fmt.Errorf("client: %w", err)
 	}
 
-	resp, err := client.GetBlockHeaderByHash(ctx, daemon.GetBlockHeaderByHashRequestParameters{
-		Hashes: c.Hashes,
-	})
-	if err != nil {
-		return fmt.Errorf("get block: %w", err)
+	if len(c.Hashes) > 0 {
+		resp, err := client.GetBlockHeaderByHash(ctx, c.Hashes)
+		if err != nil {
+			return fmt.Errorf("get block header by hash: %w", err)
+		}
+
+		c.pretty(resp.BlockHeaders)
+		return nil
 	}
 
-	c.pretty(resp)
+	resp, err := client.GetBlockHeaderByHeight(ctx, c.Height)
+	if err != nil {
+		return fmt.Errorf("get block header by height: %w", err)
+	}
+
+	c.pretty([]daemon.BlockHeader{resp.BlockHeader})
 	return nil
 }
 
-func (c *getBlockHeaderByHashCommand) pretty(v *daemon.GetBlockHeaderByHashResult) {
+func (c *getBlockHeaderCommand) pretty(blockHeaders []daemon.BlockHeader) {
 	table := display.NewTable()
 
-	for _, blockHeader := range v.BlockHeaders {
+	for _, blockHeader := range blockHeaders {
 		prettyBlockHeader(table, blockHeader)
 		table.AddRow("")
 	}
@@ -66,5 +76,5 @@ func (c *getBlockHeaderByHashCommand) pretty(v *daemon.GetBlockHeaderByHashResul
 }
 
 func init() {
-	RootCommand.AddCommand((&getBlockHeaderByHashCommand{}).Cmd())
+	RootCommand.AddCommand((&getBlockHeaderCommand{}).Cmd())
 }

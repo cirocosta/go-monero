@@ -7,24 +7,25 @@ import (
 )
 
 const (
-	methodGetAlternateChains   = "get_alternate_chains"
-	methodGetBans              = "get_bans"
-	methodGetVersion           = "get_version"
-	methodGetBlock             = "get_block"
-	methodGetBlockCount        = "get_block_count"
-	methodGetBlockHeaderByHash = "get_block_header_by_hash"
-	methodGetBlockTemplate     = "get_block_template"
-	methodGenerateBlocks       = "generateblocks"
-	methodGetCoinbaseTxSum     = "get_coinbase_tx_sum"
-	methodGetConnections       = "get_connections"
-	methodGetFeeEstimate       = "get_fee_estimate"
-	methodGetInfo              = "get_info"
-	methodGetLastBlockHeader   = "get_last_block_header"
-	methodHardForkInfo         = "hard_fork_info"
-	methodOnGetBlockHash       = "on_get_block_hash"
-	methodRPCAccessTracking    = "rpc_access_tracking"
-	methodRelayTx              = "relay_tx"
-	methodSyncInfo             = "sync_info"
+	methodGenerateBlocks         = "generateblocks"
+	methodGetAlternateChains     = "get_alternate_chains"
+	methodGetBans                = "get_bans"
+	methodGetBlock               = "get_block"
+	methodGetBlockCount          = "get_block_count"
+	methodGetBlockHeaderByHeight = "get_block_header_by_height"
+	methodGetBlockHeaderByHash   = "get_block_header_by_hash"
+	methodGetBlockTemplate       = "get_block_template"
+	methodGetCoinbaseTxSum       = "get_coinbase_tx_sum"
+	methodGetConnections         = "get_connections"
+	methodGetFeeEstimate         = "get_fee_estimate"
+	methodGetInfo                = "get_info"
+	methodGetLastBlockHeader     = "get_last_block_header"
+	methodGetVersion             = "get_version"
+	methodHardForkInfo           = "hard_fork_info"
+	methodOnGetBlockHash         = "on_get_block_hash"
+	methodRPCAccessTracking      = "rpc_access_tracking"
+	methodRelayTx                = "relay_tx"
+	methodSyncInfo               = "sync_info"
 )
 
 // GetAlternateChains displays alternative chains seen by the node.
@@ -252,40 +253,30 @@ func (j *GetBlockResult) InnerJSON() (*GetBlockResultJSON, error) {
 	return res, nil
 }
 
-// GetBlockHeaderByHashRequestParameters represents the set of possible parameters that can be used
-// for submitting a call to the `get_block` jsonrpc method.
+// GetBlockHeaderByHeight retrieves block header information for either one or
+// multiple blocks.
 //
-type GetBlockHeaderByHashRequestParameters struct {
-	Hashes []string `json:"hashes"`
-	Hash   *string  `json:"hash"`
-}
+func (c *Client) GetBlockHeaderByHeight(ctx context.Context, height uint64) (*GetBlockHeaderByHeightResult, error) {
+	resp := &GetBlockHeaderByHeightResult{}
 
-func (p GetBlockHeaderByHashRequestParameters) Validate() error {
-	if p.Hashes == nil && p.Hash == nil {
-		return fmt.Errorf("'hashes' or 'hash' must be set")
+	if err := c.JSONRPC(ctx, methodGetBlockHeaderByHeight, map[string]interface{}{
+		"height": height,
+	}, resp); err != nil {
+		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
-	if p.Hashes != nil && p.Hash != nil {
-		return fmt.Errorf("either 'hashes' or 'hash' must be set, not both")
-	}
-
-	return nil
+	return resp, nil
 }
 
 // GetBlockHeaderByHash retrieves block header information for either one or
 // multiple blocks.
 //
-// Dending on the input, different parts of the result will be filled:
-//   - `hashes`: BlockHeaders array is filled
-//   - `hash`: BlockHeader is filled
-//
-func (c *Client) GetBlockHeaderByHash(ctx context.Context, params GetBlockHeaderByHashRequestParameters) (*GetBlockHeaderByHashResult, error) {
-	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("validate: %w", err)
-	}
-
+func (c *Client) GetBlockHeaderByHash(ctx context.Context, hashes []string) (*GetBlockHeaderByHashResult, error) {
 	resp := &GetBlockHeaderByHashResult{}
-	if err := c.JSONRPC(ctx, methodGetBlockHeaderByHash, params, resp); err != nil {
+
+	if err := c.JSONRPC(ctx, methodGetBlockHeaderByHash, map[string]interface{}{
+		"hashes": hashes,
+	}, resp); err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 

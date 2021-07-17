@@ -1,13 +1,17 @@
 package daemon
 
 import (
-	"github.com/cirocosta/go-monero/pkg/rpc/daemon"
+	"time"
+
+	"github.com/dustin/go-humanize"
 	"github.com/gosuri/uitable"
+
+	"github.com/cirocosta/go-monero/pkg/rpc/daemon"
 )
 
 func prettyBlockHeader(table *uitable.Table, header daemon.BlockHeader) {
-	table.AddRow("Block Size:", header.BlockSize)
-	table.AddRow("Block Weight:", header.BlockWeight)
+	table.AddRow("Block Size:", humanize.Bytes(header.BlockSize))
+	table.AddRow("Block Weight:", humanize.Bytes(header.BlockWeight))
 	table.AddRow("Cumulative Difficulty:", header.CumulativeDifficulty)
 	table.AddRow("Cumulative Difficulty Top64:", header.CumulativeDifficultyTop64)
 	table.AddRow("Depth:", header.Depth)
@@ -25,7 +29,7 @@ func prettyBlockHeader(table *uitable.Table, header daemon.BlockHeader) {
 	table.AddRow("Proof-of-Work Hash:", header.PowHash)
 	table.AddRow("Previous Hash:", header.PrevHash)
 	table.AddRow("Reward:", header.Reward)
-	table.AddRow("Timestamp:", header.Timestamp)
+	table.AddRow("Timestamp:", time.Unix(header.Timestamp, 0))
 	table.AddRow("WIDE Cumulative Difficulty:", header.WideCumulativeDifficulty)
 	table.AddRow("Wide Difficulty:", header.WideDifficulty)
 }
