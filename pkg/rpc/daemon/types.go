@@ -683,25 +683,27 @@ type GetTransactionPoolStatsResult struct {
 	RPCResultFooter `json:",inline"`
 }
 
+type GetTransactionsResultTransaction struct {
+	AsHex           string `json:"as_hex"`
+	AsJSON          string `json:"as_json"`
+	BlockHeight     uint64 `json:"block_height"`
+	BlockTimestamp  int64  `json:"block_timestamp"`
+	DoubleSpendSeen bool   `json:"double_spend_seen"`
+	InPool          bool   `json:"in_pool"`
+	OutputIndices   []int  `json:"output_indices"`
+	PrunableAsHex   string `json:"prunable_as_hex"`
+	PrunableHash    string `json:"prunable_hash"`
+	PrunedAsHex     string `json:"pruned_as_hex"`
+	TxHash          string `json:"tx_hash"`
+}
+
 type GetTransactionsResult struct {
-	Credits int    `json:"credits"`
-	Status  string `json:"status"`
-	TopHash string `json:"top_hash"`
-	Txs     []struct {
-		AsHex           string `json:"as_hex"`
-		AsJSON          string `json:"as_json"`
-		BlockHeight     uint64 `json:"block_height"`
-		BlockTimestamp  int64  `json:"block_timestamp"`
-		DoubleSpendSeen bool   `json:"double_spend_seen"`
-		InPool          bool   `json:"in_pool"`
-		OutputIndices   []int  `json:"output_indices"`
-		PrunableAsHex   string `json:"prunable_as_hex"`
-		PrunableHash    string `json:"prunable_hash"`
-		PrunedAsHex     string `json:"pruned_as_hex"`
-		TxHash          string `json:"tx_hash"`
-	} `json:"txs"`
-	TxsAsHex  []string `json:"txs_as_hex"`
-	Untrusted bool     `json:"untrusted"`
+	Credits   int                                `json:"credits"`
+	Status    string                             `json:"status"`
+	TopHash   string                             `json:"top_hash"`
+	Txs       []GetTransactionsResultTransaction `json:"txs"`
+	TxsAsHex  []string                           `json:"txs_as_hex"`
+	Untrusted bool                               `json:"untrusted"`
 }
 
 type TransactionJSON struct {

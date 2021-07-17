@@ -79,13 +79,32 @@ func (c *getTransactionCommand) pretty(ctx context.Context, v *daemon.GetTransac
 		return nil
 	}
 
-	table := display.NewTable()
 	txn := v.Txs[0]
 
 	txnDetails := &daemon.TransactionJSON{}
 	if err := json.Unmarshal([]byte(txn.AsJSON), txnDetails); err != nil {
 		return fmt.Errorf("unsmarshal txjson: %w", err)
 	}
+
+	if err := c.prettyHeader(ctx, txn, txnDetails); err != nil {
+		return err
+	}
+	if err := c.prettyOutputs(ctx, txn, txnDetails); err != nil {
+		return err
+	}
+	if err := c.prettyInputs(ctx, txn, txnDetails); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *getTransactionCommand) prettyHeader(
+	ctx context.Context,
+	txn daemon.GetTransactionsResultTransaction,
+	txnDetails *daemon.TransactionJSON,
+) error {
+	table := display.NewTable()
 
 	confirmations := uint64(0)
 	fee := float64(txnDetails.RctSignatures.Txnfee)
@@ -116,7 +135,15 @@ func (c *getTransactionCommand) pretty(ctx context.Context, v *daemon.GetTransac
 	fmt.Println(table)
 	fmt.Println("")
 
-	table = display.NewTable()
+	return nil
+}
+
+func (c *getTransactionCommand) prettyOutputs(
+	ctx context.Context,
+	txn daemon.GetTransactionsResultTransaction,
+	txnDetails *daemon.TransactionJSON,
+) error {
+	table := display.NewTable()
 	table.AddRow("OUTPUTS")
 	table.AddRow("", "STEALTH ADDR", "AMOUNT", "AMOUNT IDX")
 	for idx, vout := range txnDetails.Vout {
@@ -131,20 +158,48 @@ func (c *getTransactionCommand) pretty(ctx context.Context, v *daemon.GetTransac
 	fmt.Println(table)
 	fmt.Println("")
 
+	return nil
+}
+
+func decodeOffsets(offsets []uint) []uint {
+	accum := uint(0)
+	res := make([]uint, len(offsets))
+
+	for idx, offset := range offsets {
+		accum += offset
+		res[idx] = accum
+	}
+
+	return res
+}
+
+func (c *getTransactionCommand) prettyInputs(
+	ctx context.Context,
+	txn daemon.GetTransactionsResultTransaction,
+	txnDetails *daemon.TransactionJSON,
+) error {
 	for _, vin := range txnDetails.Vin {
-		outsResp, err := c.client.GetOuts(ctx, vin.Key.KeyOffsets, true)
+		outsResp, err := c.client.GetOuts(ctx, decodeOffsets(vin.Key.KeyOffsets), true)
 		if err != nil {
 			return fmt.Errorf("outs: %w", err)
 		}
 
-		table = display.NewTable()
+		table := display.NewTable()
 		table.AddRow("Input Key Image:", vin.Key.KImage)
 		fmt.Println(table)
 
 		table = display.NewTable()
 		table.AddRow("", "RING MEMBER", "TXID", "BLK", "AGE")
 		for idx, out := range outsResp.Outs {
-			table.AddRow(idx, out.Key, out.Txid, out.Height)
+			blockHeaderResp, err := c.client.GetBlockHeaderByHeight(ctx, out.Height)
+			if err != nil {
+				return fmt.Errorf("get block header by height %d: %w", out.Height, err)
+			}
+
+			table.AddRow(idx, out.Key, out.Txid, out.Height,
+				humanize.Time(time.Unix(blockHeaderResp.BlockHeader.Timestamp, 0)),
+			)
+
 		}
 		fmt.Println(table)
 		fmt.Println()
