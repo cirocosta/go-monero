@@ -15,7 +15,7 @@ func prettyBlockHeader(table *uitable.Table, header daemon.BlockHeader) {
 	table.AddRow("Cumulative Difficulty:", header.CumulativeDifficulty)
 	table.AddRow("Cumulative Difficulty Top64:", header.CumulativeDifficultyTop64)
 	table.AddRow("Depth:", header.Depth)
-	table.AddRow("Difficulty:", header.Difficulty)
+	table.AddRow("Difficulty:", humanize.Comma(int64(header.Difficulty)))
 	table.AddRow("Difficulty Top64:", header.DifficultyTop64)
 	table.AddRow("Hash:", header.Hash)
 	table.AddRow("Height:", header.Height)
@@ -30,6 +30,6 @@ func prettyBlockHeader(table *uitable.Table, header daemon.BlockHeader) {
 	table.AddRow("Previous Hash:", header.PrevHash)
 	table.AddRow("Reward:", header.Reward)
 	table.AddRow("Timestamp:", time.Unix(header.Timestamp, 0))
-	table.AddRow("WIDE Cumulative Difficulty:", header.WideCumulativeDifficulty)
+	table.AddRow("Wide Cumulative Difficulty:", header.WideCumulativeDifficulty)
 	table.AddRow("Wide Difficulty:", header.WideDifficulty)
 }

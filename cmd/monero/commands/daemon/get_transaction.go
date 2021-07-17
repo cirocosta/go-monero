@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/dustin/go-humanize"
@@ -148,12 +149,12 @@ func (c *getTransactionCommand) prettyOutputs(
 	table.AddRow()
 	table.AddRow("", "STEALTH ADDR", "AMOUNT", "AMOUNT IDX")
 	for idx, vout := range txnDetails.Vout {
-		table.AddRow(
-			idx,
-			vout.Target.Key,
-			vout.Amount,
-			txn.OutputIndices[idx],
-		)
+		amount := "?"
+		if vout.Amount != 0 {
+			amount = strconv.Itoa(vout.Amount)
+		}
+
+		table.AddRow(idx, vout.Target.Key, amount, txn.OutputIndices[idx])
 	}
 
 	fmt.Println(table)

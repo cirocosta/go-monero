@@ -24,7 +24,7 @@ $ GO111MODULE=on go get github.com/cirocosta/go-monero/cmd/monero
 
 or fetching the binary for your distribution - check out the [releases page](https://github.com/cirocosta/go-monero/releases).
 
-```
+```console
 $ monero --help
 Daemon, Wallet, and p2p command line monero CLI
 
@@ -42,8 +42,10 @@ Flags:
   -h, --help   help for monero
 
 Use "monero [command] --help" for more information about a command.
+```
 
 
+```console
 $ monero daemon --help
 execute remote procedure calls against a monero node
 
@@ -53,27 +55,30 @@ Usage:
 Available Commands:
   generate-blocks            generate blocks when in regtest mode
   get-alternate-chains       display alternative chains as seen by the node
-  get-bans                   all the nodes that have been banned by our node.
+  get-bans                   all the nodes that have been banned by our node
   get-block                  full block information by either block height or hash
   get-block-count            look up how many blocks are in the longest chain known to the node
-  get-block-header-by-hash   retrieve block(s) header(s) by hash
+  get-block-header           retrieve block(s) header(s) by hash
   get-block-template         generate a block template for mining a new block
   get-coinbase-tx-sum        compute the coinbase amount and the fees amount for n last blocks starting at particular height
   get-connections            information about incoming and outgoing connections.
   get-fee-estimate           estimate fees in atomic units per kB
-  get-height                 node's current height
+  get-height                 node's current chain height
   get-info                   general information about the node and the network
   get-last-block-header      header of the last block.
   get-net-stats              networking statistics.
+  get-outs                   output details
   get-peer-list              peers lists (white and gray)
   get-public-nodes           all known peers advertising as public nodes
+  get-transaction            lookup a transaction, in the pool or not
   get-transaction-pool       information about valid transactions seen by the node but not yet mined into a block, including spent key image info for the txpool
   get-transaction-pool-stats statistics about the transaction pool
-  get-transactions           lookup one or more transactions by hash
+  get-version                version of the monero daemon
   hardfork-info              information regarding hard fork voting and readiness.
   on-get-block-hash          find out block's hash by height
   relay-tx                   relay a list of transaction ids
   rpc-access-tracking        statistics about rpc access
+  set-bans                   ban another nodes
   sync-info                  daemon's chain synchronization info
 
 Flags:
