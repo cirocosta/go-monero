@@ -8,6 +8,7 @@ import (
 	"github.com/cirocosta/go-monero/pkg/rpc/daemon"
 )
 
+// nolint
 func ExampleGetHeight() {
 	ctx := context.Background()
 	addr := "http://localhost:18081"

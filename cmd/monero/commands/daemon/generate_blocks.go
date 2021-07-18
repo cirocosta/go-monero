@@ -28,7 +28,7 @@ func (c *generateBlocksCommand) Cmd() *cobra.Command {
 		1, "number of blocks to generate")
 	cmd.Flags().StringVar(&c.walletAddress, "wallet-address",
 		"", "address submit the block rewards to")
-	cmd.MarkFlagRequired("wallet-address")
+	_ = cmd.MarkFlagRequired("wallet-address")
 
 	return cmd
 }
@@ -55,9 +55,11 @@ func (c *generateBlocksCommand) RunE(cmd *cobra.Command, args []string) error {
 	}
 
 	c.pretty(resp)
+
 	return nil
 }
 
+// nolint:forbidigo
 func (c *generateBlocksCommand) pretty(v *daemon.GenerateBlocksResult) {
 	table := display.NewTable()
 

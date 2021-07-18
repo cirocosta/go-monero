@@ -50,6 +50,7 @@ func (c *syncInfoCommand) RunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
+// nolint:forbidigo
 func (c *syncInfoCommand) pretty(v *daemon.SyncInfoResult) {
 	table := display.NewTable()
 

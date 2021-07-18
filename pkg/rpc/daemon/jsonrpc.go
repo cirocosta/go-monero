@@ -33,10 +33,13 @@ const (
 //
 // (restricted).
 //
-func (c *Client) GetAlternateChains(ctx context.Context) (*GetAlternateChainsResult, error) {
+func (c *Client) GetAlternateChains(
+	ctx context.Context,
+) (*GetAlternateChainsResult, error) {
 	resp := &GetAlternateChainsResult{}
 
-	if err := c.JSONRPC(ctx, methodGetAlternateChains, nil, resp); err != nil {
+	err := c.JSONRPC(ctx, methodGetAlternateChains, nil, resp)
+	if err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
@@ -48,10 +51,13 @@ func (c *Client) GetAlternateChains(ctx context.Context) (*GetAlternateChainsRes
 //
 // (restricted).
 //
-func (c *Client) RPCAccessTracking(ctx context.Context) (*RPCAccessTrackingResult, error) {
+func (c *Client) RPCAccessTracking(
+	ctx context.Context,
+) (*RPCAccessTrackingResult, error) {
 	resp := &RPCAccessTrackingResult{}
 
-	if err := c.JSONRPC(ctx, methodRPCAccessTracking, nil, resp); err != nil {
+	err := c.JSONRPC(ctx, methodRPCAccessTracking, nil, resp)
+	if err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
@@ -60,10 +66,13 @@ func (c *Client) RPCAccessTracking(ctx context.Context) (*RPCAccessTrackingResul
 
 // HardForkInfo looks up informaiton about the last hard fork.
 //
-func (c *Client) HardForkInfo(ctx context.Context) (*HardForkInfoResult, error) {
+func (c *Client) HardForkInfo(
+	ctx context.Context,
+) (*HardForkInfoResult, error) {
 	resp := &HardForkInfoResult{}
 
-	if err := c.JSONRPC(ctx, methodHardForkInfo, nil, resp); err != nil {
+	err := c.JSONRPC(ctx, methodHardForkInfo, nil, resp)
+	if err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
@@ -77,7 +86,8 @@ func (c *Client) HardForkInfo(ctx context.Context) (*HardForkInfoResult, error) 
 func (c *Client) GetBans(ctx context.Context) (*GetBansResult, error) {
 	resp := &GetBansResult{}
 
-	if err := c.JSONRPC(ctx, methodGetBans, nil, resp); err != nil {
+	err := c.JSONRPC(ctx, methodGetBans, nil, resp)
+	if err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
@@ -98,10 +108,13 @@ type SetBansRequestParameters struct {
 //
 // (restricted).
 //
-func (c *Client) SetBans(ctx context.Context, params SetBansRequestParameters) (*SetBansResult, error) {
+func (c *Client) SetBans(
+	ctx context.Context, params SetBansRequestParameters,
+) (*SetBansResult, error) {
 	resp := &SetBansResult{}
 
-	if err := c.JSONRPC(ctx, methodSetBans, params, resp); err != nil {
+	err := c.JSONRPC(ctx, methodSetBans, params, resp)
+	if err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
@@ -115,7 +128,8 @@ func (c *Client) SetBans(ctx context.Context, params SetBansRequestParameters) (
 func (c *Client) GetVersion(ctx context.Context) (*GetVersionResult, error) {
 	resp := &GetVersionResult{}
 
-	if err := c.JSONRPC(ctx, methodGetVersion, nil, resp); err != nil {
+	err := c.JSONRPC(ctx, methodGetVersion, nil, resp)
+	if err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
@@ -151,48 +165,56 @@ type GenerateBlocksRequestParameters struct {
 //
 // (restricted).
 //
-func (c *Client) GenerateBlocks(ctx context.Context, params GenerateBlocksRequestParameters) (*GenerateBlocksResult, error) {
+func (c *Client) GenerateBlocks(
+	ctx context.Context, params GenerateBlocksRequestParameters,
+) (*GenerateBlocksResult, error) {
 	resp := &GenerateBlocksResult{}
 
-	if err := c.JSONRPC(ctx, methodGenerateBlocks, params, resp); err != nil {
+	err := c.JSONRPC(ctx, methodGenerateBlocks, params, resp)
+	if err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
 	return resp, nil
 }
 
-func (c *Client) GetBlockCount(ctx context.Context) (*GetBlockCountResult, error) {
+func (c *Client) GetBlockCount(
+	ctx context.Context,
+) (*GetBlockCountResult, error) {
 	resp := &GetBlockCountResult{}
 
-	if err := c.JSONRPC(ctx, methodGetBlockCount, nil, resp); err != nil {
+	err := c.JSONRPC(ctx, methodGetBlockCount, nil, resp)
+	if err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
 	return resp, nil
 }
 
-func (c *Client) OnGetBlockHash(ctx context.Context, height uint64) (string, error) {
-	var (
-		resp   = ""
-		params = []uint64{height}
-	)
+func (c *Client) OnGetBlockHash(
+	ctx context.Context, height uint64,
+) (string, error) {
+	resp := ""
+	params := []uint64{height}
 
-	if err := c.JSONRPC(ctx, methodOnGetBlockHash, params, &resp); err != nil {
+	err := c.JSONRPC(ctx, methodOnGetBlockHash, params, &resp)
+	if err != nil {
 		return "", fmt.Errorf("jsonrpc: %w", err)
 	}
 
 	return resp, nil
 }
 
-func (c *Client) RelayTx(ctx context.Context, txns []string) (*RelayTxResult, error) {
-	var (
-		resp   = &RelayTxResult{}
-		params = map[string]interface{}{
-			"txids": txns,
-		}
-	)
+func (c *Client) RelayTx(
+	ctx context.Context, txns []string,
+) (*RelayTxResult, error) {
+	resp := &RelayTxResult{}
+	params := map[string]interface{}{
+		"txids": txns,
+	}
 
-	if err := c.JSONRPC(ctx, methodRelayTx, params, resp); err != nil {
+	err := c.JSONRPC(ctx, methodRelayTx, params, resp)
+	if err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
@@ -201,26 +223,30 @@ func (c *Client) RelayTx(ctx context.Context, txns []string) (*RelayTxResult, er
 
 // GetBlockTemplate gets a block template on which mining a new block.
 //
-func (c *Client) GetBlockTemplate(ctx context.Context, walletAddress string, reserveSize uint) (*GetBlockTemplateResult, error) {
-	var (
-		resp   = &GetBlockTemplateResult{}
-		params = map[string]interface{}{
-			"wallet_address": walletAddress,
-			"reserve_size":   reserveSize,
-		}
-	)
+func (c *Client) GetBlockTemplate(
+	ctx context.Context, walletAddress string, reserveSize uint,
+) (*GetBlockTemplateResult, error) {
+	resp := &GetBlockTemplateResult{}
+	params := map[string]interface{}{
+		"wallet_address": walletAddress,
+		"reserve_size":   reserveSize,
+	}
 
-	if err := c.JSONRPC(ctx, methodGetBlockTemplate, params, resp); err != nil {
+	err := c.JSONRPC(ctx, methodGetBlockTemplate, params, resp)
+	if err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
 	return resp, nil
 }
 
-func (c *Client) GetConnections(ctx context.Context) (*GetConnectionsResult, error) {
+func (c *Client) GetConnections(
+	ctx context.Context,
+) (*GetConnectionsResult, error) {
 	resp := &GetConnectionsResult{}
 
-	if err := c.JSONRPC(ctx, methodGetConnections, nil, resp); err != nil {
+	err := c.JSONRPC(ctx, methodGetConnections, nil, resp)
+	if err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
@@ -240,26 +266,30 @@ func (c *Client) GetInfo(ctx context.Context) (*GetInfoResult, error) {
 	return resp, nil
 }
 
-func (c *Client) GetLastBlockHeader(ctx context.Context) (*GetLastBlockHeaderResult, error) {
+func (c *Client) GetLastBlockHeader(
+	ctx context.Context,
+) (*GetLastBlockHeaderResult, error) {
 	resp := &GetLastBlockHeaderResult{}
 
-	if err := c.JSONRPC(ctx, methodGetLastBlockHeader, nil, resp); err != nil {
+	err := c.JSONRPC(ctx, methodGetLastBlockHeader, nil, resp)
+	if err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
 	return resp, nil
 }
 
-func (c *Client) GetCoinbaseTxSum(ctx context.Context, height, count uint64) (*GetCoinbaseTxSumResult, error) {
-	var (
-		resp   = &GetCoinbaseTxSumResult{}
-		params = map[string]uint64{
-			"height": height,
-			"count":  count,
-		}
-	)
+func (c *Client) GetCoinbaseTxSum(
+	ctx context.Context, height, count uint64,
+) (*GetCoinbaseTxSumResult, error) {
+	resp := &GetCoinbaseTxSumResult{}
+	params := map[string]uint64{
+		"height": height,
+		"count":  count,
+	}
 
-	if err := c.JSONRPC(ctx, methodGetCoinbaseTxSum, params, resp); err != nil {
+	err := c.JSONRPC(ctx, methodGetCoinbaseTxSum, params, resp)
+	if err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
@@ -271,7 +301,8 @@ func (c *Client) GetCoinbaseTxSum(ctx context.Context, height, count uint64) (*G
 func (j *GetBlockResult) InnerJSON() (*GetBlockResultJSON, error) {
 	res := &GetBlockResultJSON{}
 
-	if err := json.Unmarshal([]byte(j.JSON), res); err != nil {
+	err := json.Unmarshal([]byte(j.JSON), res)
+	if err != nil {
 		return nil, fmt.Errorf("unmarshal: %w", err)
 	}
 
@@ -281,12 +312,16 @@ func (j *GetBlockResult) InnerJSON() (*GetBlockResultJSON, error) {
 // GetBlockHeaderByHeight retrieves block header information for either one or
 // multiple blocks.
 //
-func (c *Client) GetBlockHeaderByHeight(ctx context.Context, height uint64) (*GetBlockHeaderByHeightResult, error) {
+func (c *Client) GetBlockHeaderByHeight(
+	ctx context.Context, height uint64,
+) (*GetBlockHeaderByHeightResult, error) {
 	resp := &GetBlockHeaderByHeightResult{}
-
-	if err := c.JSONRPC(ctx, methodGetBlockHeaderByHeight, map[string]interface{}{
+	params := map[string]interface{}{
 		"height": height,
-	}, resp); err != nil {
+	}
+
+	err := c.JSONRPC(ctx, methodGetBlockHeaderByHeight, params, resp)
+	if err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
@@ -296,20 +331,24 @@ func (c *Client) GetBlockHeaderByHeight(ctx context.Context, height uint64) (*Ge
 // GetBlockHeaderByHash retrieves block header information for either one or
 // multiple blocks.
 //
-func (c *Client) GetBlockHeaderByHash(ctx context.Context, hashes []string) (*GetBlockHeaderByHashResult, error) {
+func (c *Client) GetBlockHeaderByHash(
+	ctx context.Context, hashes []string,
+) (*GetBlockHeaderByHashResult, error) {
 	resp := &GetBlockHeaderByHashResult{}
-
-	if err := c.JSONRPC(ctx, methodGetBlockHeaderByHash, map[string]interface{}{
+	params := map[string]interface{}{
 		"hashes": hashes,
-	}, resp); err != nil {
+	}
+
+	err := c.JSONRPC(ctx, methodGetBlockHeaderByHash, params, resp)
+	if err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
 	return resp, nil
 }
 
-// GetBlockRequestParameters represents the set of possible parameters that can be used
-// for submitting a call to the `get_block` jsonrpc method.
+// GetBlockRequestParameters represents the set of possible parameters that can
+// be used for submitting a call to the `get_block` jsonrpc method.
 //
 type GetBlockRequestParameters struct {
 	Height uint64 `json:"height,omitempty"`
@@ -318,24 +357,29 @@ type GetBlockRequestParameters struct {
 
 // GetBlock fetches full block information from a block at a particular hash OR height.
 //
-func (c *Client) GetBlock(ctx context.Context, params GetBlockRequestParameters) (*GetBlockResult, error) {
+func (c *Client) GetBlock(
+	ctx context.Context, params GetBlockRequestParameters,
+) (*GetBlockResult, error) {
 	resp := &GetBlockResult{}
-	if err := c.JSONRPC(ctx, methodGetBlock, params, resp); err != nil {
+
+	err := c.JSONRPC(ctx, methodGetBlock, params, resp)
+	if err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
 	return resp, nil
 }
 
-func (c *Client) GetFeeEstimate(ctx context.Context, graceBlocks uint64) (*GetFeeEstimateResult, error) {
-	var (
-		resp   = new(GetFeeEstimateResult)
-		params = map[string]uint64{
-			"grace_blocks": graceBlocks,
-		}
-	)
+func (c *Client) GetFeeEstimate(
+	ctx context.Context, graceBlocks uint64,
+) (*GetFeeEstimateResult, error) {
+	resp := &GetFeeEstimateResult{}
+	params := map[string]uint64{
+		"grace_blocks": graceBlocks,
+	}
 
-	if err := c.JSONRPC(ctx, methodGetFeeEstimate, params, resp); err != nil {
+	err := c.JSONRPC(ctx, methodGetFeeEstimate, params, resp)
+	if err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
@@ -343,9 +387,10 @@ func (c *Client) GetFeeEstimate(ctx context.Context, graceBlocks uint64) (*GetFe
 }
 
 func (c *Client) SyncInfo(ctx context.Context) (*SyncInfoResult, error) {
-	resp := new(SyncInfoResult)
+	resp := &SyncInfoResult{}
 
-	if err := c.JSONRPC(ctx, methodSyncInfo, nil, resp); err != nil {
+	err := c.JSONRPC(ctx, methodSyncInfo, nil, resp)
+	if err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 

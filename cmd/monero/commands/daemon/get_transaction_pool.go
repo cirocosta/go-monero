@@ -21,9 +21,11 @@ type getTransactionPoolCommand struct {
 
 func (c *getTransactionPoolCommand) Cmd() *cobra.Command {
 	cmd := &cobra.Command{
-		Use:   "get-transaction-pool",
-		Short: "information about valid transactions seen by the node but not yet mined into a block, including spent key image info for the txpool",
-		RunE:  c.RunE,
+		Use: "get-transaction-pool",
+		Short: "information about valid transactions seen by the " +
+			"node but not yet mined into a block, including " +
+			"spent key image info for the txpool",
+		RunE: c.RunE,
 	}
 
 	cmd.Flags().BoolVar(&c.JSON, "json",
@@ -53,6 +55,7 @@ func (c *getTransactionPoolCommand) RunE(_ *cobra.Command, _ []string) error {
 	return c.pretty(resp)
 }
 
+// nolint:forbidigo
 func (c *getTransactionPoolCommand) pretty(v *daemon.GetTransactionPoolResult) error {
 	table := display.NewTable()
 

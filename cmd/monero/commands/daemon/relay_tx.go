@@ -27,7 +27,7 @@ func (c *relayTxCommand) Cmd() *cobra.Command {
 		false, "whether or not to output the result as json")
 	cmd.Flags().StringArrayVar(&c.Txns, "txn",
 		[]string{}, "id of a transaction to relay")
-	cmd.MarkFlagRequired("txn")
+	_ = cmd.MarkFlagRequired("txn")
 
 	return cmd
 }
@@ -54,6 +54,7 @@ func (c *relayTxCommand) RunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
+// nolint:forbidigo
 func (c *relayTxCommand) pretty(v *daemon.RelayTxResult) {
 	fmt.Println(v.Status)
 }

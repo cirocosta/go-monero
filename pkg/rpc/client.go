@@ -78,7 +78,7 @@ func NewClient(address string, opts ...ClientOption) (*Client, error) {
 	}
 
 	if options.HTTPClient == nil {
-		httpClient, err := mhttp.NewHTTPClient(mhttp.HTTPClientConfig{})
+		httpClient, err := mhttp.NewHTTPClient(mhttp.ClientConfig{})
 		if err != nil {
 			return nil, fmt.Errorf("new http client: %w", err)
 		}

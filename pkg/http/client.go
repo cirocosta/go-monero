@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-type HTTPClientConfig struct {
+type ClientConfig struct {
 	TLSSkipVerify  bool
 	TLSClientCert  string
 	TLSClientKey   string
@@ -16,7 +16,7 @@ type HTTPClientConfig struct {
 	RequestTimeout time.Duration
 }
 
-func (c HTTPClientConfig) Validate() error {
+func (c ClientConfig) Validate() error {
 	if c.TLSClientCert != "" && c.TLSClientKey == "" {
 		return fmt.Errorf("tls client certificate specified but tls client key not")
 	}
@@ -35,12 +35,14 @@ func (c HTTPClientConfig) Validate() error {
 //
 // `skipTLSVerify`: if set, skips TLS validation.
 //
-func NewHTTPClient(cfg HTTPClientConfig) (*http.Client, error) {
+func NewHTTPClient(cfg ClientConfig) (*http.Client, error) {
 	if err := cfg.Validate(); err != nil {
 		return nil, fmt.Errorf("validate: %w", err)
 	}
 
-	tlsConfig := &tls.Config{}
+	tlsConfig := &tls.Config{
+		MinVersion: tls.VersionTLS12,
+	}
 	if cfg.TLSCACert != "" {
 		if err := WithCACert(cfg.TLSCACert)(tlsConfig); err != nil {
 			return nil, fmt.Errorf("with tls ca cert: %w", err)
@@ -54,7 +56,7 @@ func NewHTTPClient(cfg HTTPClientConfig) (*http.Client, error) {
 	}
 
 	if cfg.TLSSkipVerify {
-		WithInsecureSkipVerify()(tlsConfig)
+		_ = WithInsecureSkipVerify()(tlsConfig)
 	}
 
 	transport := http.DefaultTransport.(*http.Transport).Clone()

@@ -34,7 +34,7 @@ func (c *getTransactionCommand) Cmd() *cobra.Command {
 
 	cmd.Flags().StringVar(&c.Txn, "txn",
 		"", "hash of a transaction to lookup")
-	cmd.MarkFlagRequired("txn")
+	_ = cmd.MarkFlagRequired("txn")
 
 	cmd.Flags().BoolVar(&c.JSON, "json",
 		false, "whether or not to output the result as json")
@@ -90,16 +90,14 @@ func (c *getTransactionCommand) pretty(ctx context.Context, v *daemon.GetTransac
 	if err := c.prettyHeader(ctx, txn, txnDetails); err != nil {
 		return err
 	}
-	if err := c.prettyOutputs(ctx, txn, txnDetails); err != nil {
-		return err
-	}
-	if err := c.prettyInputs(ctx, txn, txnDetails); err != nil {
+	if err := c.prettyOutputs(txn, txnDetails); err != nil {
 		return err
 	}
 
-	return nil
+	return c.prettyInputs(ctx, txnDetails)
 }
 
+// nolint:forbidigo
 func (c *getTransactionCommand) prettyHeader(
 	ctx context.Context,
 	txn daemon.GetTransactionsResultTransaction,
@@ -107,7 +105,6 @@ func (c *getTransactionCommand) prettyHeader(
 ) error {
 	table := display.NewTable()
 
-	confirmations := uint64(0)
 	fee := float64(txnDetails.RctSignatures.Txnfee)
 	size := len(txn.AsHex) / 2
 
@@ -118,7 +115,7 @@ func (c *getTransactionCommand) prettyHeader(
 	table.AddRow("Size:", humanize.IBytes(uint64(len(txn.AsHex))/2))
 	table.AddRow("Public Key:", hex.EncodeToString(txnDetails.Extra[1:33]))
 
-	if txn.InPool == false {
+	if !txn.InPool {
 		table.AddRow("Age:", humanize.Time(time.Unix(txn.BlockTimestamp, 0)))
 		table.AddRow("Block:", txn.BlockHeight)
 
@@ -127,8 +124,7 @@ func (c *getTransactionCommand) prettyHeader(
 			return fmt.Errorf("get block count: %w", err)
 		}
 
-		confirmations = heightResp.Height - txn.BlockHeight
-		table.AddRow("Confirmations:", confirmations)
+		table.AddRow("Confirmations:", heightResp.Height-txn.BlockHeight)
 	} else {
 		table.AddRow("Confirmations:", 0)
 	}
@@ -139,8 +135,8 @@ func (c *getTransactionCommand) prettyHeader(
 	return nil
 }
 
+// nolint:forbidigo
 func (c *getTransactionCommand) prettyOutputs(
-	ctx context.Context,
 	txn daemon.GetTransactionsResultTransaction,
 	txnDetails *daemon.TransactionJSON,
 ) error {
@@ -175,9 +171,9 @@ func decodeOffsets(offsets []uint) []uint {
 	return res
 }
 
+// nolint:forbidigo
 func (c *getTransactionCommand) prettyInputs(
 	ctx context.Context,
-	txn daemon.GetTransactionsResultTransaction,
 	txnDetails *daemon.TransactionJSON,
 ) error {
 	for _, vin := range txnDetails.Vin {

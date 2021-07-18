@@ -30,7 +30,7 @@ func (c *setBansCommand) Cmd() *cobra.Command {
 		false, "whether or not to output the result as json")
 	cmd.Flags().IPVar(&c.Host, "host",
 		nil, "ip address (string format) of the host to ban")
-	cmd.MarkFlagRequired("host")
+	_ = cmd.MarkFlagRequired("host")
 
 	cmd.Flags().DurationVar(&c.Duration, "duration",
 		24*time.Hour, "for how long this host should be banned for")
@@ -69,6 +69,7 @@ func (c *setBansCommand) RunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
+// nolint:forbidigo
 func (c *setBansCommand) pretty(v *daemon.SetBansResult) {
 	fmt.Println(v.Status)
 }

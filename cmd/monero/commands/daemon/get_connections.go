@@ -52,6 +52,7 @@ func (c *getConnectionsCommand) RunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
+// nolint:forbidigo
 func (c *getConnectionsCommand) pretty(v *daemon.GetConnectionsResult) {
 	table := display.NewTable()
 
@@ -66,7 +67,7 @@ func (c *getConnectionsCommand) pretty(v *daemon.GetConnectionsResult) {
 			connection.Incoming,
 			connection.State,
 			connection.Height,
-			humanize.Time(time.Now().Add(-1*time.Duration(connection.LiveTime)*time.Second)),
+			humanize.Time(time.Now().Add(-1*time.Duration(connection.LiveTime)*time.Second)), // nolint:durationcheck
 			humanize.IBytes(connection.RecvCount),
 			humanize.IBytes(connection.SendCount),
 		)

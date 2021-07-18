@@ -57,6 +57,7 @@ func (c *getBalanceCommand) RunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
+// nolint:forbidigo
 func (c *getBalanceCommand) pretty(v *wallet.GetBalanceResult) {
 	table := display.NewTable()
 

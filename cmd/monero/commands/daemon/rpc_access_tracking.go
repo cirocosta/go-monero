@@ -51,6 +51,7 @@ func (c *rpcAccessTrackingCommand) RunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
+// nolint:forbidigo
 func (c *rpcAccessTrackingCommand) pretty(v *daemon.RPCAccessTrackingResult) {
 	table := display.NewTable()
 

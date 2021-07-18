@@ -58,6 +58,7 @@ func (c *getCoinbaseTxSumCommand) RunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
+// nolint:forbidigo
 func (c *getCoinbaseTxSumCommand) pretty(v *daemon.GetCoinbaseTxSumResult) {
 	table := display.NewTable()
 

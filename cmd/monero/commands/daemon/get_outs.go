@@ -31,7 +31,7 @@ func (c *getOutsCommand) Cmd() *cobra.Command {
 
 	cmd.Flags().UintSliceVar(&c.Outputs, "output",
 		[]uint{}, "key offsets to lookup output information about")
-	cmd.MarkFlagRequired("output")
+	_ = cmd.MarkFlagRequired("output")
 
 	return cmd
 }
@@ -58,6 +58,7 @@ func (c *getOutsCommand) RunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
+// nolint:forbidigo
 func (c *getOutsCommand) pretty(v *daemon.GetOutsResult) {
 	table := display.NewTable()
 

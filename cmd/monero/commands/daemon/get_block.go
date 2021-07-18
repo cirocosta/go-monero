@@ -83,6 +83,7 @@ func (c *getBlockCommand) RunE(_ *cobra.Command, _ []string) error {
 	return c.pretty(ctx, resp)
 }
 
+// nolint:forbidigo
 func (c *getBlockCommand) pretty(ctx context.Context, v *daemon.GetBlockResult) error {
 	table := display.NewTable()
 

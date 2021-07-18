@@ -49,6 +49,7 @@ func (c *getVersionCommand) RunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
+// nolint:forbidigo
 func (c *getVersionCommand) pretty(v *daemon.GetVersionResult) {
 	table := display.NewTable()
 

@@ -49,6 +49,7 @@ func (c *getBlockCountCommand) RunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
+// nolint:forbidigo
 func (c *getBlockCountCommand) pretty(v *daemon.GetBlockCountResult) {
 	table := display.NewTable()
 

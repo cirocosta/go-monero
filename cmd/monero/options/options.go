@@ -22,7 +22,7 @@ var RootOptions = &options{}
 //
 type options struct {
 	address string
-	mhttp.HTTPClientConfig
+	mhttp.ClientConfig
 }
 
 // Context generates a new `context.Context` already honouring the deadline
@@ -35,7 +35,7 @@ func (o *options) Context() (context.Context, context.CancelFunc) {
 // Client instantiates a new daemon RPC client based on the options filled.
 //
 func (o *options) Client() (*daemon.Client, error) {
-	httpClient, err := mhttp.NewHTTPClient(o.HTTPClientConfig)
+	httpClient, err := mhttp.NewHTTPClient(o.ClientConfig)
 	if err != nil {
 		return nil, fmt.Errorf("new httpclient: %w", err)
 	}
@@ -54,7 +54,7 @@ func (o *options) Client() (*daemon.Client, error) {
 // filled.
 //
 func (o *options) WalletClient() (*wallet.Client, error) {
-	httpClient, err := mhttp.NewHTTPClient(o.HTTPClientConfig)
+	httpClient, err := mhttp.NewHTTPClient(o.ClientConfig)
 	if err != nil {
 		return nil, fmt.Errorf("new httpclient: %w", err)
 	}

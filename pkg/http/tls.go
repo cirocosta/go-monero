@@ -22,6 +22,7 @@ func WithCACert(fpath string) TLSOption {
 		}
 
 		config.RootCAs = pool
+
 		return nil
 	}
 }
@@ -29,6 +30,7 @@ func WithCACert(fpath string) TLSOption {
 func WithInsecureSkipVerify() TLSOption {
 	return func(config *tls.Config) error {
 		config.InsecureSkipVerify = true
+
 		return nil
 	}
 }
@@ -41,6 +43,7 @@ func WithClientCertificate(cert, key string) TLSOption {
 		}
 
 		config.Certificates = []tls.Certificate{keypair}
+
 		return nil
 	}
 }

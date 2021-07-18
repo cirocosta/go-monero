@@ -52,6 +52,7 @@ func (c *getBlockHeaderCommand) RunE(_ *cobra.Command, _ []string) error {
 		}
 
 		c.pretty(resp.BlockHeaders)
+
 		return nil
 	}
 
@@ -64,6 +65,7 @@ func (c *getBlockHeaderCommand) RunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
+// nolint:forbidigo
 func (c *getBlockHeaderCommand) pretty(blockHeaders []daemon.BlockHeader) {
 	table := display.NewTable()
 

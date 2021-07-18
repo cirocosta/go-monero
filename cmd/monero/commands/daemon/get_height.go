@@ -50,6 +50,7 @@ func (c *getHeightCommand) RunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
+// nolint:forbidigo
 func (c *getHeightCommand) pretty(v *daemon.GetHeightResult) {
 	table := display.NewTable()
 

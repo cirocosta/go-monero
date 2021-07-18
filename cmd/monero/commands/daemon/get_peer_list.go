@@ -52,6 +52,7 @@ func (c *getPeerListCommand) RunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
+// nolint:forbidigo
 func (c *getPeerListCommand) pretty(v *daemon.GetPeerListResult) {
 	table := display.NewTable()
 

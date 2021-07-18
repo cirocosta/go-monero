@@ -49,6 +49,7 @@ func (c *getAlternateChainsCommand) RunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
+// nolint:forbidigo
 func (c *getAlternateChainsCommand) pretty(v *daemon.GetAlternateChainsResult) {
 	table := display.NewTable()
 

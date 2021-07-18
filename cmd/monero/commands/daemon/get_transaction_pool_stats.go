@@ -55,6 +55,7 @@ func (c *getTransactionPoolStatsCommand) RunE(_ *cobra.Command, _ []string) erro
 	return nil
 }
 
+// nolint:forbidigo
 func (c *getTransactionPoolStatsCommand) pretty(v *daemon.GetTransactionPoolStatsResult) {
 	table := display.NewTable()
 

@@ -53,6 +53,7 @@ func (c *getFeeEstimateCommand) RunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
+// nolint:forbidigo
 func (c *getFeeEstimateCommand) pretty(v *daemon.GetFeeEstimateResult) {
 	table := display.NewTable()
 

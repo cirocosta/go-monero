@@ -25,7 +25,7 @@ func (c *getBlockTemplateCommand) Cmd() *cobra.Command {
 
 	cmd.Flags().StringVar(&c.WalletAddress, "wallet-address",
 		"", "address of the wallet to receive coinbase transactions if block is successfully mined")
-	cmd.MarkFlagRequired("wallet-address")
+	_ = cmd.MarkFlagRequired("wallet-address")
 
 	cmd.Flags().UintVar(&c.ReserveSize, "reserve-size",
 		0, "reserve size")

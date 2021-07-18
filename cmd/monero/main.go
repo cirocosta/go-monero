@@ -21,6 +21,7 @@ var rootCmd = &cobra.Command{
 	Short: "Daemon, Wallet, and p2p command line monero CLI",
 }
 
+// nolint:forbidigo
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "print the version of this cli",

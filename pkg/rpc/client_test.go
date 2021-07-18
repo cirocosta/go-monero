@@ -16,6 +16,7 @@ import (
 	"github.com/cirocosta/go-monero/pkg/rpc"
 )
 
+// nolint:funlen
 func TestClient(t *testing.T) {
 	spec.Run(t, "JSONRPC", func(t *testing.T, when spec.G, it spec.S) {
 		var (

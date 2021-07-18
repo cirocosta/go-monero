@@ -51,6 +51,7 @@ func (c *getBansCommand) RunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
+// nolint:forbidigo
 func (c *getBansCommand) pretty(v *daemon.GetBansResult) {
 	table := display.NewTable()
 

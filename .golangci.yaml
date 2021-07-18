@@ -20,7 +20,6 @@ linters:
     - gocyclo
     - godot
     - godox
-    - goerr113
     - goimports
     - gosec
     - govet
@@ -32,7 +31,6 @@ linters:
     - nakedret
     - nestif
     - nilerr
-    - nlreturn
     - noctx
     - nolintlint
     - paralleltest
@@ -49,7 +47,6 @@ linters:
     - varcheck
     - wastedassign
     - whitespace
-    - wrapcheck
 
 linters-settings:
   goimports:
@@ -62,3 +59,5 @@ issues:
 
 run:
   timeout: 5m
+  skip-dirs:
+    - pkg/levin # needs to be refactored anyway

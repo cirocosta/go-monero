@@ -21,7 +21,7 @@ func (c *onGetBlockHashCommand) Cmd() *cobra.Command {
 
 	cmd.Flags().Uint64Var(&c.Height, "height",
 		0, "block height to find the hash for")
-	cmd.MarkFlagRequired("height")
+	_ = cmd.MarkFlagRequired("height")
 
 	return cmd
 }
@@ -40,8 +40,13 @@ func (c *onGetBlockHashCommand) RunE(_ *cobra.Command, _ []string) error {
 		return fmt.Errorf("get block count: %w", err)
 	}
 
-	fmt.Println(resp)
+	c.pretty(resp)
 	return nil
+}
+
+// nolint:forbidigo
+func (c *onGetBlockHashCommand) pretty(v string) {
+	fmt.Println(v)
 }
 
 func init() {
