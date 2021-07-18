@@ -9,7 +9,7 @@ package http
 
 import (
 	"bytes"
-	"crypto/md5"
+	"crypto/md5" // nolint:gosec
 	"crypto/rand"
 	"fmt"
 	"io"
@@ -93,12 +93,14 @@ func (t *DigestAuthTransport) RoundTrip(
 	// we must ensure that the initial response has been totally drained
 	// otherwise the http client won't reuse the connection.
 	//
-	io.Copy(ioutil.Discard, resp.Body)
+	if _, err := io.Copy(ioutil.Discard, resp.Body); err != nil {
+		return nil, fmt.Errorf("copy body to null dev: %w", err)
+	}
 	resp.Body.Close()
 
 	chal, err := parseChallenge(resp.Header.Get("WWW-Authenticate"))
 	if err != nil {
-		return nil, fmt.Errorf("parse challange: %w", err)
+		return nil, fmt.Errorf("parse challenge: %w", err)
 	}
 
 	cr := t.newCredentials(finalRequest, chal)
@@ -122,25 +124,14 @@ type challenge struct {
 }
 
 func parseChallenge(input string) (*challenge, error) {
-	const challengePrefix = "Digest "
-	const whitespaceDelimiters = " \n\r\t"
 	const quotation = `"`
 
-	str := strings.Trim(input, whitespaceDelimiters)
-	if !strings.HasPrefix(str, challengePrefix) {
-		return nil, fmt.Errorf("bad challange: "+
-			"input doesn't start with '%s'", challengePrefix)
-	}
-
-	str = strings.Trim(str[len(challengePrefix):], whitespaceDelimiters)
-	fields := strings.Split(str, ",")
-	if len(fields) != 5 {
-		return nil, fmt.Errorf("split: expected 5 fields, got %d",
-			len(fields))
+	fields, err := parseChallengeFields(input)
+	if err != nil {
+		return nil, fmt.Errorf("parse challenge fields: %w", err)
 	}
 
 	c := &challenge{}
-
 	for _, field := range fields {
 		kv := strings.SplitN(field, "=", 2)
 		if len(kv) != 2 {
@@ -168,6 +159,26 @@ func parseChallenge(input string) (*challenge, error) {
 	}
 
 	return c, nil
+}
+
+func parseChallengeFields(str string) ([]string, error) {
+	const challengePrefix = "Digest "
+	const whitespaceDelimiters = " \n\r\t"
+
+	str = strings.Trim(str, whitespaceDelimiters)
+	if !strings.HasPrefix(str, challengePrefix) {
+		return nil, fmt.Errorf("bad challenge: "+
+			"input doesn't start with '%s'", challengePrefix)
+	}
+
+	str = strings.Trim(str[len(challengePrefix):], whitespaceDelimiters)
+	fields := strings.Split(str, ",")
+	if len(fields) != 5 {
+		return nil, fmt.Errorf("split: expected 5 fields, got %d",
+			len(fields))
+	}
+
+	return fields, nil
 }
 
 type credentials struct {
@@ -251,8 +262,14 @@ func (c *credentials) authorize() (string, error) {
 }
 
 func h(data string) string {
+	// `gosec` won't be happy ("weak crypto primitive"), but it's what the
+	// server uses.
+	//
+	// nolint:gosec
 	hf := md5.New()
-	io.WriteString(hf, data)
+	if _, err := io.WriteString(hf, data); err != nil {
+		panic(fmt.Errorf("write string: %w", err))
+	}
 	return fmt.Sprintf("%x", hf.Sum(nil))
 }
 

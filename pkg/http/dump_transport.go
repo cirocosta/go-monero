@@ -29,7 +29,7 @@ func NewDumpTransport(rt http.RoundTripper) *DumpTransport {
 // It does so by first dumping the request, then passing that down to the
 // wrapped roundtripper, and then from the response it sees, dumping it too.
 //
-// nolint:forbidigo
+
 func (d *DumpTransport) RoundTrip(h *http.Request) (*http.Response, error) {
 	requestDump, _ := httputil.DumpRequestOut(h, true)
 	fmt.Fprintln(os.Stderr, string(requestDump))

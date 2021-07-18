@@ -9,6 +9,8 @@ import (
 )
 
 func TestParseChallenge(t *testing.T) {
+	t.Parallel()
+
 	input := `Digest qop="auth",algorithm=MD5,realm="monero-rpc",nonce="IdDHjxbfpLYP/KzjaxaOqA==",stale=false`
 
 	challenge, err := mhttp.ParseChallenge(input)
