@@ -22,7 +22,10 @@ You can either install it by using Go building from scratch
 $ GO111MODULE=on go get github.com/cirocosta/go-monero/cmd/monero
 ```
 
-or fetching the binary for your distribution - check out the [releases page](https://github.com/cirocosta/go-monero/releases).
+or fetching the binary for your distribution - check out the [releases page].
+
+[releases page]: https://github.com/cirocosta/go-monero/releases
+
 
 ### Example
 
@@ -138,8 +141,9 @@ Use "monero daemon [command] --help" for more information about a command.
 
 ### Tor support
 
-Nodes reachable only through the Tor network (hidden services) _are_ supported
-despite the lack of a specific flag for specifying the proxy address. 
+Nodes reachable only through the Tor network (hidden services) or proxying
+traffic through Tor to clearnet _is_ supported despite the lack of a specific
+flag for specifying the proxy address. 
 
 For instance:
 
@@ -156,7 +160,7 @@ Content-Type: application/json
 Accept-Encoding: gzip
 
 {"id":"0","jsonrpc":"2.0","method":"get_version"}
-200
+
 HTTP/1.1 200 Ok
 Content-Length: 150
 Accept-Ranges: bytes
@@ -174,6 +178,7 @@ Server: Epee-based
     "version": 196613
   }
 }
+
 Release:        true
 Major:          3
 Minor:          5
