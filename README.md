@@ -122,7 +122,13 @@ Available Commands:
 Flags:
   -a, --address string             full address of the monero node to reach out to (default "http://localhost:18081")
   -h, --help                       help for daemon
-      --request-timeout duration   how long to wait until considering the request a failure (default 1m0s)
+  -p, --password string            password to supply for rpc auth
+      --request-timeout duration   max wait time until considering the request a failure (default 1m0s)
+      --tls-ca-cert string         certificate authority to load
+      --tls-client-cert string     tls client certificate to use when connecting
+      --tls-client-key string      tls client key to use when connecting
+  -k, --tls-skip-verify            skip verification of certificate chain and host name
+  -u, --username string            name of the user to use during rpc auth
   -v, --verbose                    dump http requests and responses to stderr
 
 Use "monero daemon [command] --help" for more information about a command.

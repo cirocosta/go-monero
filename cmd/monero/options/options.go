@@ -83,6 +83,16 @@ func Bind(cmd *cobra.Command) {
 		"http://localhost:18081",
 		"full address of the monero node to reach out to")
 
+	cmd.PersistentFlags().StringVarP(&RootOptions.Username,
+		"username", "u",
+		"",
+		"name of the user to use during rpc auth")
+
+	cmd.PersistentFlags().StringVarP(&RootOptions.Password,
+		"password", "p",
+		"",
+		"password to supply for rpc auth")
+
 	cmd.PersistentFlags().BoolVarP(&RootOptions.TLSSkipVerify,
 		"tls-skip-verify", "k",
 		false,

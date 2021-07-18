@@ -44,6 +44,23 @@ type ClientConfig struct {
 	// client.
 	//
 	RequestTimeout time.Duration
+
+	// Username is the name of the user to send in the header of every HTTP
+	// call - must match the first portion of
+	// `--rpc-login=<username>:[password]` provided to `monerod`.
+	//
+	Username string
+
+	// Password is the user's password to send in the header of every HTTP
+	// call - must match the second portion of
+	// `--rpc-login=<username>:[password]` provided to `monerod` or the
+	// password interactively supplied during the daemon's startup.
+	//
+	// Note that because the `monerod` performs digest auth, the password
+	// won't be sent solely in plain base64 encoding, but the rest of the
+	// body of every request and response will still be cleartext.
+	//
+	Password string
 }
 
 func (c ClientConfig) Validate() error {
@@ -55,6 +72,14 @@ func (c ClientConfig) Validate() error {
 	if c.TLSClientKey != "" && c.TLSClientCert == "" {
 		return fmt.Errorf("tls client key specified but " +
 			"tls client key")
+	}
+
+	if c.Username != "" && c.Password == "" {
+		return fmt.Errorf("username specified but password not")
+	}
+
+	if c.Password != "" && c.Username == "" {
+		return fmt.Errorf("password specified but username not")
 	}
 
 	return nil
@@ -100,8 +125,21 @@ func NewClient(cfg ClientConfig) (*http.Client, error) {
 	}
 
 	if cfg.Verbose {
-		client.Transport = NewDumpTransport(client.Transport)
+		WithTransport(NewDumpTransport(client.Transport))(client)
+	}
+
+	if cfg.Username != "" {
+		WithTransport(NewDigestAuthTransport(
+			cfg.Username, cfg.Password,
+			client.Transport,
+		))(client)
 	}
 
 	return client, nil
+}
+
+func WithTransport(rt http.RoundTripper) func(*http.Client) {
+	return func(c *http.Client) {
+		c.Transport = rt
+	}
 }
