@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httputil"
+	"os"
 )
 
 // DumpTransport implements the `net/http.RoundTripper` interface wrapping
@@ -30,18 +31,18 @@ func NewDumpTransport(rt http.RoundTripper) *DumpTransport {
 //
 // nolint:forbidigo
 func (d *DumpTransport) RoundTrip(h *http.Request) (*http.Response, error) {
-	dump, _ := httputil.DumpRequestOut(h, true)
-	fmt.Println(string(dump))
+	requestDump, _ := httputil.DumpRequestOut(h, true)
+	fmt.Fprintln(os.Stderr, string(requestDump))
 
 	resp, err := d.R.RoundTrip(h)
 	if err != nil {
 		return nil, err
 	}
 
-	fmt.Println(resp.StatusCode)
+	fmt.Fprintln(os.Stderr, resp.StatusCode)
 
-	dump, _ = httputil.DumpResponse(resp, true)
-	fmt.Println(string(dump))
+	responseDump, _ := httputil.DumpResponse(resp, true)
+	fmt.Fprintln(os.Stderr, string(responseDump))
 
 	return resp, err
 }
