@@ -355,7 +355,8 @@ type GetBlockRequestParameters struct {
 	Hash   string `json:"hash,omitempty"`
 }
 
-// GetBlock fetches full block information from a block at a particular hash OR height.
+// GetBlock fetches full block information from a block at a particular hash OR
+// height.
 //
 func (c *Client) GetBlock(
 	ctx context.Context, params GetBlockRequestParameters,

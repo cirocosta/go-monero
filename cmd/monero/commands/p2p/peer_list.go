@@ -24,14 +24,21 @@ func (c *peerListCommand) Cmd() *cobra.Command {
 		RunE:  c.RunE,
 	}
 
-	cmd.Flags().StringVar(&c.NodeAddress, "node-address",
-		"", "address of the node to connect to")
+	cmd.Flags().StringVar(&c.NodeAddress,
+		"node-address",
+		"",
+		"address of the node to connect to")
 	_ = cmd.MarkFlagRequired("node-address")
 
-	cmd.Flags().DurationVar(&c.Timeout, "timeout",
-		1*time.Minute, "how long to wait until considering the connection a failure")
-	cmd.Flags().StringVar(&c.Proxy, "proxy",
-		"", "proxy to proxy connections through (useful for tor)")
+	cmd.Flags().DurationVar(&c.Timeout,
+		"timeout",
+		1*time.Minute,
+		"how long to wait until considering the connection a failure")
+
+	cmd.Flags().StringVar(&c.Proxy,
+		"proxy",
+		"",
+		"proxy to proxy connections through (useful for tor)")
 
 	return cmd
 }
@@ -51,7 +58,8 @@ func (c *peerListCommand) RunE(_ *cobra.Command, _ []string) error {
 
 		contextDialer, ok := dialer.(proxy.ContextDialer)
 		if !ok {
-			panic("can't cast proxy dialer to proxy context dialer")
+			return fmt.Errorf("can't cast proxy dialer " +
+				"to proxy context dialer")
 		}
 
 		opts = append(opts, levin.WithContextDialer(contextDialer))

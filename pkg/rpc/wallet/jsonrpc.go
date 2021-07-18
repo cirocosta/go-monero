@@ -9,7 +9,8 @@ const (
 	methodGetBalance = "get_balance"
 )
 
-// GetBalance gets the balance of the wallet configured for the wallet rpc server.
+// GetBalance gets the balance of the wallet configured for the wallet rpc
+// server.
 //
 func (c *Client) GetBalance(ctx context.Context) (*GetBalanceResult, error) {
 	resp := &GetBalanceResult{}

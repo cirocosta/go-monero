@@ -1,7 +1,8 @@
 package wallet
 
 type GetBalanceResult struct {
-	// Balance is the total balance of the current monero-wallet-rpc in session.
+	// Balance is the total balance of the current monero-wallet-rpc in
+	// session.
 	//
 	Balance uint64 `json:"balance"`
 

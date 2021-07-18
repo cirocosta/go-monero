@@ -25,13 +25,15 @@ type RPCResultFooter struct {
 	TopHash string `json:"top_hash,omitempty"`
 }
 
-// GetAlternateChainsResult is the result of a call to the GetAlternateChains RPC method.
+// GetAlternateChainsResult is the result of a call to the GetAlternateChains
+// RPC method.
 //
 type GetAlternateChainsResult struct {
 	// Chains is the array of alternate chains seen by the node.
 	//
 	Chains []struct {
-		// BlockHash is the hash of the first diverging block of this alternative chain.
+		// BlockHash is the hash of the first diverging block of this
+		// alternative chain.
 		//
 		BlockHash string `json:"block_hash"`
 
@@ -39,7 +41,8 @@ type GetAlternateChainsResult struct {
 		//
 		BlockHashes []string `json:"block_hashes"`
 
-		// Difficulty is the cumulative difficulty of all blocks in the alternative chain.
+		// Difficulty is the cumulative difficulty of all blocks in the
+		// alternative chain.
 		//
 		Difficulty int64 `json:"difficulty"`
 
@@ -48,11 +51,13 @@ type GetAlternateChainsResult struct {
 		//
 		DifficultyTop64 int `json:"difficulty_top64"`
 
-		// Height is the block height of the first diverging block of this alternative chain.
+		// Height is the block height of the first diverging block of
+		// this alternative chain.
 		//
 		Height uint64 `json:"height"`
 
-		// Length is the length in blocks of this alternative chain, after divergence.
+		// Length is the length in blocks of this alternative chain,
+		// after divergence.
 		//
 		Length uint64 `json:"length"`
 
@@ -69,7 +74,8 @@ type GetAlternateChainsResult struct {
 	RPCResultFooter `json:",inline"`
 }
 
-// AccessTrackingResult is the result of a call to the RPCAccessTracking RPC method.
+// AccessTrackingResult is the result of a call to the RPCAccessTracking RPC
+// method.
 //
 type RPCAccessTrackingResult struct {
 	Data []struct {
@@ -82,11 +88,13 @@ type RPCAccessTrackingResult struct {
 		//
 		RPC string `json:"rpc"`
 
-		// Time indicates how much time the daemon spent serving this procedure.
+		// Time indicates how much time the daemon spent serving this
+		// procedure.
 		//
 		Time uint64 `json:"time"`
 
-		// Credits indicates the number of credits consumed for this method.
+		// Credits indicates the number of credits consumed for this
+		// method.
 		//
 		Credits uint64 `json:"credits"`
 	} `json:"data"`
@@ -152,7 +160,8 @@ type GetBansResult struct {
 	// Bans contains the list of nodes banned by this node.
 	//
 	Bans []struct {
-		// Host is the string representation of the node that is banned.
+		// Host is the string representation of the node that is
+		// banned.
 		//
 		Host string `json:"host"`
 
@@ -225,7 +234,8 @@ type GetInfoResult struct {
 	RPCResultFooter `json:",inline"`
 }
 
-// GetBlockTemplateResult is the result of a call to the GetBlockTemplate RPC method.
+// GetBlockTemplateResult is the result of a call to the GetBlockTemplate RPC
+// method.
 //
 type GetBlockTemplateResult struct {
 	// BlockhashingBlob is the blob on which to try to find a valid nonce.
@@ -248,7 +258,8 @@ type GetBlockTemplateResult struct {
 	//
 	Height int `json:"height"`
 
-	// PrevHash is the hash of the most recent block on which to mine the next block.
+	// PrevHash is the hash of the most recent block on which to mine the
+	// next block.
 	//
 	PrevHash string `json:"prev_hash"`
 
@@ -278,7 +289,8 @@ type GetPeerListResult struct {
 	RPCResultFooter `json:",inline"`
 }
 
-// GetConnectionsResult is the result of a call to the GetConnections RPC method.
+// GetConnectionsResult is the result of a call to the GetConnections RPC
+// method.
 //
 type GetConnectionsResult struct {
 	Connections []struct {
@@ -341,7 +353,8 @@ type GetNetStatsResult struct {
 	RPCResultFooter `json:",inline"`
 }
 
-// GetPublicNodesResult is the result of a call to the GetPublicNodes RPC method.
+// GetPublicNodesResult is the result of a call to the GetPublicNodes RPC
+// method.
 //
 type GetPublicNodesResult struct {
 	WhiteList []Peer `json:"white"`
@@ -350,7 +363,8 @@ type GetPublicNodesResult struct {
 	RPCResultFooter `json:",inline"`
 }
 
-// GenerateBlocksResult is the result of a call to the GenerateBlocks RPC method.
+// GenerateBlocksResult is the result of a call to the GenerateBlocks RPC
+// method.
 //
 type GenerateBlocksResult struct {
 	Blocks []string `json:"blocks"`
@@ -373,7 +387,8 @@ type RelayTxResult struct {
 	RPCResultFooter `json:",inline"`
 }
 
-// GetCoinbaseTxSumResult is the result of a call to the GetCoinbaseTxSum RPC method.
+// GetCoinbaseTxSumResult is the result of a call to the GetCoinbaseTxSum RPC
+// method.
 //
 type GetCoinbaseTxSumResult struct {
 	EmissionAmount      int64  `json:"emission_amount"`
@@ -424,7 +439,8 @@ type BlockHeader struct {
 	//
 	Hash string `json:"hash"`
 
-	// Height is the number of blocks preceding this block on the blockchain.
+	// Height is the number of blocks preceding this block on the
+	// blockchain.
 	//
 	Height uint64 `json:"height"`
 
@@ -503,7 +519,8 @@ type GetBlockResult struct {
 	//
 	BlockHeader BlockHeader `json:"block_header"`
 
-	// JSON is a json representation of the block - see `GetBlockResultJSON`.
+	// JSON is a json representation of the block - see
+	// `GetBlockResultJSON`.
 	//
 	JSON string `json:"json"`
 
@@ -544,7 +561,8 @@ type GetBlockResultJSON struct {
 		//
 		Version int `json:"version"`
 
-		// UnlockTime is the block height when the coinbase transaction becomes spendable.
+		// UnlockTime is the block height when the coinbase transaction
+		// becomes spendable.
 		//
 		UnlockTime int `json:"unlock_time"`
 
@@ -639,7 +657,8 @@ type SyncInfoResult struct {
 	RPCResultFooter `json:",inline"`
 }
 
-// GetLastBlockHeaderResult is the result of a call to the GetLastBlockHeader RPC method.
+// GetLastBlockHeaderResult is the result of a call to the GetLastBlockHeader
+// RPC method.
 //
 type GetLastBlockHeaderResult struct {
 	BlockHeader BlockHeader `json:"block_header"`
@@ -647,7 +666,8 @@ type GetLastBlockHeaderResult struct {
 	RPCResultFooter `json:",inline"`
 }
 
-// GetBlockHeaderByHeightResult is the result of a call to the GetBlockHeaderByHeight RPC method.
+// GetBlockHeaderByHeightResult is the result of a call to the
+// GetBlockHeaderByHeight RPC method.
 //
 type GetBlockHeaderByHeightResult struct {
 	BlockHeader BlockHeader `json:"block_header"`
@@ -655,7 +675,8 @@ type GetBlockHeaderByHeightResult struct {
 	RPCResultFooter `json:",inline"`
 }
 
-// GetBlockHeaderByHashResult is the result of a call to the GetBlockHeaderByHash RPC method.
+// GetBlockHeaderByHashResult is the result of a call to the
+// GetBlockHeaderByHash RPC method.
 //
 type GetBlockHeaderByHashResult struct {
 	BlockHeader  BlockHeader   `json:"block_header"`
@@ -664,7 +685,8 @@ type GetBlockHeaderByHashResult struct {
 	RPCResultFooter `json:",inline"`
 }
 
-// GetTransactionPoolStatsResult is the result of a call to the GetTransactionPoolStats RPC method.
+// GetTransactionPoolStatsResult is the result of a call to the
+// GetTransactionPoolStats RPC method.
 //
 type GetTransactionPoolStatsResult struct {
 	PoolStats struct {

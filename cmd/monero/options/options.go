@@ -35,7 +35,7 @@ func (o *options) Context() (context.Context, context.CancelFunc) {
 // Client instantiates a new daemon RPC client based on the options filled.
 //
 func (o *options) Client() (*daemon.Client, error) {
-	httpClient, err := mhttp.NewHTTPClient(o.ClientConfig)
+	httpClient, err := mhttp.NewClient(o.ClientConfig)
 	if err != nil {
 		return nil, fmt.Errorf("new httpclient: %w", err)
 	}
@@ -54,7 +54,7 @@ func (o *options) Client() (*daemon.Client, error) {
 // filled.
 //
 func (o *options) WalletClient() (*wallet.Client, error) {
-	httpClient, err := mhttp.NewHTTPClient(o.ClientConfig)
+	httpClient, err := mhttp.NewClient(o.ClientConfig)
 	if err != nil {
 		return nil, fmt.Errorf("new httpclient: %w", err)
 	}
@@ -73,24 +73,38 @@ func (o *options) WalletClient() (*wallet.Client, error) {
 // can be filled either via comand arguments or environment variables.
 //
 func Bind(cmd *cobra.Command) {
-	cmd.PersistentFlags().BoolVarP(&RootOptions.Verbose, "verbose", "v",
-		false, "dump http requests and responses to stderr")
+	cmd.PersistentFlags().BoolVarP(&RootOptions.Verbose,
+		"verbose", "v",
+		false,
+		"dump http requests and responses to stderr")
 
-	cmd.PersistentFlags().StringVarP(&RootOptions.address, "address", "a",
-		"http://localhost:18081", "full address of the monero node to reach out to")
+	cmd.PersistentFlags().StringVarP(&RootOptions.address,
+		"address", "a",
+		"http://localhost:18081",
+		"full address of the monero node to reach out to")
 
-	cmd.PersistentFlags().BoolVarP(&RootOptions.TLSSkipVerify, "tls-skip-verify", "k",
-		false, "skip verification of certificate chain and host name")
+	cmd.PersistentFlags().BoolVarP(&RootOptions.TLSSkipVerify,
+		"tls-skip-verify", "k",
+		false,
+		"skip verification of certificate chain and host name")
 
-	cmd.PersistentFlags().StringVar(&RootOptions.TLSClientCert, "tls-client-cert",
-		"", "tls client certificate to use when connecting")
+	cmd.PersistentFlags().StringVar(&RootOptions.TLSClientCert,
+		"tls-client-cert",
+		"",
+		"tls client certificate to use when connecting")
 
-	cmd.PersistentFlags().StringVar(&RootOptions.TLSClientKey, "tls-client-key",
-		"", "tls client key to use when connecting")
+	cmd.PersistentFlags().StringVar(&RootOptions.TLSClientKey,
+		"tls-client-key",
+		"",
+		"tls client key to use when connecting")
 
-	cmd.PersistentFlags().StringVar(&RootOptions.TLSCACert, "tls-ca-cert",
-		"", "certificate authority to load")
+	cmd.PersistentFlags().StringVar(&RootOptions.TLSCACert,
+		"tls-ca-cert",
+		"",
+		"certificate authority to load")
 
-	cmd.PersistentFlags().DurationVar(&RootOptions.RequestTimeout, "request-timeout",
-		1*time.Minute, "how long to wait until considering the request a failure")
+	cmd.PersistentFlags().DurationVar(&RootOptions.RequestTimeout,
+		"request-timeout",
+		1*time.Minute,
+		"max wait time until considering the request a failure")
 }

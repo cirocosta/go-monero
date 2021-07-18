@@ -9,13 +9,20 @@ type Requester interface {
 	// JSONRPC is used for callind methods under `/json_rpc` that follow
 	// monero's `v2` response and error encapsulation.
 	//
-	JSONRPC(ctx context.Context, method string, params interface{}, result interface{}) error
+	JSONRPC(
+		ctx context.Context, method string, params, result interface{},
+	) error
 
 	// RawRequest is used for making a request to an arbitrary endpoint
 	// `endpoint` whose response (in JSON format) should be unmarshalled to
 	// `response`.
 	//
-	RawRequest(ctx context.Context, endpoint string, params interface{}, response interface{}) error
+	RawRequest(
+		ctx context.Context,
+		endpoint string,
+		params interface{},
+		response interface{},
+	) error
 }
 
 // Client provides access to the daemon's JSONRPC methods and regular

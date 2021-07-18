@@ -7,9 +7,7 @@ import (
 	"os"
 )
 
-type TLSOption func(*tls.Config) error
-
-func WithCACert(fpath string) TLSOption {
+func WithCACert(fpath string) func(*tls.Config) error {
 	return func(config *tls.Config) error {
 		certBytes, err := os.ReadFile(fpath)
 		if err != nil {
@@ -27,15 +25,13 @@ func WithCACert(fpath string) TLSOption {
 	}
 }
 
-func WithInsecureSkipVerify() TLSOption {
-	return func(config *tls.Config) error {
+func WithInsecureSkipVerify() func(*tls.Config) {
+	return func(config *tls.Config) {
 		config.InsecureSkipVerify = true
-
-		return nil
 	}
 }
 
-func WithClientCertificate(cert, key string) TLSOption {
+func WithClientCertificate(cert, key string) func(*tls.Config) error {
 	return func(config *tls.Config) error {
 		keypair, err := tls.LoadX509KeyPair(cert, key)
 		if err != nil {
