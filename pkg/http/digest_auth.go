@@ -11,18 +11,11 @@ import (
 	"bytes"
 	"crypto/md5"
 	"crypto/rand"
-	"errors"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
-)
-
-var (
-	ErrNilTransport      = errors.New("Transport is nil")
-	ErrBadChallenge      = errors.New("Challenge is bad")
-	ErrAlgNotImplemented = errors.New("algorithm not implemented")
 )
 
 // DigestAuthTransport is an implementation of http.RoundTripper that takes
@@ -205,57 +198,56 @@ func (c *credentials) ha2() string {
 	return h(fmt.Sprintf("%s:%s", c.method, c.DigestURI))
 }
 
-func (c *credentials) resp(cnonce string) (string, error) {
+func (c *credentials) resp() (string, error) {
 	c.NonceCount++
 
-	if c.MessageQop == "auth" {
-		if cnonce != "" {
-			c.Cnonce = cnonce
-		} else {
-			b := make([]byte, 8)
-			io.ReadFull(rand.Reader, b)
-			c.Cnonce = fmt.Sprintf("%x", b)[:16]
-		}
-		return kd(c.ha1(), fmt.Sprintf("%s:%08x:%s:%s:%s",
-			c.Nonce, c.NonceCount, c.Cnonce, c.MessageQop, c.ha2())), nil
-	} else if c.MessageQop == "" {
-		return kd(c.ha1(), fmt.Sprintf("%s:%s", c.Nonce, c.ha2())), nil
+	if c.MessageQop != "auth" {
+		return "", fmt.Errorf("unexpected messageqop '%s'",
+			c.MessageQop)
 	}
 
-	return "", ErrAlgNotImplemented
+	b := make([]byte, 8)
+	io.ReadFull(rand.Reader, b)
+	c.Cnonce = fmt.Sprintf("%x", b)[:16]
+
+	data := fmt.Sprintf("%s:%08x:%s:%s:%s",
+		c.Nonce, c.NonceCount, c.Cnonce, c.MessageQop, c.ha2())
+	return kd(c.ha1(), data), nil
 }
 
 func (c *credentials) authorize() (string, error) {
 	// Note that this is only implemented for MD5 and NOT MD5-sess.
 	// MD5-sess is rarely supported and those that do are a big mess.
 	if c.Algorithm != "MD5" {
-		return "", ErrAlgNotImplemented
+		return "", fmt.Errorf("unsupported algorithm '%s'",
+			c.Algorithm)
 	}
-	// Note that this is NOT implemented for "qop=auth-int".  Similarly the
-	// auth-int server side implementations that do exist are a mess.
-	if c.MessageQop != "auth" && c.MessageQop != "" {
-		return "", ErrAlgNotImplemented
-	}
-	resp, err := c.resp("")
+
+	resp, err := c.resp()
 	if err != nil {
-		return "", ErrAlgNotImplemented
+		return "", fmt.Errorf("resp: %w", err)
 	}
+
 	sl := []string{fmt.Sprintf(`username="%s"`, c.Username)}
 	sl = append(sl, fmt.Sprintf(`realm="%s"`, c.Realm))
 	sl = append(sl, fmt.Sprintf(`nonce="%s"`, c.Nonce))
 	sl = append(sl, fmt.Sprintf(`uri="%s"`, c.DigestURI))
 	sl = append(sl, fmt.Sprintf(`response="%s"`, resp))
+
 	if c.Algorithm != "" {
 		sl = append(sl, fmt.Sprintf(`algorithm="%s"`, c.Algorithm))
 	}
+
 	if c.Opaque != "" {
 		sl = append(sl, fmt.Sprintf(`opaque="%s"`, c.Opaque))
 	}
+
 	if c.MessageQop != "" {
 		sl = append(sl, fmt.Sprintf("qop=%s", c.MessageQop))
 		sl = append(sl, fmt.Sprintf("nc=%08x", c.NonceCount))
 		sl = append(sl, fmt.Sprintf(`cnonce="%s"`, c.Cnonce))
 	}
+
 	return fmt.Sprintf("Digest %s", strings.Join(sl, ", ")), nil
 }
 
