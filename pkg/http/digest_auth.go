@@ -22,9 +22,9 @@ import (
 // care of http digest authentication.
 //
 type DigestAuthTransport struct {
-	Username  string
-	Password  string
-	transport http.RoundTripper
+	Username string
+	Password string
+	rt       http.RoundTripper
 }
 
 // NewDigestAuthTransport creates a new digest transport using the
@@ -34,9 +34,9 @@ func NewDigestAuthTransport(
 	username, password string, rt http.RoundTripper,
 ) *DigestAuthTransport {
 	return &DigestAuthTransport{
-		Username:  username,
-		Password:  password,
-		transport: rt,
+		Username: username,
+		Password: password,
+		rt:       rt,
 	}
 }
 
@@ -65,55 +65,46 @@ func (t *DigestAuthTransport) newCredentials(
 func (t *DigestAuthTransport) RoundTrip(
 	req *http.Request,
 ) (*http.Response, error) {
-	// copy the request so we don't modify the input.
-	req2 := new(http.Request)
-	*req2 = *req
-	req2.Header = make(http.Header)
-	for k, s := range req.Header {
-		req2.Header[k] = s
-	}
+	finalRequest := req.Clone(req.Context())
 
-	// we need two readers for the body.
 	if req.Body != nil {
-		tmp, err := ioutil.ReadAll(req.Body)
+		bodyContents, err := ioutil.ReadAll(req.Body)
 		if err != nil {
 			return nil, fmt.Errorf("read all body: %w", err)
 		}
 
-		reqBody01 := ioutil.NopCloser(bytes.NewBuffer(tmp))
-		reqBody02 := ioutil.NopCloser(bytes.NewBuffer(tmp))
+		reqBody01 := io.NopCloser(bytes.NewBuffer(bodyContents))
+		reqBody02 := io.NopCloser(bytes.NewBuffer(bodyContents))
 
 		req.Body = reqBody01
-		req2.Body = reqBody02
+		finalRequest.Body = reqBody02
 	}
 
 	// make a request to get the 401 that contains the challenge.
-	resp, err := t.transport.RoundTrip(req)
+	resp, err := t.rt.RoundTrip(req)
 	if err != nil {
 		return nil, fmt.Errorf("round trip err: %w", err)
 	}
-	if resp.StatusCode != 401 {
+	if resp.StatusCode != 401 { // cool, reached what we needed
 		return resp, nil
 	}
 
-	chal := resp.Header.Get("WWW-Authenticate")
-	c, err := parseChallenge(chal)
+	chal, err := parseChallenge(resp.Header.Get("WWW-Authenticate"))
 	if err != nil {
 		return nil, fmt.Errorf("parse challange: %w", err)
 	}
 
 	// form credentials based on the challenge.
-	cr := t.newCredentials(req2, c)
+	cr := t.newCredentials(finalRequest, chal)
 	auth, err := cr.authorize()
 	if err != nil {
 		return nil, fmt.Errorf("authorize: %w", err)
 	}
 
-	// we'll no longer use the initial response, so close it
-	resp.Body.Close()
-	// Make authenticated request.
-	req2.Header.Set("Authorization", auth)
-	return t.transport.RoundTrip(req2)
+	// resp.Body.Close()
+	finalRequest.Header.Set("Authorization", auth)
+	resp2, err := t.rt.RoundTrip(finalRequest)
+	return resp2, err
 }
 
 type challenge struct {
@@ -207,7 +198,11 @@ func (c *credentials) resp() (string, error) {
 	}
 
 	b := make([]byte, 8)
-	io.ReadFull(rand.Reader, b)
+	_, err := io.ReadFull(rand.Reader, b)
+	if err != nil {
+		return "", fmt.Errorf("read full: %w", err)
+	}
+
 	c.Cnonce = fmt.Sprintf("%x", b)[:16]
 
 	data := fmt.Sprintf("%s:%08x:%s:%s:%s",

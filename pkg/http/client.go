@@ -93,9 +93,7 @@ func NewClient(cfg ClientConfig) (*http.Client, error) {
 		return nil, fmt.Errorf("validate: %w", err)
 	}
 
-	tlsConfig := &tls.Config{
-		MinVersion: tls.VersionTLS12,
-	}
+	tlsConfig := &tls.Config{MinVersion: tls.VersionTLS12}
 	if cfg.TLSCACert != "" {
 		if err := WithCACert(cfg.TLSCACert)(tlsConfig); err != nil {
 			return nil, fmt.Errorf("with tls ca cert: %w", err)
@@ -125,14 +123,14 @@ func NewClient(cfg ClientConfig) (*http.Client, error) {
 	}
 
 	if cfg.Verbose {
-		WithTransport(NewDumpTransport(client.Transport))(client)
+		client.Transport = NewDumpTransport(client.Transport)
 	}
 
 	if cfg.Username != "" {
-		WithTransport(NewDigestAuthTransport(
+		client.Transport = NewDigestAuthTransport(
 			cfg.Username, cfg.Password,
 			client.Transport,
-		))(client)
+		)
 	}
 
 	return client, nil
