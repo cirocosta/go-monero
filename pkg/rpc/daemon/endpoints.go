@@ -17,31 +17,40 @@ const (
 	endpointGetTransactions         = "/get_transactions"
 )
 
-func (c *Client) GetTransactionPool(ctx context.Context) (*GetTransactionPoolResult, error) {
+func (c *Client) GetTransactionPool(
+	ctx context.Context,
+) (*GetTransactionPoolResult, error) {
 	resp := &GetTransactionPoolResult{}
 
-	if err := c.RawRequest(ctx, endpointGetTransactionPool, nil, resp); err != nil {
-		return nil, fmt.Errorf("other: %w", err)
+	err := c.RawRequest(ctx, endpointGetTransactionPool, nil, resp)
+	if err != nil {
+		return nil, fmt.Errorf("raw request: %w", err)
 	}
 
 	return resp, nil
 }
 
-func (c *Client) GetTransactionPoolStats(ctx context.Context) (*GetTransactionPoolStatsResult, error) {
-	resp := new(GetTransactionPoolStatsResult)
+func (c *Client) GetTransactionPoolStats(
+	ctx context.Context,
+) (*GetTransactionPoolStatsResult, error) {
+	resp := &GetTransactionPoolStatsResult{}
 
-	if err := c.RawRequest(ctx, endpointGetTransactionPoolStats, nil, resp); err != nil {
-		return nil, fmt.Errorf("other: %w", err)
+	err := c.RawRequest(ctx, endpointGetTransactionPoolStats, nil, resp)
+	if err != nil {
+		return nil, fmt.Errorf("raw request: %w", err)
 	}
 
 	return resp, nil
 }
 
-func (c *Client) GetPeerList(ctx context.Context) (*GetPeerListResult, error) {
+func (c *Client) GetPeerList(
+	ctx context.Context,
+) (*GetPeerListResult, error) {
 	resp := &GetPeerListResult{}
 
-	if err := c.RawRequest(ctx, endpointGetPeerList, nil, resp); err != nil {
-		return nil, fmt.Errorf("other: %w", err)
+	err := c.RawRequest(ctx, endpointGetPeerList, nil, resp)
+	if err != nil {
+		return nil, fmt.Errorf("raw request: %w", err)
 	}
 
 	return resp, nil
@@ -53,17 +62,22 @@ type GetPublicNodesRequestParameters struct {
 	IncludeBlocked bool `json:"include_blocked"`
 }
 
-func (c *Client) GetPublicNodes(ctx context.Context, params GetPublicNodesRequestParameters) (*GetPublicNodesResult, error) {
+func (c *Client) GetPublicNodes(
+	ctx context.Context, params GetPublicNodesRequestParameters,
+) (*GetPublicNodesResult, error) {
 	resp := &GetPublicNodesResult{}
 
-	if err := c.RawRequest(ctx, endpointGetPublicNodes, params, resp); err != nil {
-		return nil, fmt.Errorf("other: %w", err)
+	err := c.RawRequest(ctx, endpointGetPublicNodes, params, resp)
+	if err != nil {
+		return nil, fmt.Errorf("raw request: %w", err)
 	}
 
 	return resp, nil
 }
 
-func (c *Client) GetOuts(ctx context.Context, outputs []uint, gettxid bool) (*GetOutsResult, error) {
+func (c *Client) GetOuts(
+	ctx context.Context, outputs []uint, gettxid bool,
+) (*GetOutsResult, error) {
 	resp := &GetOutsResult{}
 
 	type output struct {
@@ -79,8 +93,9 @@ func (c *Client) GetOuts(ctx context.Context, outputs []uint, gettxid bool) (*Ge
 		params.Outputs = append(params.Outputs, output{out})
 	}
 
-	if err := c.RawRequest(ctx, endpointGetOuts, params, resp); err != nil {
-		return nil, fmt.Errorf("other: %w", err)
+	err := c.RawRequest(ctx, endpointGetOuts, params, resp)
+	if err != nil {
+		return nil, fmt.Errorf("raw request: %w", err)
 	}
 
 	return resp, nil
@@ -89,8 +104,9 @@ func (c *Client) GetOuts(ctx context.Context, outputs []uint, gettxid bool) (*Ge
 func (c *Client) GetHeight(ctx context.Context) (*GetHeightResult, error) {
 	resp := &GetHeightResult{}
 
-	if err := c.RawRequest(ctx, endpointGetHeight, nil, resp); err != nil {
-		return nil, fmt.Errorf("other: %w", err)
+	err := c.RawRequest(ctx, endpointGetHeight, nil, resp)
+	if err != nil {
+		return nil, fmt.Errorf("raw request: %w", err)
 	}
 
 	return resp, nil
@@ -99,8 +115,9 @@ func (c *Client) GetHeight(ctx context.Context) (*GetHeightResult, error) {
 func (c *Client) GetNetStats(ctx context.Context) (*GetNetStatsResult, error) {
 	resp := &GetNetStatsResult{}
 
-	if err := c.RawRequest(ctx, endpointGetNetStats, nil, resp); err != nil {
-		return nil, fmt.Errorf("other: %w", err)
+	err := c.RawRequest(ctx, endpointGetNetStats, nil, resp)
+	if err != nil {
+		return nil, fmt.Errorf("raw request: %w", err)
 	}
 
 	return resp, nil
@@ -111,12 +128,15 @@ func (r *GetTransactionsResult) GetTransactions() ([]*TransactionJSON, error) {
 
 	for idx, txn := range r.Txs {
 		if len(txn.AsJSON) == 0 {
-			return nil, fmt.Errorf("txn '%s' w/ empty `.as_json`", txn.TxHash)
+			return nil, fmt.Errorf("txn w/ empty `.as_json`: %s",
+				txn.TxHash)
 		}
 
 		t := &TransactionJSON{}
-		if err := json.Unmarshal([]byte(txn.AsJSON), t); err != nil {
-			return nil, fmt.Errorf("unmarshal txn '%s': %w", txn.TxHash, err)
+		err := json.Unmarshal([]byte(txn.AsJSON), t)
+		if err != nil {
+			return nil, fmt.Errorf("unmarshal txn '%s': %w",
+				txn.TxHash, err)
 		}
 
 		txns[idx] = t
@@ -125,14 +145,18 @@ func (r *GetTransactionsResult) GetTransactions() ([]*TransactionJSON, error) {
 	return txns, nil
 }
 
-func (c *Client) GetTransactions(ctx context.Context, txns []string) (*GetTransactionsResult, error) {
+func (c *Client) GetTransactions(
+	ctx context.Context, txns []string,
+) (*GetTransactionsResult, error) {
 	resp := &GetTransactionsResult{}
-
-	if err := c.RawRequest(ctx, endpointGetTransactions, map[string]interface{}{
+	params := map[string]interface{}{
 		"txs_hashes":     txns,
 		"decode_as_json": true,
-	}, resp); err != nil {
-		return nil, fmt.Errorf("other: %w", err)
+	}
+
+	err := c.RawRequest(ctx, endpointGetTransactions, params, resp)
+	if err != nil {
+		return nil, fmt.Errorf("raw request: %w", err)
 	}
 
 	return resp, nil
