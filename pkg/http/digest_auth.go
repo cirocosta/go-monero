@@ -81,6 +81,7 @@ func (t *DigestAuthTransport) RoundTrip(
 	}
 
 	// make a request to get the 401 that contains the challenge.
+	//
 	resp, err := t.rt.RoundTrip(req)
 	if err != nil {
 		return nil, fmt.Errorf("round trip err: %w", err)
@@ -89,22 +90,25 @@ func (t *DigestAuthTransport) RoundTrip(
 		return resp, nil
 	}
 
+	// we must ensure that the initial response has been totally drained
+	// otherwise the http client won't reuse the connection.
+	//
+	io.Copy(ioutil.Discard, resp.Body)
+	resp.Body.Close()
+
 	chal, err := parseChallenge(resp.Header.Get("WWW-Authenticate"))
 	if err != nil {
 		return nil, fmt.Errorf("parse challange: %w", err)
 	}
 
-	// form credentials based on the challenge.
 	cr := t.newCredentials(finalRequest, chal)
 	auth, err := cr.authorize()
 	if err != nil {
 		return nil, fmt.Errorf("authorize: %w", err)
 	}
 
-	// resp.Body.Close()
 	finalRequest.Header.Set("Authorization", auth)
-	resp2, err := t.rt.RoundTrip(finalRequest)
-	return resp2, err
+	return t.rt.RoundTrip(finalRequest)
 }
 
 type challenge struct {
