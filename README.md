@@ -22,7 +22,8 @@ You can either install it by using Go building from scratch
 $ GO111MODULE=on go get github.com/cirocosta/go-monero/cmd/monero
 ```
 
-or fetching the binary for your distribution - check out the [releases page].
+or fetching the binary for your distribution from the [releases page]. See
+[INSTALL.md](./INSTALL.md) for details and examples.
 
 [releases page]: https://github.com/cirocosta/go-monero/releases
 
