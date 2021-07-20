@@ -144,13 +144,19 @@ func (c *getTransactionCommand) prettyOutputs(
 	table.AddRow("Outputs")
 	table.AddRow()
 	table.AddRow("", "STEALTH ADDR", "AMOUNT", "AMOUNT IDX")
+
+	fmt.Println("indices", txn.OutputIndices)
 	for idx, vout := range txnDetails.Vout {
 		amount := "?"
 		if vout.Amount != 0 {
 			amount = strconv.Itoa(vout.Amount)
 		}
 
-		table.AddRow(idx, vout.Target.Key, amount, txn.OutputIndices[idx])
+		var outIdx interface{} = "?"
+		if len(txn.OutputIndices) != 0 {
+			outIdx = txn.OutputIndices[idx]
+		}
+		table.AddRow(idx, vout.Target.Key, amount, outIdx)
 	}
 
 	fmt.Println(table)
