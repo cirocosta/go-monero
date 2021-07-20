@@ -68,3 +68,10 @@ type SubAddress struct {
 	//
 	UnlockedBalance int64 `json:"unlocked_balance"`
 }
+
+type CreateAddressResult struct {
+	Address        string   `json:"address"`
+	AddressIndex   uint     `json:"address_index"`
+	AddressIndices []uint   `json:"address_indices"`
+	Addresses      []string `json:"addresses"`
+}
