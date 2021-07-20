@@ -7,6 +7,7 @@ import (
 )
 
 const (
+	endpointMiningStatus            = "/mining_status"
 	endpointGetHeight               = "/get_height"
 	endpointGetOuts                 = "/get_outs"
 	endpointGetNetStats             = "/get_net_stats"
@@ -16,6 +17,19 @@ const (
 	endpointGetTransactionPoolStats = "/get_transaction_pool_stats"
 	endpointGetTransactions         = "/get_transactions"
 )
+
+func (c *Client) MiningStatus(
+	ctx context.Context,
+) (*MiningStatusResult, error) {
+	resp := &MiningStatusResult{}
+
+	err := c.RawRequest(ctx, endpointMiningStatus, nil, resp)
+	if err != nil {
+		return nil, fmt.Errorf("raw request: %w", err)
+	}
+
+	return resp, nil
+}
 
 func (c *Client) GetTransactionPool(
 	ctx context.Context,

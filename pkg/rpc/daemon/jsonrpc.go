@@ -12,6 +12,7 @@ const (
 	methodGetBans                = "get_bans"
 	methodGetBlock               = "get_block"
 	methodGetBlockCount          = "get_block_count"
+	methodGetBlockHeadersRange   = "get_block_headers_range"
 	methodGetBlockHeaderByHash   = "get_block_header_by_hash"
 	methodGetBlockHeaderByHeight = "get_block_header_by_height"
 	methodGetBlockTemplate       = "get_block_template"
@@ -307,6 +308,23 @@ func (j *GetBlockResult) InnerJSON() (*GetBlockResultJSON, error) {
 	}
 
 	return res, nil
+}
+
+func (c *Client) GetBlockHeadersRange(
+	ctx context.Context, start, end uint64,
+) (*GetBlockHeadersRangeResult, error) {
+	resp := &GetBlockHeadersRangeResult{}
+	params := map[string]interface{}{
+		"start_height": start,
+		"end_height":   end,
+	}
+
+	err := c.JSONRPC(ctx, methodGetBlockHeadersRange, params, resp)
+	if err != nil {
+		return nil, fmt.Errorf("jsonrpc: %w", err)
+	}
+
+	return resp, nil
 }
 
 // GetBlockHeaderByHeight retrieves block header information for either one or

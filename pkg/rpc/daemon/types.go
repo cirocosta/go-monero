@@ -666,6 +666,15 @@ type GetLastBlockHeaderResult struct {
 	RPCResultFooter `json:",inline"`
 }
 
+// GetBlockHeadersRangeResult is the result of a call to the
+// GetBlockHeadersRange RPC method.
+//
+type GetBlockHeadersRangeResult struct {
+	Headers []BlockHeader `json:"headers"`
+
+	RPCResultFooter `json:",inline"`
+}
+
 // GetBlockHeaderByHeightResult is the result of a call to the
 // GetBlockHeaderByHeight RPC method.
 //
@@ -681,6 +690,26 @@ type GetBlockHeaderByHeightResult struct {
 type GetBlockHeaderByHashResult struct {
 	BlockHeader  BlockHeader   `json:"block_header"`
 	BlockHeaders []BlockHeader `json:"block_headers"`
+
+	RPCResultFooter `json:",inline"`
+}
+
+type MiningStatusResult struct {
+	Active                    bool   `json:"active"`
+	Address                   string `json:"address"`
+	BgIdleThreshold           int    `json:"bg_idle_threshold"`
+	BgIgnoreBattery           bool   `json:"bg_ignore_battery"`
+	BgMinIdleSeconds          uint64 `json:"bg_min_idle_seconds"`
+	BgTarget                  uint64 `json:"bg_target"`
+	BlockReward               uint64 `json:"block_reward"`
+	BlockTarget               uint64 `json:"block_target"`
+	Difficulty                uint64 `json:"difficulty"`
+	DifficultyTop64           uint64 `json:"difficulty_top64"`
+	IsBackgroundMiningEnabled bool   `json:"is_background_mining_enabled"`
+	PowAlgorithm              string `json:"pow_algorithm"`
+	Speed                     uint64 `json:"speed"`
+	ThreadsCount              uint64 `json:"threads_count"`
+	WideDifficulty            string `json:"wide_difficulty"`
 
 	RPCResultFooter `json:",inline"`
 }
