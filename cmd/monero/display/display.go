@@ -27,8 +27,7 @@ func JSON(v interface{}) error {
 func NewTable() *uitable.Table {
 	table := uitable.New()
 
-	table.MaxColWidth = 80
-	table.Wrap = true
+	table.MaxColWidth = 160
 
 	return table
 }

@@ -59,40 +59,49 @@ func (c *getBalanceCommand) RunE(_ *cobra.Command, _ []string) error {
 
 // nolint:forbidigo
 func (c *getBalanceCommand) pretty(v *wallet.GetBalanceResult) {
+	c.prettyTotal(v)
+
+	for _, saddr := range v.PerSubaddress {
+		c.prettySubAddress(saddr)
+	}
+}
+
+func (c *getBalanceCommand) prettyTotal(v *wallet.GetBalanceResult) {
 	table := display.NewTable()
 
-	table.AddRow("BALANCE", fmt.Sprintf("%f XMR",
+	table.AddRow("Total Balance:", fmt.Sprintf("%f XMR",
 		float64(v.Balance)/float64(constant.XMR)))
 
 	if v.BlocksToUnlock > 0 {
-		table.AddRow("UNLOCKED BALANCE", fmt.Sprintf("%f XMR",
+		table.AddRow("Total Unlocked Balance:", fmt.Sprintf("%f XMR",
 			float64(v.UnlockedBalance)/float64(constant.XMR)))
 
-		table.AddRow("BLOCKS TO UNLOCK", v.BlocksToUnlock)
-		table.AddRow("TIME TO UNLOCK (s)", v.TimeToUnlock)
+		table.AddRow("Total Blocks to Unlock:", v.BlocksToUnlock)
+		table.AddRow("Total Time to Unlock (s):", v.TimeToUnlock)
 	}
 
 	if v.MultisigImportNeeded {
-		table.AddRow("MULTISIG IMPORT NEEDED", v.MultisigImportNeeded)
+		table.AddRow("Multisig Import Needed:", v.MultisigImportNeeded)
 	}
 
+	fmt.Println(table)
+}
+
+func (c *getBalanceCommand) prettySubAddress(saddr wallet.SubAddress) {
+	table := display.NewTable()
+
 	table.AddRow("")
+	table.AddRow(saddr.AccountIndex, "Address", saddr.Address)
+	table.AddRow("~", "Label:", saddr.Label)
+	table.AddRow("~", "UTXOs", saddr.NumUnspentOutputs)
+	table.AddRow("~", "Balance:", fmt.Sprintf("%f XMR",
+		float64(saddr.Balance)/float64(constant.XMR)))
 
-	for _, saddr := range v.PerSubaddress {
-		table.AddRow("", "ACCOUNT IDX", saddr.AccountIndex)
-		table.AddRow("", "ADDRESS IDX", saddr.AddressIndex)
-		table.AddRow("", "ADDRESS", saddr.Address)
-		table.AddRow("", "LABEL", saddr.Label)
-		table.AddRow("", "UTXOs", saddr.NumUnspentOutputs)
-		table.AddRow("", "BALANCE", fmt.Sprintf("%f XMR",
-			float64(saddr.Balance)/float64(constant.XMR)))
-
-		if saddr.BlocksToUnlock > 0 {
-			table.AddRow("", "BLOCKS TO UNLOCK", saddr.BlocksToUnlock)
-			table.AddRow("", "TIME TO UNLOCK", saddr.TimeToUnlock)
-			table.AddRow("", "UNLOCKED BALANCE", fmt.Sprintf("%f XMR",
-				float64(saddr.UnlockedBalance)/float64(constant.XMR)))
-		}
+	if saddr.BlocksToUnlock > 0 {
+		table.AddRow("~", "Blocks to Unlock:", saddr.BlocksToUnlock)
+		table.AddRow("~", "Time to Unlock:", saddr.TimeToUnlock)
+		table.AddRow("~", "Unlocked Balance:", fmt.Sprintf("%f XMR",
+			float64(saddr.UnlockedBalance)/float64(constant.XMR)))
 	}
 
 	fmt.Println(table)

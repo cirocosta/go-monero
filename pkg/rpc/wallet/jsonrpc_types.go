@@ -19,48 +19,50 @@ type GetBalanceResult struct {
 	// PerSubaddress is an array of subaddress information; Balance
 	// information for each subaddress in an account.
 	//
-	PerSubaddress []struct {
-		// AccountIndex is the index of the account.
-		//
-		AccountIndex uint `json:"account_index"`
-
-		// Address at this index. Base58 representation of the public
-		// keys.
-		//
-		Address string `json:"address"`
-
-		// AddressIndex  is the index of the subaddress in the account.
-		//
-		AddressIndex uint `json:"address_index"`
-
-		// Balance is the balance for the subaddress.
-		//
-		Balance uint64 `json:"balance"`
-
-		// BlocksToUnlock TODO
-		//
-		BlocksToUnlock uint `json:"blocks_to_unlock"`
-
-		// Label TODO
-		//
-		Label string `json:"label"`
-
-		// NumUnspentOutputs TODO
-		//
-		NumUnspentOutputs uint `json:"num_unspent_outputs"`
-
-		// TimeToUnlock TODO
-		//
-		TimeToUnlock uint `json:"time_to_unlock"`
-
-		// UnlockedBalance TODO
-		//
-		UnlockedBalance int64 `json:"unlocked_balance"`
-	} `json:"per_subaddress"`
+	PerSubaddress []SubAddress `json:"per_subaddress"`
 
 	// TimeToUnlock TODO
 	//
 	TimeToUnlock int `json:"time_to_unlock"`
+
+	// UnlockedBalance TODO
+	//
+	UnlockedBalance int64 `json:"unlocked_balance"`
+}
+
+type SubAddress struct {
+	// AccountIndex is the index of the account.
+	//
+	AccountIndex uint `json:"account_index"`
+
+	// Address at this index. Base58 representation of the public
+	// keys.
+	//
+	Address string `json:"address"`
+
+	// AddressIndex  is the index of the subaddress in the account.
+	//
+	AddressIndex uint `json:"address_index"`
+
+	// Balance is the balance for the subaddress.
+	//
+	Balance uint64 `json:"balance"`
+
+	// BlocksToUnlock TODO
+	//
+	BlocksToUnlock uint `json:"blocks_to_unlock"`
+
+	// Label TODO
+	//
+	Label string `json:"label"`
+
+	// NumUnspentOutputs TODO
+	//
+	NumUnspentOutputs uint `json:"num_unspent_outputs"`
+
+	// TimeToUnlock TODO
+	//
+	TimeToUnlock uint `json:"time_to_unlock"`
 
 	// UnlockedBalance TODO
 	//
