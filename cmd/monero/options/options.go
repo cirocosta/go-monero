@@ -3,6 +3,7 @@ package options
 import (
 	"context"
 	"fmt"
+	"os"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -32,9 +33,21 @@ func (o *options) Context() (context.Context, context.CancelFunc) {
 	return context.WithTimeout(context.Background(), o.RequestTimeout)
 }
 
+// initializeFromEnv ensures that any variables not supplied via flags have
+// been captures from the set of environment variables.
+//
+func (o *options) initializeFromEnv() {
+	if address := os.Getenv("MONERO_ADDRESS"); address != "" {
+		o.address = address
+	}
+
+}
+
 // Client instantiates a new daemon RPC client based on the options filled.
 //
 func (o *options) Client() (*daemon.Client, error) {
+	o.initializeFromEnv()
+
 	httpClient, err := mhttp.NewClient(o.ClientConfig)
 	if err != nil {
 		return nil, fmt.Errorf("new httpclient: %w", err)
@@ -54,6 +67,8 @@ func (o *options) Client() (*daemon.Client, error) {
 // filled.
 //
 func (o *options) WalletClient() (*wallet.Client, error) {
+	o.initializeFromEnv()
+
 	httpClient, err := mhttp.NewClient(o.ClientConfig)
 	if err != nil {
 		return nil, fmt.Errorf("new httpclient: %w", err)
@@ -81,7 +96,7 @@ func Bind(cmd *cobra.Command) {
 	cmd.PersistentFlags().StringVarP(&RootOptions.address,
 		"address", "a",
 		"http://localhost:18081",
-		"full address of the monero node to reach out to")
+		"full address of the monero node to reach out to [MONERO_ADDRESS]")
 
 	cmd.PersistentFlags().StringVarP(&RootOptions.Username,
 		"username", "u",
