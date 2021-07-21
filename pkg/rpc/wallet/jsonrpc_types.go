@@ -1,5 +1,27 @@
 package wallet
 
+type GetAddressRequestParameters struct {
+	AccountIndex   uint   `json:"account_index"`
+	AddressIndices []uint `json:"address_indices"`
+}
+
+type GetAddressResult struct {
+	Address   string `json:"address"`
+	Addresses []struct {
+		Address      string `json:"address"`
+		AddressIndex uint   `json:"address_index"`
+		Label        string `json:"label"`
+		Used         bool   `json:"used"`
+	} `json:"addresses"`
+}
+
+type GetBalanceRequestParameters struct {
+	AccountIndex   uint   `json:"account_index"`
+	AddressIndices []uint `json:"address_indices"`
+	AllAccounts    bool   `json:"all_accounts"`
+	Strict         bool   `json:"strict"`
+}
+
 type GetBalanceResult struct {
 	// Balance is the total balance of the current monero-wallet-rpc in
 	// session.

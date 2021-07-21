@@ -14,6 +14,8 @@ import (
 type getBalanceCommand struct {
 	AccountIndex   uint
 	AddressIndices []uint
+	AllAccounts    bool
+	Strict         bool
 
 	JSON bool
 }
@@ -25,12 +27,19 @@ func (c *getBalanceCommand) Cmd() *cobra.Command {
 		RunE:  c.RunE,
 	}
 
-	cmd.Flags().BoolVar(
-		&c.JSON,
-		"json",
-		false,
-		"whether or not to output the result as json",
-	)
+	cmd.Flags().BoolVar(&c.JSON, "json",
+		false, "whether or not to output the result as json")
+
+	cmd.Flags().BoolVar(&c.AllAccounts, "all-accounts",
+		false, "retrieve balances from all accounts")
+
+	cmd.Flags().BoolVar(&c.Strict, "strict",
+		false, "todo")
+
+	cmd.Flags().UintVar(&c.AccountIndex, "account-index",
+		0, "todo")
+	cmd.Flags().UintSliceVar(&c.AddressIndices, "address-index",
+		[]uint{}, "todo")
 
 	return cmd
 }
@@ -44,7 +53,13 @@ func (c *getBalanceCommand) RunE(_ *cobra.Command, _ []string) error {
 		return fmt.Errorf("client: %w", err)
 	}
 
-	resp, err := client.GetBalance(ctx)
+	params := wallet.GetBalanceRequestParameters{
+		AccountIndex:   c.AccountIndex,
+		AddressIndices: c.AddressIndices,
+		AllAccounts:    c.AllAccounts,
+		Strict:         c.Strict,
+	}
+	resp, err := client.GetBalance(ctx, params)
 	if err != nil {
 		return fmt.Errorf("get balance: %w", err)
 	}

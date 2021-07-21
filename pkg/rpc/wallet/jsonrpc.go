@@ -6,22 +6,35 @@ import (
 )
 
 const (
+	methodAutoRefresh   = "auto_refresh"
 	methodCreateAddress = "create_address"
+	methodGetAddress    = "get_address"
 	methodGetBalance    = "get_balance"
 	methodGetHeight     = "get_height"
 	methodRefresh       = "refresh"
-	methodAutoRefresh   = "auto_refresh"
 )
+
+func (c *Client) GetAddress(
+	ctx context.Context, params GetAddressRequestParameters,
+) (*GetAddressResult, error) {
+	resp := &GetAddressResult{}
+
+	if err := c.JSONRPC(ctx, methodGetAddress, params, resp); err != nil {
+		return nil, fmt.Errorf("jsonrpc: %w", err)
+	}
+
+	return resp, nil
+}
 
 // GetBalance gets the balance of the wallet configured for the wallet rpc
 // server.
 //
 func (c *Client) GetBalance(
-	ctx context.Context,
+	ctx context.Context, params GetBalanceRequestParameters,
 ) (*GetBalanceResult, error) {
 	resp := &GetBalanceResult{}
 
-	if err := c.JSONRPC(ctx, methodGetBalance, nil, resp); err != nil {
+	if err := c.JSONRPC(ctx, methodGetBalance, params, resp); err != nil {
 		return nil, fmt.Errorf("jsonrpc: %w", err)
 	}
 
