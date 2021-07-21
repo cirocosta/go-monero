@@ -40,7 +40,6 @@ func (o *options) initializeFromEnv() {
 	if address := os.Getenv("MONERO_ADDRESS"); address != "" {
 		o.address = address
 	}
-
 }
 
 // Client instantiates a new daemon RPC client based on the options filled.

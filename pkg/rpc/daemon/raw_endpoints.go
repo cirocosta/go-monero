@@ -7,16 +7,44 @@ import (
 )
 
 const (
-	endpointMiningStatus            = "/mining_status"
 	endpointGetHeight               = "/get_height"
-	endpointGetOuts                 = "/get_outs"
 	endpointGetNetStats             = "/get_net_stats"
+	endpointGetOuts                 = "/get_outs"
 	endpointGetPeerList             = "/get_peer_list"
 	endpointGetPublicNodes          = "/get_public_nodes"
 	endpointGetTransactionPool      = "/get_transaction_pool"
 	endpointGetTransactionPoolStats = "/get_transaction_pool_stats"
 	endpointGetTransactions         = "/get_transactions"
+	endpointMiningStatus            = "/mining_status"
+	endpointStartMining             = "/start_mining"
+	endpointStopMining              = "/stop_mining"
 )
+
+func (c *Client) StopMining(
+	ctx context.Context,
+) (*StopMiningResult, error) {
+	resp := &StopMiningResult{}
+
+	err := c.RawRequest(ctx, endpointStopMining, nil, resp)
+	if err != nil {
+		return nil, fmt.Errorf("raw request: %w", err)
+	}
+
+	return resp, nil
+}
+
+func (c *Client) StartMining(
+	ctx context.Context, params StartMiningRequestParameters,
+) (*StartMiningResult, error) {
+	resp := &StartMiningResult{}
+
+	err := c.RawRequest(ctx, endpointStartMining, params, resp)
+	if err != nil {
+		return nil, fmt.Errorf("raw request: %w", err)
+	}
+
+	return resp, nil
+}
 
 func (c *Client) MiningStatus(
 	ctx context.Context,

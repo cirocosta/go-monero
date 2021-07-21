@@ -75,3 +75,15 @@ type CreateAddressResult struct {
 	AddressIndices []uint   `json:"address_indices"`
 	Addresses      []string `json:"addresses"`
 }
+
+type RefreshResult struct {
+	BlocksFetched uint64 `json:"blocks_fetched"`
+	ReceivedMoney bool   `json:"received_money"`
+}
+
+type AutoRefreshResult struct {
+}
+
+type GetHeightResult struct {
+	Height uint64 `json:"height"`
+}

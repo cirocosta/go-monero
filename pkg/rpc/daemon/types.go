@@ -840,3 +840,18 @@ type GetTransactionPoolResult struct {
 	} `json:"transactions"`
 	Untrusted bool `json:"untrusted"`
 }
+
+type StartMiningRequestParameters struct {
+	MinerAddress     string `json:"miner_address"`
+	BackgroundMining bool   `json:"background_mining"`
+	IgnoreBattery    bool   `json:"ignore_battery"`
+	ThreadsCount     uint   `json:"threads_count"`
+}
+
+type StartMiningResult struct {
+	RPCResultFooter `json:",inline"`
+}
+
+type StopMiningResult struct {
+	RPCResultFooter `json:",inline"`
+}

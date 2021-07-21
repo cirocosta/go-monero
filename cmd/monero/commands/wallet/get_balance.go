@@ -57,7 +57,6 @@ func (c *getBalanceCommand) RunE(_ *cobra.Command, _ []string) error {
 	return nil
 }
 
-// nolint:forbidigo
 func (c *getBalanceCommand) pretty(v *wallet.GetBalanceResult) {
 	c.prettyTotal(v)
 
@@ -66,6 +65,7 @@ func (c *getBalanceCommand) pretty(v *wallet.GetBalanceResult) {
 	}
 }
 
+// nolint:forbidigo
 func (c *getBalanceCommand) prettyTotal(v *wallet.GetBalanceResult) {
 	table := display.NewTable()
 
@@ -87,6 +87,7 @@ func (c *getBalanceCommand) prettyTotal(v *wallet.GetBalanceResult) {
 	fmt.Println(table)
 }
 
+// nolint:forbidigo
 func (c *getBalanceCommand) prettySubAddress(saddr wallet.SubAddress) {
 	table := display.NewTable()
 
