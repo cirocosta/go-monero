@@ -45,10 +45,10 @@ func (c *getBalanceCommand) Cmd() *cobra.Command {
 }
 
 func (c *getBalanceCommand) RunE(_ *cobra.Command, _ []string) error {
-	ctx, cancel := options.RootOptions.Context()
+	ctx, cancel := options.RootOpts.Context()
 	defer cancel()
 
-	client, err := options.RootOptions.WalletClient()
+	client, err := options.RootOpts.WalletClient()
 	if err != nil {
 		return fmt.Errorf("client: %w", err)
 	}

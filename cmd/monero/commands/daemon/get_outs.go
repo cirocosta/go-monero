@@ -37,10 +37,10 @@ func (c *getOutsCommand) Cmd() *cobra.Command {
 }
 
 func (c *getOutsCommand) RunE(_ *cobra.Command, _ []string) error {
-	ctx, cancel := options.RootOptions.Context()
+	ctx, cancel := options.RootOpts.Context()
 	defer cancel()
 
-	client, err := options.RootOptions.Client()
+	client, err := options.RootOpts.Client()
 	if err != nil {
 		return fmt.Errorf("client: %w", err)
 	}

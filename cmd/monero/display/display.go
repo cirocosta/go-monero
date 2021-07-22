@@ -6,6 +6,8 @@ import (
 	"os"
 
 	"github.com/gosuri/uitable"
+
+	"github.com/cirocosta/go-monero/pkg/constant"
 )
 
 // JSON pushes to stdout a pretty printed representation of a given value `v`.
@@ -30,4 +32,16 @@ func NewTable() *uitable.Table {
 	table.MaxColWidth = 160
 
 	return table
+}
+
+func XMR(v uint64) string {
+	return fmt.Sprintf("%.2f ɱ", float64(v)/float64(constant.XMR))
+}
+
+func ShortenAddress(addr string) string {
+	if len(addr) < 10 {
+		return addr
+	}
+
+	return addr[:5] + ".." + addr[len(addr)-5:]
 }

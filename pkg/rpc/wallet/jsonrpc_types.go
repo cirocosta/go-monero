@@ -1,5 +1,24 @@
 package wallet
 
+type GetAccountsRequestParameters struct {
+	Tag            string `json:"tag,omitempty"`
+	StrictBalances bool   `json:"strict_balances,omitempty"`
+}
+
+type GetAccountsResult struct {
+	SubaddressAccounts []struct {
+		AccountIndex    uint   `json:"account_index"`
+		Balance         uint64 `json:"balance"`
+		BaseAddress     string `json:"base_address"`
+		Label           string `json:"label"`
+		Tag             string `json:"tag"`
+		UnlockedBalance uint64 `json:"unlocked_balance"`
+	} `json:"subaddress_accounts"`
+
+	TotalBalance         uint64 `json:"total_balance"`
+	TotalUnlockedBalance uint64 `json:"total_unlocked_balance"`
+}
+
 type GetAddressRequestParameters struct {
 	AccountIndex   uint   `json:"account_index"`
 	AddressIndices []uint `json:"address_indices"`

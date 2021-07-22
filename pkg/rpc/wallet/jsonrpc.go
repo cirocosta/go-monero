@@ -8,11 +8,24 @@ import (
 const (
 	methodAutoRefresh   = "auto_refresh"
 	methodCreateAddress = "create_address"
+	methodGetAccounts   = "get_accounts"
 	methodGetAddress    = "get_address"
 	methodGetBalance    = "get_balance"
 	methodGetHeight     = "get_height"
 	methodRefresh       = "refresh"
 )
+
+func (c *Client) GetAccounts(
+	ctx context.Context, params GetAccountsRequestParameters,
+) (*GetAccountsResult, error) {
+	resp := &GetAccountsResult{}
+
+	if err := c.JSONRPC(ctx, methodGetAccounts, params, resp); err != nil {
+		return nil, fmt.Errorf("jsonrpc: %w", err)
+	}
+
+	return resp, nil
+}
 
 func (c *Client) GetAddress(
 	ctx context.Context, params GetAddressRequestParameters,

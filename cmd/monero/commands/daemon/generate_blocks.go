@@ -34,10 +34,10 @@ func (c *generateBlocksCommand) Cmd() *cobra.Command {
 }
 
 func (c *generateBlocksCommand) RunE(cmd *cobra.Command, args []string) error {
-	ctx, cancel := options.RootOptions.Context()
+	ctx, cancel := options.RootOpts.Context()
 	defer cancel()
 
-	client, err := options.RootOptions.Client()
+	client, err := options.RootOpts.Client()
 	if err != nil {
 		return fmt.Errorf("client: %w", err)
 	}
