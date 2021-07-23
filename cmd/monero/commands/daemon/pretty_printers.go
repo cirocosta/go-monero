@@ -1,6 +1,7 @@
 package daemon
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/dustin/go-humanize"
@@ -10,6 +11,8 @@ import (
 )
 
 func prettyBlockHeader(table *uitable.Table, header daemon.BlockHeader) {
+	timestamp := time.Unix(header.Timestamp, 0)
+
 	table.AddRow("Block Size:", humanize.Bytes(header.BlockSize))
 	table.AddRow("Block Weight:", humanize.Bytes(header.BlockWeight))
 	table.AddRow("Cumulative Difficulty:", header.CumulativeDifficulty)
@@ -29,7 +32,7 @@ func prettyBlockHeader(table *uitable.Table, header daemon.BlockHeader) {
 	table.AddRow("Proof-of-Work Hash:", header.PowHash)
 	table.AddRow("Previous Hash:", header.PrevHash)
 	table.AddRow("Reward:", header.Reward)
-	table.AddRow("Timestamp:", time.Unix(header.Timestamp, 0))
+	table.AddRow("Timestamp:", fmt.Sprintf("%s (%s)", timestamp, humanize.Time(timestamp)))
 	table.AddRow("Wide Cumulative Difficulty:", header.WideCumulativeDifficulty)
 	table.AddRow("Wide Difficulty:", header.WideDifficulty)
 }

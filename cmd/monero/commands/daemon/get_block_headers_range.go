@@ -13,6 +13,7 @@ import (
 type getBlockHeadersRangeCommand struct {
 	Start uint64
 	End   uint64
+	Last  uint64
 
 	JSON bool
 }
@@ -31,6 +32,8 @@ func (c *getBlockHeadersRangeCommand) Cmd() *cobra.Command {
 		0, "height of the first block in the range")
 	cmd.Flags().Uint64Var(&c.End, "end",
 		0, "height the last block in the range")
+	cmd.Flags().Uint64Var(&c.Last, "last",
+		0, "get the last `n` block headers")
 
 	return cmd
 }
@@ -44,7 +47,18 @@ func (c *getBlockHeadersRangeCommand) RunE(_ *cobra.Command, _ []string) error {
 		return fmt.Errorf("client: %w", err)
 	}
 
-	resp, err := client.GetBlockHeadersRange(ctx, c.Start, c.End)
+	start, end := c.Start, c.End
+	if c.Last != 0 {
+		heightResp, err := client.GetHeight(ctx)
+		if err != nil {
+			return fmt.Errorf("get height: %w", err)
+		}
+
+		end = heightResp.Height - 1
+		start = end - c.Last
+	}
+
+	resp, err := client.GetBlockHeadersRange(ctx, start, end)
 	if err != nil {
 		return fmt.Errorf("get block header by height: %w", err)
 	}
