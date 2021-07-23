@@ -145,7 +145,6 @@ func (c *getTransactionCommand) prettyOutputs(
 	table.AddRow()
 	table.AddRow("", "STEALTH ADDR", "AMOUNT", "AMOUNT IDX")
 
-	fmt.Println("indices", txn.OutputIndices)
 	for idx, vout := range txnDetails.Vout {
 		amount := "?"
 		if vout.Amount != 0 {
