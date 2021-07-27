@@ -3,10 +3,9 @@
 [![GoDoc](https://img.shields.io/static/v1?label=godoc&message=reference&color=blue)](https://pkg.go.dev/github.com/cirocosta/go-monero)
 
 
-A Go library (and CLI) for interacting with Monero's daemon via RPC or the P2P
-network, free of CGO, either on clearnet or not.
-
-Support for `monero-wallet-rpc` coming soon.
+A multi-platform [Go] library (and command line interface) for interacting with
+[Monero] servers either on clearnet or not (see [Tor support]), supporting for
+daemon and wallet RPC, p2p commands and ZeroMQ.
 
 
 ## Quick start
@@ -23,9 +22,7 @@ $ GO111MODULE=on go get github.com/cirocosta/go-monero/cmd/monero
 ```
 
 or fetching the binary for your distribution from the [releases page]. See
-[INSTALL.md](./INSTALL.md) for details and examples.
-
-[releases page]: https://github.com/cirocosta/go-monero/releases
+[INSTALL.md] for details and examples.
 
 
 ### Example
@@ -103,6 +100,7 @@ Available Commands:
   get-block                  full block information by either block height or hash
   get-block-count            look up how many blocks are in the longest chain known to the node
   get-block-header           retrieve block(s) header(s) by hash
+  get-block-headers-range    retrieve a range of block headers
   get-block-template         generate a block template for mining a new block
   get-coinbase-tx-sum        compute the coinbase amount and the fees amount for n last blocks starting at particular height
   get-connections            information about incoming and outgoing connections.
@@ -119,17 +117,22 @@ Available Commands:
   get-transaction-pool-stats statistics about the transaction pool
   get-version                version of the monero daemon
   hardfork-info              information regarding hard fork voting and readiness.
+  mining-status              information about this daemon's mining activity
   on-get-block-hash          find out block's hash by height
   relay-tx                   relay a list of transaction ids
   rpc-access-tracking        statistics about rpc access
   set-bans                   ban another nodes
+  start-mining               start mining on the daemon
+  stop-mining                stop mining on the daemon
   sync-info                  daemon's chain synchronization info
+  zmq                        listen for zmq notifications
 
 Flags:
-  -a, --address string             full address of the monero node to reach out to (default "http://localhost:18081")
+  -a, --address string             full address of the monero node to reach out to [MONERO_ADDRESS] (default "http://localhost:18081")
   -h, --help                       help for daemon
   -p, --password string            password to supply for rpc auth
       --request-timeout duration   max wait time until considering the request a failure (default 1m0s)
+      --shorten-addresses          whether addresses should be shortened when displaying pretty results (default true)
       --tls-ca-cert string         certificate authority to load
       --tls-client-cert string     tls client certificate to use when connecting
       --tls-client-key string      tls client key to use when connecting
@@ -305,3 +308,11 @@ Big thanks to the Monero community and other projects around cryptonote:
 ![xmr address](./assets/donate.png)
 
 891B5keCnwXN14hA9FoAzGFtaWmcuLjTDT5aRTp65juBLkbNpEhLNfgcBn6aWdGuBqBnSThqMPsGRjWVQadCrhoAT6CnSL3
+
+
+[CGO]: https://pkg.go.dev/cmd/cgo
+[Go]: https://go.dev
+[INSTALL.md]: ./INSTALL.md
+[Monero]: https://getmonero.org/
+[releases page]: https://github.com/cirocosta/go-monero/releases
+[Tor support]: #tor-support
