@@ -4,7 +4,7 @@
 
 
 A multi-platform [Go] library (and command line interface) for interacting with
-[Monero] servers either on clearnet or not (see [Tor support]), supporting for
+[Monero] servers either on clearnet or not (see [Tor support]), supporting
 daemon and wallet RPC, p2p commands and ZeroMQ.
 
 
