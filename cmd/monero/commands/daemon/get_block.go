@@ -109,7 +109,7 @@ func (c *getBlockCommand) pretty(ctx context.Context, v *daemon.GetBlockResult) 
 		return fmt.Errorf("get txns: %w", err)
 	}
 
-	details, err := txnsResult.GetTransactions()
+	txnsDetails, err := txnsResult.GetTransactions()
 	if err != nil {
 		return fmt.Errorf("get transactions: %w", err)
 	}
@@ -117,18 +117,19 @@ func (c *getBlockCommand) pretty(ctx context.Context, v *daemon.GetBlockResult) 
 	prettyBlockHeader(table, v.BlockHeader)
 
 	fees := uint64(0)
-	for _, d := range details {
-		fees += d.RctSignatures.Txnfee
+	for _, txnDetails := range txnsDetails {
+		fees += txnDetails.RctSignatures.Txnfee
 	}
 
 	table.AddRow("Fees:", display.PreciseXMR(fees))
+	table.AddRow("Block Subsidy:", display.PreciseXMR(v.BlockHeader.Reward-fees))
 	fmt.Println(table)
 	fmt.Println("")
 
 	table = display.NewTable()
 	table.AddRow("HASH", "FEE (µɱ)", "FEE (µɱ per kB)", "IN/OUT", "SIZE")
 	for idx, txn := range txnsResult.Txs {
-		txnDetails := details[idx]
+		txnDetails := txnsDetails[idx]
 
 		fee := float64(txnDetails.RctSignatures.Txnfee)
 		size := len(txn.AsHex) / 2
