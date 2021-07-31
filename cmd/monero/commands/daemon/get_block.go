@@ -18,6 +18,7 @@ import (
 type getBlockCommand struct {
 	Height    uint64
 	Hash      string
+	Last      int64
 	BlockJSON bool
 	JSON      bool
 
@@ -31,6 +32,9 @@ func (c *getBlockCommand) Cmd() *cobra.Command {
 		RunE:  c.RunE,
 	}
 
+	cmd.Flags().Int64Var(&c.Last, "last",
+		-1, "get the last Nth block")
+
 	cmd.Flags().Uint64Var(&c.Height, "height",
 		0, "height of the block to retrieve the information of")
 
@@ -39,6 +43,7 @@ func (c *getBlockCommand) Cmd() *cobra.Command {
 
 	cmd.Flags().BoolVar(&c.JSON, "json",
 		false, "whether or not to output the result as json")
+
 	cmd.Flags().BoolVar(&c.BlockJSON, "block-json",
 		false, "display just the block json (from the `json` field)")
 
@@ -52,6 +57,15 @@ func (c *getBlockCommand) RunE(_ *cobra.Command, _ []string) error {
 	client, err := options.RootOpts.Client()
 	if err != nil {
 		return fmt.Errorf("client: %w", err)
+	}
+
+	if c.Last >= 0 {
+		lastBlockHeaderResp, err := client.GetLastBlockHeader(ctx)
+		if err != nil {
+			return fmt.Errorf("get last block header: %w", err)
+		}
+
+		c.Height = lastBlockHeaderResp.BlockHeader.Height - uint64(c.Last)
 	}
 
 	if c.Hash == "" && c.Height == 0 {

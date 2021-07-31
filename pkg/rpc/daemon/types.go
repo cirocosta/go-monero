@@ -774,7 +774,7 @@ type TransactionJSON struct {
 		} `json:"key"`
 	} `json:"vin"`
 	Vout []struct {
-		Amount int `json:"amount"`
+		Amount uint64 `json:"amount"`
 		Target struct {
 			Key string `json:"key"`
 		} `json:"target"`

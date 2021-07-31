@@ -5,7 +5,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/dustin/go-humanize"
@@ -148,7 +147,7 @@ func (c *getTransactionCommand) prettyOutputs(
 	for idx, vout := range txnDetails.Vout {
 		amount := "?"
 		if vout.Amount != 0 {
-			amount = strconv.Itoa(vout.Amount)
+			amount = display.PreciseXMR(vout.Amount)
 		}
 
 		var outIdx interface{} = "?"
@@ -162,18 +161,6 @@ func (c *getTransactionCommand) prettyOutputs(
 	fmt.Println("")
 
 	return nil
-}
-
-func decodeOffsets(offsets []uint) []uint {
-	accum := uint(0)
-	res := make([]uint, len(offsets))
-
-	for idx, offset := range offsets {
-		accum += offset
-		res[idx] = accum
-	}
-
-	return res
 }
 
 // nolint:forbidigo
@@ -210,6 +197,18 @@ func (c *getTransactionCommand) prettyInputs(
 	}
 
 	return nil
+}
+
+func decodeOffsets(offsets []uint) []uint {
+	accum := uint(0)
+	res := make([]uint, len(offsets))
+
+	for idx, offset := range offsets {
+		accum += offset
+		res[idx] = accum
+	}
+
+	return res
 }
 
 func init() {

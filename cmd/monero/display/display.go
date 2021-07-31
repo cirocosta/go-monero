@@ -34,6 +34,14 @@ func NewTable() *uitable.Table {
 	return table
 }
 
+func MicroXMR(v uint64) string {
+	return fmt.Sprintf("%.2f uɱ", float64(v)/float64(constant.MicroXMR))
+}
+
+func PreciseXMR(v uint64) string {
+	return fmt.Sprintf("%.6f ɱ", float64(v)/float64(constant.XMR))
+}
+
 func XMR(v uint64) string {
 	return fmt.Sprintf("%.2f ɱ", float64(v)/float64(constant.XMR))
 }

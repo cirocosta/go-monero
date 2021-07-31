@@ -7,6 +7,7 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/gosuri/uitable"
 
+	"github.com/cirocosta/go-monero/cmd/monero/display"
 	"github.com/cirocosta/go-monero/pkg/rpc/daemon"
 )
 
@@ -31,7 +32,7 @@ func prettyBlockHeader(table *uitable.Table, header daemon.BlockHeader) {
 	table.AddRow("Orphan Status:", header.OrphanStatus)
 	table.AddRow("Proof-of-Work Hash:", header.PowHash)
 	table.AddRow("Previous Hash:", header.PrevHash)
-	table.AddRow("Reward:", header.Reward)
+	table.AddRow("Reward:", display.PreciseXMR(header.Reward))
 	table.AddRow("Timestamp:", fmt.Sprintf("%s (%s)", timestamp, humanize.Time(timestamp)))
 	table.AddRow("Wide Cumulative Difficulty:", header.WideCumulativeDifficulty)
 	table.AddRow("Wide Difficulty:", header.WideDifficulty)
