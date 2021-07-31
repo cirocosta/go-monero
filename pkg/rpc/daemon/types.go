@@ -781,8 +781,8 @@ type TransactionJSON struct {
 	} `json:"vout"`
 	Extra         []byte `json:"extra"`
 	RctSignatures struct {
-		Type     int `json:"type"`
-		Txnfee   int `json:"txnFee"`
+		Type     int    `json:"type"`
+		Txnfee   uint64 `json:"txnFee"`
 		Ecdhinfo []struct {
 			Amount string `json:"amount"`
 		} `json:"ecdhInfo"`

@@ -2,9 +2,7 @@ package daemon
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"time"
 
 	"github.com/dustin/go-humanize"
 	"github.com/spf13/cobra"
@@ -106,31 +104,31 @@ func (c *getBlockCommand) pretty(ctx context.Context, v *daemon.GetBlockResult) 
 		return fmt.Errorf("inner json: %w", err)
 	}
 
-	table.AddRow("Hash:", v.BlockHeader.Hash)
-	table.AddRow("Height:", v.BlockHeader.Height)
-	table.AddRow("Age:", humanize.Time(time.Unix(v.BlockHeader.Timestamp, 0)))
-	table.AddRow("Timestamp:", time.Unix(v.BlockHeader.Timestamp, 0))
-	table.AddRow("Size:", humanize.IBytes(v.BlockHeader.BlockSize))
-	table.AddRow("Reward:", fmt.Sprintf("%f XMR", float64(v.BlockHeader.Reward)/constant.XMR))
-	table.AddRow("Version:", fmt.Sprintf("%d.%d", blockDetails.MajorVersion, blockDetails.MinorVersion))
-	table.AddRow("Previous Block:", blockDetails.PrevID)
-	table.AddRow("Nonce:", blockDetails.Nonce)
-	table.AddRow("Miner TXN Hash:", v.MinerTxHash)
-	fmt.Println(table)
-	fmt.Println("")
-
 	txnsResult, err := c.client.GetTransactions(ctx, blockDetails.TxHashes)
 	if err != nil {
 		return fmt.Errorf("get txns: %w", err)
 	}
 
+	details, err := txnsResult.GetTransactions()
+	if err != nil {
+		return fmt.Errorf("get transactions: %w", err)
+	}
+
+	prettyBlockHeader(table, v.BlockHeader)
+
+	fees := uint64(0)
+	for _, d := range details {
+		fees += d.RctSignatures.Txnfee
+	}
+
+	table.AddRow("Fees:", display.PreciseXMR(fees))
+	fmt.Println(table)
+	fmt.Println("")
+
 	table = display.NewTable()
 	table.AddRow("HASH", "FEE (µɱ)", "FEE (µɱ per kB)", "IN/OUT", "SIZE")
-	for _, txn := range txnsResult.Txs {
-		txnDetails := &daemon.TransactionJSON{}
-		if err := json.Unmarshal([]byte(txn.AsJSON), txnDetails); err != nil {
-			return fmt.Errorf("unsmarshal txjson: %w", err)
-		}
+	for idx, txn := range txnsResult.Txs {
+		txnDetails := details[idx]
 
 		fee := float64(txnDetails.RctSignatures.Txnfee)
 		size := len(txn.AsHex) / 2
