@@ -31,9 +31,9 @@ func (c *getTransactionCommand) Cmd() *cobra.Command {
 		RunE:  c.RunE,
 	}
 
-	cmd.Flags().StringVar(&c.Txn, "txn",
+	cmd.Flags().StringVarP(&c.Txn, "transaction", "t",
 		"", "hash of a transaction to lookup")
-	_ = cmd.MarkFlagRequired("txn")
+	_ = cmd.MarkFlagRequired("transaction")
 
 	cmd.Flags().BoolVar(&c.JSON, "json",
 		false, "whether or not to output the result as json")
