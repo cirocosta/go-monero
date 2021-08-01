@@ -58,7 +58,11 @@ func (c *getTransactionPoolCommand) RunE(_ *cobra.Command, _ []string) error {
 // nolint:forbidigo
 func (c *getTransactionPoolCommand) pretty(v *daemon.GetTransactionPoolResult) error {
 	table := display.NewTable()
+	table.AddRow("Spent Key Images:", len(v.SpentKeyImages))
+	fmt.Println(table)
+	fmt.Println()
 
+	table = display.NewTable()
 	table.AddRow("AGE", "HASH", "FEE (µɱ)", "FEE (µɱ per kB)", "IN/OUT", "SIZE")
 
 	sort.Slice(v.Transactions, func(i, j int) bool {
