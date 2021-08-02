@@ -2,8 +2,10 @@ package daemon
 
 import (
 	"fmt"
+	"sort"
 	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/spf13/cobra"
 
 	"github.com/cirocosta/go-monero/cmd/monero/display"
@@ -57,15 +59,19 @@ func (c *syncInfoCommand) pretty(v *daemon.SyncInfoResult) {
 	table.AddRow("HEIGHT", v.Height)
 	table.AddRow("")
 
-	table.AddRow("ADDR", "IN", "STATE", "TIME", "RECV (kB)", "SEND (kB)")
+	sort.Slice(v.Peers, func(i, j int) bool {
+		return v.Peers[i].Info.LiveTime > v.Peers[j].Info.LiveTime
+	})
+
+	table.AddRow("ADDR", "IN", "STATE", "TIME", "RECV", "SEND")
 	for _, peer := range v.Peers {
 		table.AddRow(
 			peer.Info.Address,
 			peer.Info.Incoming,
 			peer.Info.State,
 			time.Duration(peer.Info.LiveTime)*time.Second,
-			peer.Info.RecvCount/1024,
-			peer.Info.SendCount/1024,
+			humanize.Bytes(peer.Info.RecvCount),
+			humanize.Bytes(peer.Info.SendCount),
 		)
 	}
 
