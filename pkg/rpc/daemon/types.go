@@ -210,9 +210,9 @@ type GetInfoResult struct {
 	BusySyncing              bool   `json:"busy_syncing"`
 	CumulativeDifficulty     int64  `json:"cumulative_difficulty"`
 	Difficulty               int64  `json:"difficulty"`
-	FreeSpace                int64  `json:"free_space"`
+	FreeSpace                uint64 `json:"free_space"`
 	GreyPeerlistSize         int    `json:"grey_peerlist_size"`
-	Height                   int    `json:"height"`
+	Height                   uint64 `json:"height"`
 	HeightWithoutBootstrap   int    `json:"height_without_bootstrap"`
 	IncomingConnectionsCount int    `json:"incoming_connections_count"`
 	Mainnet                  bool   `json:"mainnet"`
