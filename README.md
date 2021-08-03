@@ -21,6 +21,22 @@ You can either install it by using Go building from scratch
 $ GO111MODULE=on go get github.com/cirocosta/go-monero/cmd/monero
 ```
 
+or, using [docker]
+
+```console
+$ docker run utxobr/go-monero:v0.0.5 --help
+Daemon, Wallet, and p2p command line monero CLI
+
+Usage:
+  monero [command]
+
+Available Commands:
+  daemon      execute remote procedure calls against a monero node
+  p2p         execute p2p commands against a monero node
+  wallet      execute remote procedure calls against a monero wallet rpc server
+...
+```
+
 or fetching the binary for your distribution from the [releases page]. See
 [INSTALL.md] for details and examples.
 
@@ -316,3 +332,4 @@ Big thanks to the Monero community and other projects around cryptonote:
 [Monero]: https://getmonero.org/
 [releases page]: https://github.com/cirocosta/go-monero/releases
 [Tor support]: #tor-support
+[docker]: https://docs.docker.com/
