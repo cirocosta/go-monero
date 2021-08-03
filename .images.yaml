@@ -1,0 +1,13 @@
+---
+apiVersion: kbld.k14s.io/v1alpha1
+kind: Config
+sources:
+  - image: go-monero
+    path: ./
+destinations:
+  - image: go-monero
+    newImage: docker.io/utxobr/go-monero
+
+---
+images:
+  - image: go-monero

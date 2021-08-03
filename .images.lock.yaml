@@ -1,0 +1,7 @@
+apiVersion: kbld.k14s.io/v1alpha1
+kind: Config
+minimumRequiredVersion: 0.30.0
+overrides:
+- image: go-monero
+  newImage: index.docker.io/utxobr/go-monero@sha256:195b49c96e8484a2381c069385d8340710454ad060c25c9c3976d79bed33750c
+  preresolved: true
