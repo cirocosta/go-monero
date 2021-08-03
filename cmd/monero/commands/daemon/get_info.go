@@ -2,7 +2,9 @@ package daemon
 
 import (
 	"fmt"
+	"time"
 
+	"github.com/dustin/go-humanize"
 	"github.com/spf13/cobra"
 
 	"github.com/cirocosta/go-monero/cmd/monero/display"
@@ -53,32 +55,42 @@ func (c *getInfoCommand) RunE(_ *cobra.Command, _ []string) error {
 func (c *getInfoCommand) pretty(v *daemon.GetInfoResult) {
 	table := display.NewTable()
 
+	table.AddRow("Adjusted Time:", time.Unix(int64(v.AdjustedTime), 0))
 	table.AddRow("Alternative Blocks:", v.AltBlocksCount)
-	table.AddRow("Block Size Limit:", v.BlockSizeLimit)
-	table.AddRow("Block Size Median:", v.BlockSizeMedian)
+	table.AddRow("Block Size Limit:", humanize.Bytes(v.BlockSizeLimit))
+	table.AddRow("Block Size Median:", humanize.Bytes(v.BlockSizeMedian))
+	table.AddRow("Block Size Limit:", humanize.Bytes(v.BlockWeightLimit))
+	table.AddRow("Block Size Median:", humanize.Bytes(v.BlockWeightMedian))
 	table.AddRow("Bootstrap Daemon Address:", v.BootstrapDaemonAddress)
 	table.AddRow("Busy Syncing:", v.BusySyncing)
 	table.AddRow("Cumulative Difficulty:", v.CumulativeDifficulty)
+	table.AddRow("DatabaseSize:", humanize.Bytes(v.DatabaseSize))
 	table.AddRow("Difficulty:", v.Difficulty)
-	table.AddRow("Free Space:", v.FreeSpace)
+	table.AddRow("Free Space:", humanize.Bytes(v.FreeSpace))
 	table.AddRow("Grey Peer List Size:", v.GreyPeerlistSize)
 	table.AddRow("Height:", v.Height)
 	table.AddRow("Height Without Bootstrap:", v.HeightWithoutBootstrap)
 	table.AddRow("Incoming Connections:", v.IncomingConnectionsCount)
 	table.AddRow("Mainnet:", v.Mainnet)
+	table.AddRow("Nettype:", v.Nettype)
 	table.AddRow("Offline:", v.Offline)
 	table.AddRow("Outgoing Connections:", v.OutgoingConnectionsCount)
 	table.AddRow("RPC Connections:", v.RPCConnectionsCount)
 	table.AddRow("Stagenet:", v.Stagenet)
-	table.AddRow("Start Time:", v.StartTime)
+	table.AddRow("Start Time:", time.Unix(int64(v.StartTime), 0))
 	table.AddRow("Synchronized:", v.Synchronized)
 	table.AddRow("Target:", v.Target)
 	table.AddRow("Target Height:", v.TargetHeight)
 	table.AddRow("Testnet:", v.Testnet)
+	table.AddRow("TopBlockHash:", v.TopBlockHash)
 	table.AddRow("Transactions:", v.TxCount)
 	table.AddRow("Transaction Pool Size:", v.TxPoolSize)
+	table.AddRow("Update Available:", v.UpdateAvailable)
+	table.AddRow("Version:", v.Version)
 	table.AddRow("Was Bootstrap Ever Used:", v.WasBootstrapEverUsed)
 	table.AddRow("White Peer List:", v.WhitePeerlistSize)
+	table.AddRow("WideCumulativeDifficulty:", v.WideCumulativeDifficulty)
+	table.AddRow("WideDifficulty:", v.WideDifficulty)
 
 	fmt.Println(table)
 }
