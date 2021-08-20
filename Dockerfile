@@ -1,5 +1,5 @@
-ARG BUILDER_IMAGE=golang@sha256:4544ae57fc735d7e415603d194d9fb09589b8ad7acd4d66e928eabfb1ed85ff1
-ARG RUNTIME_IMAGE=gcr.io/distroless/static@sha256:c9f9b040044cc23e1088772814532d90adadfa1b86dcba17d07cb567db18dc4e
+ARG BUILDER_IMAGE=index.docker.io/library/golang@sha256:634cda4edda00e59167e944cdef546e2d62da71ef1809387093a377ae3404df0
+ARG RUNTIME_IMAGE=gcr.io/distroless/static@sha256:c9320b754c2fa2cd2dea50993195f104a24f4c7ebe6e0297c6ddb40ce3679e7d
 
 
 FROM $BUILDER_IMAGE as builder
