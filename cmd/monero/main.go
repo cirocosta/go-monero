@@ -6,6 +6,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/cirocosta/go-monero/cmd/monero/commands/address"
 	"github.com/cirocosta/go-monero/cmd/monero/commands/daemon"
 	"github.com/cirocosta/go-monero/cmd/monero/commands/p2p"
 	"github.com/cirocosta/go-monero/cmd/monero/commands/wallet"
@@ -34,6 +35,7 @@ func init() {
 	rootCmd.AddCommand(daemon.RootCommand)
 	rootCmd.AddCommand(wallet.RootCommand)
 	rootCmd.AddCommand(p2p.RootCommand)
+	rootCmd.AddCommand(address.RootCommand)
 	rootCmd.AddCommand(versionCmd)
 }
 

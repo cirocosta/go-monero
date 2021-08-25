@@ -317,6 +317,7 @@ Big thanks to the Monero community and other projects around cryptonote:
 - https://github.com/cdiv1e12/py-levin
 - https://github.com/cryptonotefoundation/cryptonote
 - https://github.com/LeTurt/turtlegod
+- https://github.com/monero-ecosystem/vanity-monero
 
 
 ## Donate
