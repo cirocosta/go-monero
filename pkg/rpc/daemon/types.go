@@ -852,6 +852,37 @@ type GetTransactionPoolResult struct {
 	Untrusted bool `json:"untrusted"`
 }
 
+type SetLimitRequestParameters struct {
+	// LimitUp is the upload limit in kB/s
+	//
+	LimitUp uint64 `json:"limit_up"`
+	// LimitDown is the download limit in kB/s
+	//
+	LimitDown uint64 `json:"limit_down"`
+}
+
+type SetLimitResult struct {
+	// LimitUp is the upload limit in kB/s
+	//
+	LimitUp uint64 `json:"limit_up"`
+	// LimitDOwn is the download limit in kB/s
+	//
+	LimitDown uint64 `json:"limit_down"`
+
+	RPCResultFooter `json:",inline"`
+}
+
+type GetLimitResult struct {
+	// LimitUp is the upload limit in kB/s
+	//
+	LimitUp uint64 `json:"limit_up"`
+	// LimitDown is the download limit in kB/s
+	//
+	LimitDown uint64 `json:"limit_down"`
+
+	RPCResultFooter `json:",inline"`
+}
+
 type StartMiningRequestParameters struct {
 	MinerAddress     string `json:"miner_address"`
 	BackgroundMining bool   `json:"background_mining"`

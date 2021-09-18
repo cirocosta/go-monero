@@ -8,6 +8,7 @@ import (
 
 const (
 	endpointGetHeight               = "/get_height"
+	endpointGetLimit                = "/get_limit"
 	endpointGetNetStats             = "/get_net_stats"
 	endpointGetOuts                 = "/get_outs"
 	endpointGetPeerList             = "/get_peer_list"
@@ -16,6 +17,7 @@ const (
 	endpointGetTransactionPoolStats = "/get_transaction_pool_stats"
 	endpointGetTransactions         = "/get_transactions"
 	endpointMiningStatus            = "/mining_status"
+	endpointSetLimit                = "/set_limit"
 	endpointStartMining             = "/start_mining"
 	endpointStopMining              = "/stop_mining"
 )
@@ -26,6 +28,30 @@ func (c *Client) StopMining(
 	resp := &StopMiningResult{}
 
 	err := c.RawRequest(ctx, endpointStopMining, nil, resp)
+	if err != nil {
+		return nil, fmt.Errorf("raw request: %w", err)
+	}
+
+	return resp, nil
+}
+
+func (c *Client) GetLimit(ctx context.Context) (*GetLimitResult, error) {
+	resp := &GetLimitResult{}
+
+	err := c.RawRequest(ctx, endpointGetLimit, nil, resp)
+	if err != nil {
+		return nil, fmt.Errorf("raw request: %w", err)
+	}
+
+	return resp, nil
+}
+
+func (c *Client) SetLimit(
+	ctx context.Context, params SetLimitRequestParameters,
+) (*SetLimitResult, error) {
+	resp := &SetLimitResult{}
+
+	err := c.RawRequest(ctx, endpointSetLimit, params, resp)
 	if err != nil {
 		return nil, fmt.Errorf("raw request: %w", err)
 	}
