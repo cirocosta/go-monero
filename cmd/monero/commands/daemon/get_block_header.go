@@ -51,14 +51,21 @@ func (c *getBlockHeaderCommand) RunE(_ *cobra.Command, _ []string) error {
 			return fmt.Errorf("get block header by hash: %w", err)
 		}
 
-		c.pretty(resp.BlockHeaders)
+		if c.JSON {
+			return display.JSON(resp)
+		}
 
+		c.pretty(resp.BlockHeaders)
 		return nil
 	}
 
 	resp, err := client.GetBlockHeaderByHeight(ctx, c.Height)
 	if err != nil {
 		return fmt.Errorf("get block header by height: %w", err)
+	}
+
+	if c.JSON {
+		return display.JSON(resp)
 	}
 
 	c.pretty([]daemon.BlockHeader{resp.BlockHeader})

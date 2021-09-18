@@ -63,6 +63,10 @@ func (c *getBlockHeadersRangeCommand) RunE(_ *cobra.Command, _ []string) error {
 		return fmt.Errorf("get block header by height: %w", err)
 	}
 
+	if c.JSON {
+		return display.JSON(resp)
+	}
+
 	c.pretty(resp.Headers)
 	return nil
 }
