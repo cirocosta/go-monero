@@ -852,6 +852,34 @@ type GetTransactionPoolResult struct {
 	Untrusted bool `json:"untrusted"`
 }
 
+type SetLogCategoriesRequestParameters struct {
+	// Categories to log with their corresponding levels formatted as a
+	// comma-separated list of <category>:<level> pairs.
+	//
+	// For instance, to activate verbosity 1 for the `net.http` category
+	// and verbosity 4 for `net.dns`:
+	//
+	// 	net.htpp:1,net.dns:4
+	//
+	Categories string `json:"categories"`
+}
+
+type SetLogCategoriesResult struct {
+	Categories      string `json:"categories"`
+	RPCResultFooter `json:",inline"`
+}
+
+type SetLogLevelRequestParameters struct {
+	// Level is the log level that the daemon should use. From 0 to 4 (less
+	// verbose to more verbose).
+	//
+	Level int8 `json:"level"`
+}
+
+type SetLogLevelResult struct {
+	RPCResultFooter `json:",inline"`
+}
+
 type SetLimitRequestParameters struct {
 	// LimitUp is the upload limit in kB/s
 	//

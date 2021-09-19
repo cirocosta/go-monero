@@ -18,6 +18,8 @@ const (
 	endpointGetTransactions         = "/get_transactions"
 	endpointMiningStatus            = "/mining_status"
 	endpointSetLimit                = "/set_limit"
+	endpointSetLogLevel             = "/set_log_level"
+	endpointSetLogCategories        = "/set_log_categories"
 	endpointStartMining             = "/start_mining"
 	endpointStopMining              = "/stop_mining"
 )
@@ -39,6 +41,32 @@ func (c *Client) GetLimit(ctx context.Context) (*GetLimitResult, error) {
 	resp := &GetLimitResult{}
 
 	err := c.RawRequest(ctx, endpointGetLimit, nil, resp)
+	if err != nil {
+		return nil, fmt.Errorf("raw request: %w", err)
+	}
+
+	return resp, nil
+}
+
+func (c *Client) SetLogCategories(
+	ctx context.Context, params SetLogCategoriesRequestParameters,
+) (*SetLogCategoriesResult, error) {
+	resp := &SetLogCategoriesResult{}
+
+	err := c.RawRequest(ctx, endpointSetLogCategories, params, resp)
+	if err != nil {
+		return nil, fmt.Errorf("raw request: %w", err)
+	}
+
+	return resp, nil
+}
+
+func (c *Client) SetLogLevel(
+	ctx context.Context, params SetLogLevelRequestParameters,
+) (*SetLogLevelResult, error) {
+	resp := &SetLogLevelResult{}
+
+	err := c.RawRequest(ctx, endpointSetLogLevel, params, resp)
 	if err != nil {
 		return nil, fmt.Errorf("raw request: %w", err)
 	}
