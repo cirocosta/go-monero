@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/ebfe/keccak v0.0.0-20150115210727-5cc570678d1b // indirect
-	github.com/go-zeromq/zmq4 v0.13.0
+	github.com/go-zeromq/zmq4 v0.14.0
 	github.com/golangci/golangci-lint v1.42.1
 	github.com/gosuri/uitable v0.0.4
 	github.com/mattn/go-isatty v0.0.14 // indirect
