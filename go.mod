@@ -13,7 +13,7 @@ require (
 	github.com/paxos-bankchain/moneroutil v0.0.0-20170611151923-33d7e0c11a62
 	github.com/sclevine/spec v1.4.0
 	github.com/spf13/cobra v1.4.0
-	github.com/stretchr/testify v1.7.0
+	github.com/stretchr/testify v1.7.1
 	golang.org/x/crypto v0.0.0-20220214200702-86341886e292
 	golang.org/x/net v0.0.0-20211112202133-69e39bad7dc2
 )
