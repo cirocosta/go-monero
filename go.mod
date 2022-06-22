@@ -5,7 +5,7 @@ go 1.17
 require (
 	github.com/dustin/go-humanize v1.0.0
 	github.com/ebfe/keccak v0.0.0-20150115210727-5cc570678d1b // indirect
-	github.com/go-zeromq/zmq4 v0.13.0
+	github.com/go-zeromq/zmq4 v0.15.0
 	github.com/golangci/golangci-lint v1.45.0
 	github.com/gosuri/uitable v0.0.4
 	github.com/mattn/go-isatty v0.0.14 // indirect
@@ -153,7 +153,7 @@ require (
 	github.com/yeya24/promlinter v0.1.1-0.20210918184747-d757024714a1 // indirect
 	gitlab.com/bosi/decorder v0.2.1 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
-	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c // indirect
+	golang.org/x/sync v0.0.0-20220601150217-0de741cfad7f // indirect
 	golang.org/x/sys v0.0.0-20220209214540-3681064d5158 // indirect
 	golang.org/x/text v0.3.7 // indirect
 	golang.org/x/tools v0.1.10 // indirect
