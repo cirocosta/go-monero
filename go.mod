@@ -3,7 +3,7 @@ module github.com/cirocosta/go-monero
 go 1.17
 
 require (
-	github.com/dustin/go-humanize v1.0.0
+	github.com/dustin/go-humanize v1.0.1
 	github.com/ebfe/keccak v0.0.0-20150115210727-5cc570678d1b // indirect
 	github.com/go-zeromq/zmq4 v0.13.0
 	github.com/golangci/golangci-lint v1.45.0
